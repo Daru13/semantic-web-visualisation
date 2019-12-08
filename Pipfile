@@ -12,3 +12,4 @@ pandas = "*"
 seaborn = "*"
 # [requires]
 # python_version = "3.8"
+matplotlib = "*"
