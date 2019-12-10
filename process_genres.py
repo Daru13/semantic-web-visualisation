@@ -76,7 +76,7 @@ def create_simplified_genre_column(dataframe):
 
 def output_dataframe(dataframe, output_filename):
     os.makedirs(os.path.dirname(output_filename), exist_ok=True)
-    dataframe.to_csv(output_filename)
+    dataframe.to_csv(output_filename, index = False)
 
 films_df = pd.read_csv("data/raw/films/F3_genres.csv")
 bands_df = pd.read_csv("data/raw/musicbands/M3_genres.csv")
