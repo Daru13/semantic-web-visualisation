@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 # Load dataframes
 films_df = pd.read_csv("data/raw/films/F1_films+genre+sameAs.csv")
 bands_df = pd.read_csv("data/raw/musicbands/M1_musicbands+genres+sameAs.csv")
-all_df = pd.concat([films_df, bands_df])
+all_df = pd.concat([films_df, bands_df]).reset_index(drop = True)
 
 #print(all_df)
 
