@@ -37,4 +37,4 @@ print(final_df)
 output_filename = "./data/generated/parsed-urls.csv"
 os.makedirs(os.path.dirname(output_filename), exist_ok = True)
 
-final_df.to_csv(output_filename)
+final_df.to_csv(output_filename, index = False)
