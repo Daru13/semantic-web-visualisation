@@ -15,27 +15,26 @@ all_df = pd.concat([films_df, bands_df])
 #print(all_df)
 
 
-# Add useful columns
+# Create dataframes with parsed URIs
 def parse_url_column_into_dataframe(dataframe, column_name):
     parsed_urls = [urlparse(url) for url in dataframe[column_name]]
 
-    parsed_urls_df = pd.DataFrame(parsed_urls)
-    parsed_urls_df = parsed_urls_df.add_prefix(column_name + "_")
+    url_parts_df = pd.DataFrame(parsed_urls)[["netloc", "path", "params"]]
+    return url_parts_df.add_prefix(column_name + "_")
 
-    return parsed_urls_df
-
-resource_details_df = parse_url_column_into_dataframe(all_df, "resource")
-same_as_details_df = parse_url_column_into_dataframe(all_df, "sameAs")
+parsed_resource_url_df = parse_url_column_into_dataframe(all_df, "resource")
+parsed_same_as_url_df = parse_url_column_into_dataframe(all_df, "sameAs")
 
 
-# Merge all the columns into a single dataframe
-parsed_urls_df = all_df.join([resource_details_df, same_as_details_df])  
 
-print(parsed_urls_df)
+# Merge several dataframes into a single one
+final_df = all_df.join([parsed_resource_url_df, parsed_same_as_url_df])  
+
+print(final_df)
 
 
 # Write the dataframe into a csv file
 output_filename = "./data/generated/parsed-urls.csv"
 os.makedirs(os.path.dirname(output_filename), exist_ok = True)
 
-parsed_urls_df.to_csv(output_filename)
+final_df.to_csv(output_filename)
