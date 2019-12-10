@@ -91,6 +91,29 @@ resource_url_language_serie = extract_language_into_serie(parsed_resource_url_df
 same_as_url_language_serie = extract_language_into_serie(parsed_same_as_url_df, "sameAs_", "sameAs_language")
 
 
+# Create dataframes containing the language of the ressource pointed by an URI (using a basic heuristic)
+languages_df = pd.read_csv("./data/language-codes.csv")
+
+codes_to_languages = {
+    **{code.lower(): lang for (code, lang) in zip(languages_df["code_2"], languages_df["language"])},
+    **{code.lower(): lang for (code, lang) in zip(languages_df["code_3"], languages_df["language"])}
+}
+
+codes_regex = re.compile("|".join([key for key in codes_to_languages.keys()]), re.IGNORECASE)
+
+def extract_domain2_into_serie(dataframe, col_prefix, output_col_name):
+    url_netlocs = dataframe[col_prefix + "netloc"]
+
+    url_domain2 = url_netlocs.apply(lambda netloc: netloc.split(".")[-2])
+    url_domain2 = url_domain2.rename(output_col_name)
+    url_domain2 = url_domain2.rename_axis(output_col_name)
+
+    return url_domain2
+
+resource_url_domain2_serie = extract_domain2_into_serie(parsed_resource_url_df, "resource_", "resource_domain2")
+same_as_url_domain2_serie = extract_domain2_into_serie(parsed_same_as_url_df, "sameAs_", "sameAs_domain2")
+
+
 # Merge several dataframes into a single one
 final_df = all_df.join([
     parsed_resource_url_df,
@@ -98,7 +121,9 @@ final_df = all_df.join([
     resource_url_title_serie,
     same_as_url_title_serie,
     resource_url_language_serie,
-    same_as_url_language_serie
+    same_as_url_language_serie,
+    resource_url_domain2_serie,
+    same_as_url_domain2_serie
 ])  
 
 print(final_df)
