@@ -142,7 +142,7 @@ print(final_df)
 
 
 # Output the final dataframe as a CSV file
-output_filename = "./data/generated/parsed-urls.csv"
+output_filename = "./data/generated/processed-urls.csv"
 os.makedirs(os.path.dirname(output_filename), exist_ok = True)
 
 final_df.to_csv(output_filename, index = False)
