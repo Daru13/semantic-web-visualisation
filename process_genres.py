@@ -27,9 +27,9 @@ SIMPLIFY_LIST_RULES = [
 
 def simplify_simplified_genre(dataframe, rules):
     for i in range(len(dataframe.index)):
-        dataframe.at[i, "simplified genre"] = dataframe.at[i, "simplified genre"].lower()
+        dataframe.at[i, "simplified_genre"] = dataframe.at[i, "simplified_genre"].lower()
         for rule in rules:
-            dataframe.at[i, "simplified genre"] = dataframe.at[i, "simplified genre"].replace(
+            dataframe.at[i, "simplified_genre"] = dataframe.at[i, "simplified_genre"].replace(
                 rule["old"], rule["new"])
 
 def split_list(dataframe):
@@ -41,10 +41,10 @@ def split_list(dataframe):
         new_data_drame_object[column] = []
 
     for i in range(len(dataframe.index)):
-        split_list = dataframe.at[i, "simplified genre"].split(",")
+        split_list = dataframe.at[i, "simplified_genre"].split(",")
         for y in split_list:
             for column in columns:
-                if column != "simplified genre":
+                if column != "simplified_genre":
                     new_data_drame_object[column].append(dataframe[column][i])
                 else:
                     new_data_drame_object[column].append(y)
@@ -54,10 +54,10 @@ def split_list(dataframe):
 def create_simplified_genre_column(dataframe):
     genre = [genre for genre in dataframe["genre"]]
 
-    simplified_genre_column_name = "simplified genre"
+    simplified_genre_column_name = "simplified_genre"
     simplified_genre_column = []
 
-    is_from_url_column_name = "simplified genre from URL"
+    is_from_url_column_name = "simplified_genre_from_URL"
     is_from_url_column = []
 
     for i in range(len(genre)):
@@ -88,5 +88,5 @@ all_simplified_genre_df = all_df.join([simplified_genre_df])
 all_simplified_genre_df = split_list(all_simplified_genre_df)
 simplify_simplified_genre(all_simplified_genre_df, SIMPLIFY_LIST_RULES)
 
-output_dataframe(all_simplified_genre_df, "./data/generated/simplified_genre.csv")
+output_dataframe(all_simplified_genre_df, "./data/generated/processed-genres.csv")
 
