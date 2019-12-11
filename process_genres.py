@@ -1,39 +1,21 @@
 import numpy as np
 import pandas as pd
 import os
+import unidecode
 
-SPLIT_LIST_RULES = [
-    {"old": "etc", "new": ""},
-    {"old": "...", "new": ""},
-    {"old": " et ", "new": ","},
-    {"old": " et", "new": ""},
-    {"old": "/", "new": ","},
-    {"old": " - ", "new": ","},
-    {"old": ", ", "new": ","}
-]
 
-SIMPLIFY_LIST_RULES = [
-    {"old": "• ", "new": ""},
-    {"old": "•", "new": ""},
-    {"old": "'", "new": ""},
-    {"old": "_", "new": " "},
-    {"old": "é", "new": "e"},
-    {"old": "è", "new": "e"},
-    {"old": "ô", "new": "o"},
-    {"old": "ō", "new": "o"}
-]
+SPLIT_LIST_RULES = {" etc": "", "\.\.\.": "", " et ": ",", " et": "", "/": ",", " - ": ",", ", ": ","}
+
+SIMPLIFY_LIST_RULES = {"• ": "", "•": "", "'": "", "_": " ", " \(.*\)": "", "\(.*\)": ""}
+
 
 #regex to add finish by " " remove, remove "(*)"
 
 def simplify_simplified_genre(dataframe, rules):
-    for i in range(len(dataframe.index)):
-        dataframe.at[i, "simplified_genre"] = dataframe.at[i, "simplified_genre"].lower()
-        for rule in rules:
-            dataframe.at[i, "simplified_genre"] = dataframe.at[i, "simplified_genre"].replace(
-                rule["old"], rule["new"])
+    dataframe.replace({"simplified_genre": rules}, regex=True, inplace = True)
 
 def split_list(dataframe):
-    simplify_simplified_genre(dataframe, SPLIT_LIST_RULES)
+    #simplify_simplified_genre(dataframe, SPLIT_LIST_RULES)
 
     columns = dataframe.columns
     new_data_drame_object = {}
@@ -50,6 +32,8 @@ def split_list(dataframe):
                     new_data_drame_object[column].append(y)
     return pd.DataFrame(new_data_drame_object)
 
+def format_lowercase_no_accent(word):
+    return unidecode.unidecode(word.lower())
 #
 def create_simplified_genre_column(dataframe):
     genre = [genre for genre in dataframe["genre"]]
@@ -74,10 +58,6 @@ def create_simplified_genre_column(dataframe):
 
     return new_dataframe
 
-#films_df = pd.read_csv("data/raw/films/F3_genres.csv")
-#bands_df = pd.read_csv("data/raw/musicbands/M3_genres.csv")
-#all_df = pd.concat([films_df, bands_df], ignore_index = True)
-
 def process_genres(dataframe, split=True, simplified=True):
     all_df = dataframe.copy()
 
@@ -93,3 +73,8 @@ def process_genres(dataframe, split=True, simplified=True):
     
     return all_simplified_genre_df
 
+films_df = pd.read_csv("data/raw/films/F3_genres.csv")
+bands_df = pd.read_csv("data/raw/musicbands/M3_genres.csv")
+all_df = pd.concat([films_df, bands_df], ignore_index = True)
+
+print(process_genres(all_df))
