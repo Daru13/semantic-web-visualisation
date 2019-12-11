@@ -73,8 +73,8 @@ def process_genres(dataframe, split=True, simplified=True):
     
     return all_simplified_genre_df
 
-films_df = pd.read_csv("data/raw/films/F3_genres.csv")
-bands_df = pd.read_csv("data/raw/musicbands/M3_genres.csv")
+films_df = pd.read_csv("data/raw/films/F1_films+genre+sameAs.csv")
+bands_df = pd.read_csv("data/raw/musicbands/M1_musicbands+genres+sameAs.csv")
 all_df = pd.concat([films_df, bands_df], ignore_index = True)
 
 print(process_genres(all_df))
