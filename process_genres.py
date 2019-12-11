@@ -74,19 +74,22 @@ def create_simplified_genre_column(dataframe):
 
     return new_dataframe
 
-def output_dataframe(dataframe, output_filename):
-    os.makedirs(os.path.dirname(output_filename), exist_ok=True)
-    dataframe.to_csv(output_filename, index = False)
+#films_df = pd.read_csv("data/raw/films/F3_genres.csv")
+#bands_df = pd.read_csv("data/raw/musicbands/M3_genres.csv")
+#all_df = pd.concat([films_df, bands_df], ignore_index = True)
 
-films_df = pd.read_csv("data/raw/films/F3_genres.csv")
-bands_df = pd.read_csv("data/raw/musicbands/M3_genres.csv")
-all_df = pd.concat([films_df, bands_df], ignore_index = True)
+def process_genres(dataframe, split=True, simplified=True):
+    all_df = dataframe.copy()
 
-simplified_genre_df = create_simplified_genre_column(all_df)
-all_simplified_genre_df = all_df.join([simplified_genre_df])
+    simplified_genre_df = create_simplified_genre_column(all_df)
 
-all_simplified_genre_df = split_list(all_simplified_genre_df)
-simplify_simplified_genre(all_simplified_genre_df, SIMPLIFY_LIST_RULES)
+    all_simplified_genre_df = all_df.join([simplified_genre_df])
 
-output_dataframe(all_simplified_genre_df, "./data/generated/processed-genres.csv")
+    if split:
+        all_simplified_genre_df = split_list(all_simplified_genre_df)
+
+    if simplified:
+        simplify_simplified_genre(all_simplified_genre_df, SIMPLIFY_LIST_RULES)
+    
+    return all_simplified_genre_df
 
