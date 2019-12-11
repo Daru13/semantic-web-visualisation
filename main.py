@@ -29,13 +29,9 @@ enriched_urls = process_urls(all_data)
 print(simplified_genres)
 print(enriched_urls)
 
-all_data_transformed = all_data.join([simplified_genres, enriched_urls])
-
 
 # Save data
 print("Saving data...")
 
 write_dataframe_as_csv(simplified_genres, "./data/generated/FM1-simplified-genre.csv")
 write_dataframe_as_csv(enriched_urls, "./data/generated/FM1-enriched-urls.csv")
-
-write_dataframe_as_csv(all_data_transformed, "./data/generated/FM1-transformed.csv")

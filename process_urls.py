@@ -100,8 +100,7 @@ def process_urls(dataframe):
     same_as_url_2nd_domains = extract_url_2nd_domains(parsed_same_as_urls, "sameAs_")
 
     # Merge all the dataframes into a single one
-    merged_df = parsed_resource_urls.join([
-        #parsed_resource_urls,
+    merged_df = dataframe.join([
         parsed_same_as_urls,
         resource_url_titles,
         same_as_url_titles,
@@ -110,5 +109,5 @@ def process_urls(dataframe):
         resource_url_2nd_domains,
         same_as_url_2nd_domains
     ])  
-    
+
     return merged_df
