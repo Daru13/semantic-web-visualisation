@@ -101,6 +101,7 @@ def process_urls(dataframe):
 
     # Merge all the dataframes into a single one
     merged_df = dataframe.join([
+        parsed_resource_urls,
         parsed_same_as_urls,
         resource_url_titles,
         same_as_url_titles,
