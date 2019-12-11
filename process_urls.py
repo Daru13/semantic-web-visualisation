@@ -6,18 +6,6 @@ import os
 from urllib.parse import urlparse
 
 
-
-
-# Load dataframes
-film_data = pd.read_csv("data/raw/films/F1_films+genre+sameAs.csv")
-music_band_data = pd.read_csv("data/raw/musicbands/M1_musicbands+genres+sameAs.csv")
-all_data = pd.concat([film_data, music_band_data]).reset_index(drop = True)#.sample(n = 100)
-
-#print(all_data)
-
-
-
-
 # Create dataframes with parsed URLs
 def parse_URLs(dataframe, input_col_name, output_col_prefix = None):
     if output_col_prefix is None:
@@ -27,14 +15,6 @@ def parse_URLs(dataframe, input_col_name, output_col_prefix = None):
     split_urls_subset = pd.DataFrame(parsed_urls)[["netloc", "path", "params"]]
 
     return split_urls_subset.add_prefix(output_col_prefix)
-
-parsed_resource_urls = parse_URLs(all_data, "resource")
-parsed_same_as_urls = parse_URLs(all_data, "sameAs")
-
-#print(parsed_resource_urls)
-#print(parsed_same_as_urls)
-
-
 
 
 # Create dataframes with possible titles of the resources pointed by URL (using a basic heuristic)
@@ -50,14 +30,6 @@ def extract_url_titles(dataframe, input_col_name, output_col_name = None):
     path_titles = path_titles.rename_axis(output_col_name)
 
     return path_titles
-
-resource_url_titles = extract_url_titles(parsed_resource_urls, "resource_path")
-same_as_url_titles = extract_url_titles(parsed_same_as_urls, "sameAs_path")
-
-#print(resource_url_titles)
-#print(same_as_url_titles)
-
-
 
 
 # Create dataframes containing the language of the ressource pointed by an URI (using a basic heuristic)
@@ -99,11 +71,6 @@ def extract_url_languages(dataframe, input_col_prefix, output_col_name):
 
     return url_languages
 
-resource_url_languages = extract_url_languages(parsed_resource_urls, "resource_", "resource_language")
-same_as_url_languages = extract_url_languages(parsed_same_as_urls, "sameAs_", "sameAs_language")
-
-
-
 
 # Create dataframes containing the language of the ressource pointed by an URI (using a basic heuristic)
 def extract_url_2nd_domains(dataframe, input_col_prefix, output_col_name = None):
@@ -118,31 +85,30 @@ def extract_url_2nd_domains(dataframe, input_col_prefix, output_col_name = None)
 
     return url_2nd_domains
 
-resource_url_2nd_domains = extract_url_2nd_domains(parsed_resource_urls, "resource_")
-same_as_url_2nd_domains = extract_url_2nd_domains(parsed_same_as_urls, "sameAs_")
 
+def process_urls(dataframe):
+    parsed_resource_urls = parse_URLs(dataframe, "resource")
+    parsed_same_as_urls = parse_URLs(dataframe, "sameAs")
 
+    resource_url_titles = extract_url_titles(parsed_resource_urls, "resource_path", output_col_name = "resource_title")
+    same_as_url_titles = extract_url_titles(parsed_same_as_urls, "sameAs_path", output_col_name = "sameAs_title")
 
+    resource_url_languages = extract_url_languages(parsed_resource_urls, "resource_", "resource_language")
+    same_as_url_languages = extract_url_languages(parsed_same_as_urls, "sameAs_", "sameAs_language")
 
-# Merge several dataframes into a single one
-final_df = all_data.join([
-    parsed_resource_urls,
-    parsed_same_as_urls,
-    resource_url_titles,
-    same_as_url_titles,
-    resource_url_languages,
-    same_as_url_languages,
-    resource_url_2nd_domains,
-    same_as_url_2nd_domains
-])  
+    resource_url_2nd_domains = extract_url_2nd_domains(parsed_resource_urls, "resource_")
+    same_as_url_2nd_domains = extract_url_2nd_domains(parsed_same_as_urls, "sameAs_")
 
-print(final_df)
-
-
-
-
-# Output the final dataframe as a CSV file
-output_filename = "./data/generated/processed-urls.csv"
-os.makedirs(os.path.dirname(output_filename), exist_ok = True)
-
-final_df.to_csv(output_filename, index = False)
+    # Merge all the dataframes into a single one
+    merged_df = parsed_resource_urls.join([
+        #parsed_resource_urls,
+        parsed_same_as_urls,
+        resource_url_titles,
+        same_as_url_titles,
+        resource_url_languages,
+        same_as_url_languages,
+        resource_url_2nd_domains,
+        same_as_url_2nd_domains
+    ])  
+    
+    return merged_df
