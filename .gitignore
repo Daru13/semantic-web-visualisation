@@ -1,4 +1,4 @@
 .vscode/*
 .DS_Store
-data/generated/*
-__pycache__
+sample-analysis/data/generated/*
+sample-analysis/__pycache__
