@@ -17,6 +17,32 @@ export class DataFrame {
         return this.content.keys();
     }
 
+    * rows(): IterableIterator<any> {
+        const columnContentIterators: IterableIterator<any>[] = [];
+        for (let column of this.content.values()) {
+            columnContentIterators.push(column.values());
+        }
+
+        let someIteratorCanContinue = true;
+        while (someIteratorCanContinue) {
+            someIteratorCanContinue = false;
+
+            const values = [];
+            for (let iterator of columnContentIterators) {
+                const iteration = iterator.next();
+                if (iteration.done) {
+                    values.push(null); 
+                }
+                else {
+                    values.push(iteration.value);
+                    someIteratorCanContinue = true;
+                }
+            }
+            
+            yield values;
+        }
+    }
+
     static fromHTMLTable(tableNode: HTMLElement) {
         const rows = tableNode.querySelectorAll("tr");
         if (rows.length === 0) {

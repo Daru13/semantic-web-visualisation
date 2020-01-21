@@ -9,8 +9,6 @@ for (let name of df.columnNames()) {
 }
 
 console.info("Values:");
-for (let column of df.columns()) {
-    for (let value of column.values()) {
-        console.log(value);
-    }
+for (let row of df.rows()) {
+    console.log(row);
 }
