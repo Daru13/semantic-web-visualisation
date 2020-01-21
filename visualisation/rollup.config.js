@@ -1,4 +1,4 @@
-import typescript from "@rollup/plugin-typescript"
+import typescript from "rollup-plugin-typescript2"
 import { terser } from "rollup-plugin-terser";
 import pkg from "./package.json"
 
@@ -8,11 +8,14 @@ export default {
   output: [
     {
       file: "build/main.es.js",
-      format: "es",
+      format: "es",   
     },
     {
       file: "build/main.min.js",
       format: "umd",
+      globals: {
+        "d3": "d3",
+      },
       plugins: [terser()]
     },
   ],

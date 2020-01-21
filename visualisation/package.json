@@ -30,11 +30,14 @@
     "url": "https://github.com/Daru13/semantic-web-visualisation/issues"
   },
   "homepage": "https://github.com/Daru13/semantic-web-visualisation#readme",
-  "dependencies": {},
+  "dependencies": {
+    "d3": "^5.15.0"
+  },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^2.1.0",
+    "@types/d3": "^5.7.2",
     "rollup": "^1.29.0",
     "rollup-plugin-terser": "^5.2.0",
+    "rollup-plugin-typescript2": "^0.25.3",
     "tslib": "^1.10.0",
     "typescript": "^3.7.5"
   }
