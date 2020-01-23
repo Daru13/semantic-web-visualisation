@@ -1,8 +1,11 @@
-export class Series<T> {
-    private readonly name: string;
-    private readonly content: T[];
+export type Cell<T = any> = any;
 
-    constructor(content: T[], name: string = "<undefined>") {
+
+export class Series<T = any> {
+    private readonly name: string;
+    private readonly content: Cell<T>[];
+
+    constructor(content: Cell<T>[], name: string = "<undefined>") {
         this.name = name;
         this.content = content;
     }
@@ -11,11 +14,11 @@ export class Series<T> {
         return this.values();
     }
 
-    values(): IterableIterator<T> {
+    values(): IterableIterator<Cell<T>> {
         return this.content.values();
     }
 
-    get(index: number): T {
+    get(index: number): Cell<T> {
         return this.content[index];
     }
 }

@@ -1,6 +1,8 @@
-import { Series } from './Series';
+import { Series, Cell } from './Series';
 
-export type Column = Series<any>;
+
+export type Column = Series;
+
 
 export class DataFrame {
     private readonly content: Map<string, Column>;
@@ -21,7 +23,7 @@ export class DataFrame {
         return this.content.keys();
     }
 
-    row(index: number): any[] {
+    row(index: number): Cell[] {
         const values = [];
 
         for (let column of this.content.values()) {
@@ -30,8 +32,9 @@ export class DataFrame {
 
         return values;
     }
-    * rows(): IterableIterator<any> {
-        const columnContentIterators: IterableIterator<any>[] = [];
+
+    * rows(): IterableIterator<Cell[]> {
+        const columnContentIterators: IterableIterator<Cell[]>[] = [];
         for (let column of this.content.values()) {
             columnContentIterators.push(column.values());
         }
