@@ -9,3 +9,14 @@ body {
     border: 1px solid black;
     border-collapse: collapse;
 }
+
+.sankey {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.sankey svg {
+    width: 800px;
+    height: 800px;
+}
