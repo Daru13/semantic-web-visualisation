@@ -9,6 +9,10 @@ export class DataFrame {
         this.content = content;
     }
 
+    column(name: string): Column {
+        return this.content.get(name);
+    }
+
     columns(): IterableIterator<Column> {
         return this.content.values();
     }
@@ -17,6 +21,15 @@ export class DataFrame {
         return this.content.keys();
     }
 
+    row(index: number): any[] {
+        const values = [];
+
+        for (let column of this.content.values()) {
+            values.push(column.get(index));
+        }
+
+        return values;
+    }
     * rows(): IterableIterator<any> {
         const columnContentIterators: IterableIterator<any>[] = [];
         for (let column of this.content.values()) {
