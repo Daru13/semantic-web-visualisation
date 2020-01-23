@@ -1,6 +1,8 @@
-import { Series } from './Series';
+import { Series, Cell } from './Series';
 
-export type Column = Series<any>;
+
+export type Column = Series;
+
 
 export class DataFrame {
     private readonly content: Map<string, Column>;
@@ -9,12 +11,52 @@ export class DataFrame {
         this.content = content;
     }
 
+    column(name: string): Column {
+        return this.content.get(name);
+    }
+
     columns(): IterableIterator<Column> {
         return this.content.values();
     }
 
     columnNames(): IterableIterator<string> {
         return this.content.keys();
+    }
+
+    row(index: number): Cell[] {
+        const values = [];
+
+        for (let column of this.content.values()) {
+            values.push(column.get(index));
+        }
+
+        return values;
+    }
+
+    * rows(): IterableIterator<Cell[]> {
+        const columnContentIterators: IterableIterator<Cell[]>[] = [];
+        for (let column of this.content.values()) {
+            columnContentIterators.push(column.values());
+        }
+
+        let someIteratorCanContinue = true;
+        while (someIteratorCanContinue) {
+            someIteratorCanContinue = false;
+
+            const values = [];
+            for (let iterator of columnContentIterators) {
+                const iteration = iterator.next();
+                if (iteration.done) {
+                    values.push(null); 
+                }
+                else {
+                    values.push(iteration.value);
+                    someIteratorCanContinue = true;
+                }
+            }
+            
+            yield values;
+        }
     }
 
     static fromHTMLTable(tableNode: HTMLElement) {
