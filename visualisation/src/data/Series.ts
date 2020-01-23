@@ -7,6 +7,10 @@ export class Series<T> {
         this.content = content;
     }
 
+    [Symbol.iterator]() {
+        return this.values();
+    }
+
     values(): IterableIterator<T> {
         return this.content.values();
     }
