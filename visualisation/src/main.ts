@@ -15,12 +15,12 @@ for (let column of df.columns()) {
     for (let value of column.values()) {
         console.log(value);
     }
-}*/
+}
 
 console.info("Country codes of sameAs column:");
 for (let url of df.column("sameAs")) {
     const analysis = new URLAnalysis(url);
     console.log([url, analysis.countryCode]);
-}
+}*/
 
-new SankeyDiagram(df);
+new SankeyDiagram(df.column("genre"));

@@ -80,4 +80,17 @@ export class URLAnalysis {
 
         return null;
     }
+
+    public get(param: string): string {
+        switch(param) {
+            case "countryCode":
+                return this.countryCode;
+            case "domain":
+                return this.domain;
+            case "protocol":
+                return this.protocol;
+            default:
+                console.error("No parameter of name: ", param);
+        }
+    }
 }
