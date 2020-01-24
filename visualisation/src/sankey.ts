@@ -143,6 +143,7 @@ export class SankeyDiagram {
     }
 }
 
+// Function from https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
 function validURL(str: string): boolean {
     var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
         '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
