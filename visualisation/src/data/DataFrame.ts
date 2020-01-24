@@ -59,6 +59,14 @@ export class DataFrame {
         }
     }
 
+    * values(): IterableIterator<Cell> {
+        for (let column of this.columns()) {
+            for (let value of column.values()) {
+                yield value;
+            }
+        }
+    }
+
     static fromHTMLTable(tableNode: HTMLElement) {
         const rows = tableNode.querySelectorAll("tr");
         if (rows.length === 0) {
