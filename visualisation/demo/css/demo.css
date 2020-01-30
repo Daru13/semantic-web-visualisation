@@ -138,6 +138,10 @@ body {
     font-weight: bold;
 }
 
+.url-widget .path .underscore {
+    opacity: 0.1;
+}
+
 
 
 /* Country flags sprites - image and CSS taken from https://github.com/flarik/css-sprite-flags */
