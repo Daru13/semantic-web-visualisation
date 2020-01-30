@@ -21,4 +21,8 @@ export class Series<T = any> {
     get(index: number): Cell<T> {
         return this.content[index];
     }
+
+    length(): number {
+        return this.content.length;
+    }
 }
