@@ -2,6 +2,7 @@ import { DataFrame } from './data/DataFrame';
 import { SankeyDiagram } from './sankey';
 import { URLAnalysis } from './url/URLAnalysis';
 import { URLWidget } from './url/URLWidget';
+import { DataTable } from './visualisation/DataTable';
 
 const df = DataFrame.fromHTMLTable(document.getElementById("sparql-response"));
 /*console.log(df);
@@ -28,9 +29,9 @@ for (let url of df.column("sameAs")) {
 }
 */
 
-new SankeyDiagram(df.column("genre"));
+//new SankeyDiagram(df.column("genre"));
 
-
+/*
 console.info("Replacing all URLs by widgets...");
 const tableCellNodes = document.querySelectorAll("#sparql-response td");
 for (let node of tableCellNodes) {
@@ -46,3 +47,11 @@ for (let node of tableCellNodes) {
         // Ignore this cell (it doesn't contain any valid URL)
     }
 }
+*/
+
+const table = new DataTable(df);
+
+document.querySelector("#sparql-response").remove();
+document.querySelector("body").append(table.node);
+
+table.updateStyle();

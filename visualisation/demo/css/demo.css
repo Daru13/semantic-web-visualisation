@@ -21,11 +21,40 @@ body {
 
 
 
-/* Response table */
+/* Data table */
 
-#sparql-response,
-#sparql-response th,
-#sparql-response td {
+.data-table {
+    position: relative;
+    overflow: hidden;
+}
+
+.data-table .header {
+    height: 40px;
+    background-color: #000;
+    color: #FFF;
+    font-size: 1.5rem;
+    font-family: monospace;
+}
+
+.data-table .header > * {
+    display: inline-block;
+    text-align: center;
+    line-height: 40px;
+    vertical-align: middle;
+}
+
+.data-table .content {
+    max-height: calc(100vh - 40px - 180px);
+    overflow-y: auto;
+}
+
+.data-table .content table {
+    width: 100%;
+}
+
+.data-table .content table,
+.data-table .content th,
+.data-table .content td {
     padding: 2px;
     border: none;
     border-collapse: collapse;
@@ -33,36 +62,37 @@ body {
     font-size: 16px;
 }
 
-#sparql-response {
-    width: 100%;
-}
-
-#sparql-response td {
+.data-table .content td {
     border-right: 2px solid #CCC;
 }
 
-#sparql-response th {
-    background-color: #000;
-    color: #FFF;
-    font-size: 1.5rem;
-    text-align: center;
-    font-family: monospace;
-}
-
-#sparql-response tr:nth-child(2n) td {
+.data-table .content tr:nth-child(2n) td {
     background-color: #FAFAFA;
 }
 
-#sparql-response tr:nth-child(2n+1) td {
+.data-table .content tr:nth-child(2n+1) td {
     background-color: #EDEDED;
 }
 
-#sparql-response tr:hover td {
+.data-table .content tr:hover td {
     background-color: rgb(255, 227, 174);
 }
 
-#sparql-response tr td:hover {
+.data-table .content tr td:hover {
     background-color: rgb(255, 220, 100);
+}
+
+.data-table .dashboard-container {
+    width: 100%;
+    height: 180px;
+    background-color: #EFEFEF;
+    color: #000;
+}
+
+.data-table .dashboard {
+    height: 180px;
+    display: inline-block;
+    border: 1px solid darkgray;
 }
 
 
