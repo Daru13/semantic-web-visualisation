@@ -11,6 +11,10 @@ export class DataFrame {
         this.content = content;
     }
 
+    length(): number {
+        return Math.max(...[...this.columns()].map(c => c.length()));
+    }
+
     column(name: string): Column {
         return this.content.get(name);
     }
@@ -33,10 +37,10 @@ export class DataFrame {
         return values;
     }
 
-    * rows(): IterableIterator<Cell[]> {
+    * rows(start?: number, length?: number): IterableIterator<Cell[]> {
         const columnContentIterators: IterableIterator<Cell[]>[] = [];
         for (let column of this.content.values()) {
-            columnContentIterators.push(column.values());
+            columnContentIterators.push(column.values(start, length));
         }
 
         let someIteratorCanContinue = true;
