@@ -1,6 +1,6 @@
-import { Column } from './data/DataFrame';
 import * as d3 from "d3";
-import { URLAnalysis } from './url/URLAnalysis';
+import { Column } from '../dataStructures/DataFrame';
+import { URLAnalysis } from '../analyses/URLAnalysis';
 
 const SPACE_BETWEEN_COLUMNS = 400;
 const SPACE_BETWEEN_ROWS = 50;

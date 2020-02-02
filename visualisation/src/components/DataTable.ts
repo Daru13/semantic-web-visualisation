@@ -1,5 +1,5 @@
-import { DataFrame } from "../data/DataFrame";
-import { URLWidget } from "../url/URLWidget";
+import { DataFrame } from "../dataStructures/DataFrame";
+import { SimplifiedURL } from "./SimplifiedURL";
 import { Dashboard } from "./Dashboard";
 
 
@@ -72,7 +72,7 @@ export class DataTable {
                 const cellNode = document.createElement("td");
 
                 try {
-                    const widget = new URLWidget(encodeURI(cell));
+                    const widget = new SimplifiedURL(encodeURI(cell));
                     cellNode.appendChild(widget.node);
                 }
                 catch (_) {

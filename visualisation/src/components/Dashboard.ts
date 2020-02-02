@@ -1,4 +1,4 @@
-import { Series } from '../data/Series';
+import { Series } from '../dataStructures/Series';
 
 export class Dashboard {
     readonly node: HTMLElement;

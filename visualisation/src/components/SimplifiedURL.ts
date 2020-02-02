@@ -1,7 +1,7 @@
-import { URLAnalysis } from './URLAnalysis';
+import { URLAnalysis } from '../analyses/URLAnalysis';
 
 
-export class URLWidget {
+export class SimplifiedURL {
     node: HTMLElement;
     private analysis: URLAnalysis;
 
