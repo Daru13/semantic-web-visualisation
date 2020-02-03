@@ -1,7 +1,7 @@
-import { URLAnalysis } from './URLAnalysis';
+import { URLAnalysis } from '../analyses/URLAnalysis';
 
 
-export class URLWidget {
+export class SimplifiedURL {
     node: HTMLElement;
     private analysis: URLAnalysis;
 
@@ -50,7 +50,11 @@ export class URLWidget {
         const path = document.createElement("span");
         path.classList.add("path");
         path.innerHTML = `<span class="slash">/</span>`
-                       + this.analysis.path.map(decodeURIComponent).join(`<span class="slash">/</span>`);
+                       + this.analysis.path
+                           .map(decodeURIComponent)
+                           .join(`<span class="slash">/</span>`)
+                           .replace(/_/g, `<span class="underscore">_</span>`);
+                           
         node.appendChild(path);
     }
 }

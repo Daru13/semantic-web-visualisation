@@ -1,4 +1,4 @@
-import countries from "./Countries";
+import countries from "../utils/Countries";
 
 
 export class URLAnalysis {

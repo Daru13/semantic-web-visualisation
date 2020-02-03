@@ -1,5 +1,4 @@
-import { Immutable } from '../utils/Immutable';
-
+import { Immutable } from './Immutable';
 
 export default {
     "AF": "Afghanistan",

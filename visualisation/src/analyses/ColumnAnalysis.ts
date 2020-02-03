@@ -1,8 +1,8 @@
-import { Column } from './data/DataFrame';
-import { URLAnalysis } from './url/URLAnalysis';
+import { Column } from '../dataStructures/DataFrame';
+import { URLAnalysis } from './URLAnalysis';
 
 
-export class DataFrameColumnAnalysis {
+export class ColumnAnalysis {
     dataframeColumn: Column;
 
     protocols: Map<string, number>;
