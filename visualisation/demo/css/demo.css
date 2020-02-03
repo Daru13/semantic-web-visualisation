@@ -129,6 +129,7 @@ body {
     height: 180px;
     background-color: #EFEFEF;
     color: #000;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .data-table .dashboard {
@@ -136,6 +137,54 @@ body {
     display: inline-block;
     border: 1px solid darkgray;
 }
+
+
+
+/* Dashboard */
+
+.dashboard {
+    box-sizing: border-box;
+    padding: 10px;
+}
+
+.dashboard .distribution-chart {
+    display: flex;
+    height: 40px;
+    margin: 10px;
+}
+
+.dashboard .distribution-chart .chart {
+    flex-grow: 1;
+    padding: 0 10px 0 10px;
+}
+
+.dashboard .distribution-chart .chart-area {
+    display: inline-block;
+    height: 20px;
+    padding: 10px 0 0 0;
+}
+
+.dashboard .distribution-chart .chart-area.url-cells-area {
+    background-color: #6666FF;
+}
+
+.dashboard .distribution-chart .chart-area.text-cells-area {
+    background-color: #FF6666;
+}
+
+.dashboard .distribution-chart .chart-label {
+
+}
+
+.dashboard .distribution-chart .chart-label .type {
+    display: block;
+    font-weight: bold;
+}
+
+.dashboard .distribution-chart .chart-label .percent {
+    display: block;
+}
+
 
 
 
