@@ -1,35 +1,8 @@
 import { DataFrame } from './data/DataFrame';
-import { SankeyDiagram } from './sankey';
-import { URLAnalysis } from './url/URLAnalysis';
+import { SankeyDiagram } from './Visualizations/Sankey';
 import { URLWidget } from './url/URLWidget';
 
 const df = DataFrame.fromHTMLTable(document.getElementById("sparql-response"));
-/*console.log(df);
-
-/*
-console.info("Column names:");
-for (let name of df.columnNames()) {
-    console.log(name);
-}
-
-console.info("Values:");
-for (let column of df.columns()) {
-    for (let value of column.values()) {
-        console.log(value);
-    }
-}
-
-console.info("Country codes of sameAs column:");
-for (let url of df.column("sameAs")) {
-    const analysis = new URLAnalysis(url);
-
-    console.log([url, analysis.countryCode]);
-    console.log(analysis.path);
-}
-*/
-
-new SankeyDiagram(df.column("genre"));
-
 
 console.info("Replacing all URLs by widgets...");
 const tableCellNodes = document.querySelectorAll("#sparql-response td");
@@ -46,3 +19,9 @@ for (let node of tableCellNodes) {
         // Ignore this cell (it doesn't contain any valid URL)
     }
 }
+
+function sankey(column: string) {
+    new SankeyDiagram(df.column(column));
+}
+
+(window as any)["sankey"] = sankey; 
