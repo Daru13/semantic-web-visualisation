@@ -23,23 +23,24 @@ export class OrganizedWordCloud {
             try {
                 analyse = new URLAnalysis(url);
                 word = analyse.path[analyse.path.length - 1];
-                word = decodeURI(word);
-                word = word.toLowerCase();
-                word = word.replace(/\(.*\)/g, "");
-                word = word.replace(/_/g, " ");
-                word = word.trim();
-                this.addWord(word);
+                this.addWord(this.normalizeWord(word));
             } catch (error) {
                 word = url;
                 let words = word.split(/,|;|\/| - | et /g);
                 words.forEach((w: string) => {
-                    w = w.toLowerCase();
-                    w = w.replace(/"| etc|/gi, "");
-                    w = w.trim();
-                    this.addWord(w);
+                    this.addWord(this.normalizeWord(w));
                 })
             }
         }
+    }
+
+    private normalizeWord(word: string): string {
+        word = decodeURI(word);
+        word = word.toLowerCase();
+        word = word.replace(/"| etc|\(.*\)/gi, "");
+        word = word.replace(/_/g, " ");
+        word = word.trim();
+        return word;
     }
 
     private addWord(word: string): void {
