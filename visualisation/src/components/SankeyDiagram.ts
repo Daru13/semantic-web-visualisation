@@ -59,8 +59,8 @@ export class SankeyDiagram {
 
             maxWidth = columnTitle.node().getBBox().width;
 
-            values = this.sortMap(this.columnAnalysis.getValues(this.properties[i]));
-            values.forEach(({ key: k, val: v }) => {
+            values = this.columnAnalysis.getCounter(this.properties[i]).sortedEntries();
+            values.forEach(({ key: k, count: v }) => {
                 rect = columnHolder.append("rect")
                     .attr("x", x)
                     .attr("y", y)
@@ -87,7 +87,7 @@ export class SankeyDiagram {
             y -= SPACE_BETWEEN_ROWS;
             maxHeight = (maxHeight < y) ? y : maxHeight;
 
-            values.forEach(({ key: k, val: v }) => {
+            values.forEach(({ key: k, count: v }) => {
                 let eleProperty = this.skeleton.get(k);
                 eleProperty.fromX = eleProperty.toX + maxWidth;
             });
@@ -122,10 +122,10 @@ export class SankeyDiagram {
         let map;
 
         for (let i = 0; i < this.properties.length - 1; i++) {
-            values = this.sortMap(this.columnAnalysis.getValues(this.properties[i]));
-            values.forEach(({ key: firstValue, val: _ }) => {
+            values = this.columnAnalysis.getCounter(this.properties[i]).sortedEntries();
+            values.forEach(({ key: firstValue, count: _ }) => {
                 map = this.columnAnalysis.pairs.get(firstValue)
-                this.sortMap(map).forEach(({ key: secondValue, val: nb }) => {
+                map.sortedEntries().forEach(({ key: secondValue, count: nb }) => {
                     if (!(this.skeleton.has(firstValue) && this.skeleton.has(secondValue))) {
                         return;
                     }
@@ -169,20 +169,6 @@ export class SankeyDiagram {
         element.node().addEventListener("mouseleave", (e) => {
             d3.selectAll(".tooltip").remove();
         })
-    }
-
-    private sortMap(map: Map<string, number>): { key: string, val: number }[] {
-        let temp: { key: string, val: number }[] = [];
-
-        map.forEach((v, k, _) => {
-            let i = 0;
-            while (i < temp.length && temp[i].val > v) {
-                i += 1;
-            }
-            temp.splice(i, 0, { key: k, val: v });
-        })
-
-        return temp; //temp.slice(0,5);
     }
 
     private svgTextBbox(text: string, fontSize: number) {

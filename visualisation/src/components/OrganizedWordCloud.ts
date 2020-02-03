@@ -1,16 +1,17 @@
 import { Column } from '../dataStructures/DataFrame';
 import { URLAnalysis } from '../analyses/URLAnalysis';
 import { ColumnAnalysis } from '../analyses/ColumnAnalysis';
+import { MapCounter } from '../utils/MapCounter';
 
 export class OrganizedWordCloud {
     holder: HTMLDivElement;
-    wordCount: Map<string, number>;
+    wordCount: MapCounter<string>;
 
     constructor(column: Column) {
         this.holder = document.createElement("div");
         this.holder.classList.add("word-cloud");
         document.body.appendChild(this.holder);
-        this.wordCount = new Map();
+        this.wordCount = new MapCounter();
         
         this.countWords(column);
         this.setupUI(column);
@@ -23,12 +24,12 @@ export class OrganizedWordCloud {
             try {
                 analyse = new URLAnalysis(url);
                 word = analyse.path[analyse.path.length - 1];
-                this.addWord(this.normalizeWord(word));
+                this.wordCount.count(this.normalizeWord(word));
             } catch (error) {
                 word = url;
                 let words = word.split(/,|;|\/| - | et /g);
                 words.forEach((w: string) => {
-                    this.addWord(this.normalizeWord(w));
+                    this.wordCount.count(this.normalizeWord(w));
                 })
             }
         }
@@ -41,14 +42,6 @@ export class OrganizedWordCloud {
         word = word.replace(/_/g, " ");
         word = word.trim();
         return word;
-    }
-
-    private addWord(word: string): void {
-        if (!this.wordCount.has(word)) {
-            this.wordCount.set(word, 0);
-        }
-        let count = this.wordCount.get(word) + 1;
-        this.wordCount.set(word, count);
     } 
 
     private setupUI(column: Column): void {
@@ -56,7 +49,7 @@ export class OrganizedWordCloud {
         let textHolder: HTMLDivElement;
         let wordNb = 0;
 
-        this.sortMap(this.wordCount).forEach(({ key: text, val: count }) => {
+        this.wordCount.sortedEntries().forEach(({ key: text, count: count }) => {
             if (wordNb === 0) {
                 topHolder = document.createElement("div")
                 topHolder.classList.add("top-10");

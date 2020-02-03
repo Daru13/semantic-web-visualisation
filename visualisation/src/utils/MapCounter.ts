@@ -33,6 +33,20 @@ export class MapCounter<T = any> {
         return this.counters.get(key);
     }
 
+    sortedEntries(): { key: T, count: number }[] {
+        let temp: { key: T, count: number }[] = [];
+
+        this.counters.forEach((v, k, _) => {
+            let i = 0;
+            while (i < temp.length && temp[i].count > v) {
+                i += 1;
+            }
+            temp.splice(i, 0, { key: k, count: v });
+        })
+
+        return temp;
+    }
+
     static fromEnum(enumeration: object): MapCounter {
         const enumKeys = Object.values(enumeration).filter(v => !isNaN(Number(v)));
         return new MapCounter(enumKeys);

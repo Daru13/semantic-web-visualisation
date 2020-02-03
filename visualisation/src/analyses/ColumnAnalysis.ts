@@ -20,7 +20,7 @@ export class ColumnAnalysis {
     tlds: MapCounter<string>;
     paths: MapCounter<string>;
 
-    pairs: Map<string, Map<string, number>>;
+    pairs: Map<string, MapCounter<string>>;
 
     properties: string[] = ["protocol", "subdomains", "domain", "tld", "path"];
 
@@ -80,16 +80,11 @@ export class ColumnAnalysis {
         let temp;
 
         if (!this.pairs.has(firstValue)) {
-            temp = new Map();
-            temp.set(secondValue, 1)
+            temp = new MapCounter();
+            temp.zero(secondValue);
             this.pairs.set(firstValue, temp);
-        } else {
-            if (!this.pairs.get(firstValue).has(secondValue)) {
-                this.pairs.get(firstValue).set(secondValue, 0);
-            }
-            temp = this.pairs.get(firstValue).get(secondValue);
-            this.pairs.get(firstValue).set(secondValue, temp + 1);
         }
+        this.pairs.get(firstValue).count(secondValue);
     }
 
     private getValue(analysis: URLAnalysis, property: string): string {
