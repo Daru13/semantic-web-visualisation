@@ -19,6 +19,13 @@ body {
     height: 800px;
 }
 
+/* Word Cloud */
+.word-cloud {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: white;
+}
 
 
 /* Data table */
