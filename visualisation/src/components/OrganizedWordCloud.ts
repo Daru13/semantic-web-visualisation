@@ -23,15 +23,20 @@ export class OrganizedWordCloud {
             try {
                 analyse = new URLAnalysis(url);
                 word = analyse.path[analyse.path.length - 1];
-                word = word.replace(/\(.*\)/, "");
-                word = word.replace(/_/, " ");
-                if (word[word.length - 1] === " ") {
-                    word = word.slice(0, -1)
-                }
+                word = word.replace(/\(.*\)/g, "");
+                word = word.replace(/_/g, " ");
+                word = /\s*(.*\w)\s*/.exec(word)[1];
+                word = word.toLowerCase();
                 this.addWord(word);
             } catch (error) {
                 word = url;
-                this.addWord(word);
+                let words = word.split(/,|;|\/| - | et /g);
+                words.forEach((w: string) => {
+                    w = w.replace(/"| etc|/gi, "");
+                    w = /\s*(.*\w)\s*/.exec(w)[1];
+                    word = w.toLowerCase();
+                    this.addWord(w);
+                })
             }
         }
     }
