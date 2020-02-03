@@ -1,15 +1,24 @@
 import { Column } from '../dataStructures/DataFrame';
 import { URLAnalysis } from './URLAnalysis';
+import { MapCounter } from '../utils/MapCounter';
+
+
+export enum CellType {
+    Empty,
+    Text,
+    URL
+}
 
 
 export class ColumnAnalysis {
     dataframeColumn: Column;
 
-    protocols: Map<string, number>;
-    subdomains: Map<string, number>;
-    domains: Map<string, number>;
-    tlds: Map<string, number>;
-    paths: Map<string, number>;
+    cellTypes: MapCounter<CellType>;
+    protocols: MapCounter<string>;
+    subdomains: MapCounter<string>;
+    domains: MapCounter<string>;
+    tlds: MapCounter<string>;
+    paths: MapCounter<string>;
 
     pairs: Map<string, Map<string, number>>;
 
@@ -18,21 +27,28 @@ export class ColumnAnalysis {
     constructor(dataframeColumn: Column) {
         this.dataframeColumn = dataframeColumn;
         
-        this.protocols = new Map();
-        this.subdomains = new Map();
-        this.domains = new Map();
-        this.tlds = new Map();
-        this.paths = new Map();
+        this.cellTypes = MapCounter.fromEnum(CellType);
+        this.protocols = new MapCounter();
+        this.subdomains = new MapCounter();
+        this.domains = new MapCounter();
+        this.tlds = new MapCounter();
+        this.paths = new MapCounter();
         
         this.pairs = new Map();
+
+        this.init();
         this.analyse();
+    }
+
+    private init() {
     }
 
     analyse() {
         let analysis;
-        for (let url of this.dataframeColumn) {
+        for (let cell of this.dataframeColumn) {
             try {
-                analysis = new URLAnalysis(url);
+                analysis = new URLAnalysis(cell);
+                this.cellTypes.count(CellType.URL);
 
                 for (let i = 0; i < this.properties.length; i++) {
                     this.countPropertyValue(analysis, this.properties[i]);
@@ -41,20 +57,21 @@ export class ColumnAnalysis {
                     }
                 }
             } catch (error) {
-                
+                if (cell === undefined
+                ||  cell === null
+                ||  cell.toString().trim() === "") {
+                    this.cellTypes.count(CellType.Empty);
+                }
+                else {
+                    this.cellTypes.count(CellType.Text);
+                }
             }
         }
     }
 
     private countPropertyValue(analysis: URLAnalysis, property: string){
         let analysisValue = this.getValue(analysis, property);
-        let values = this.getValues(property);
-
-        if (!values.has(analysisValue)) {
-            values.set(analysisValue, 0);
-        }
-        let temp = values.get(analysisValue);
-        values.set(analysisValue, temp + 1);
+        this.getCounter(property).count(analysisValue);
     }
 
     private updatePairs(analysis: URLAnalysis, property: number) {
@@ -97,7 +114,7 @@ export class ColumnAnalysis {
         }
     }
 
-    getValues(property: string): Map<string, number> {
+    getCounter(property: string): MapCounter {
         switch (property) {
             case "protocol":
                 return this.protocols;
