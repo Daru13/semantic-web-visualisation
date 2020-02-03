@@ -23,18 +23,19 @@ export class OrganizedWordCloud {
             try {
                 analyse = new URLAnalysis(url);
                 word = analyse.path[analyse.path.length - 1];
+                word = decodeURI(word);
+                word = word.toLowerCase();
                 word = word.replace(/\(.*\)/g, "");
                 word = word.replace(/_/g, " ");
-                word = /\s*(.*\w)\s*/.exec(word)[1];
-                word = word.toLowerCase();
+                word = word.trim();
                 this.addWord(word);
             } catch (error) {
                 word = url;
                 let words = word.split(/,|;|\/| - | et /g);
                 words.forEach((w: string) => {
+                    w = w.toLowerCase();
                     w = w.replace(/"| etc|/gi, "");
-                    w = /\s*(.*\w)\s*/.exec(w)[1];
-                    word = w.toLowerCase();
+                    w = w.trim();
                     this.addWord(w);
                 })
             }
@@ -71,7 +72,7 @@ export class OrganizedWordCloud {
 
             textHolder = document.createElement("div");
             textHolder.classList.add("word");
-            textHolder.innerText = decodeURI(text);
+            textHolder.innerText = text;
             textHolder.style.background = `hsl(194, 100%, ${count / column.length() * (80 - 30) + 30}%)` // L in [30, 80]
 
             topHolder.appendChild(textHolder);
