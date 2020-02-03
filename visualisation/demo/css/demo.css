@@ -27,6 +27,41 @@ body {
     background-color: white;
 }
 
+.word-cloud .word {
+    margin: 2px;
+    padding: 5px 10px;
+
+    font-family: sans-serif;
+    font-size: 15px;
+    color: white;
+}
+
+
+.word-cloud .top-10 {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.word-cloud .top-10 .word {
+    font-size: 50px;
+}
+
+
+.word-cloud .top-50 {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.word-cloud .top-10 .word {
+    font-size: 30px;
+}
+
+.word-cloud .others {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
 
 /* Data table */
 

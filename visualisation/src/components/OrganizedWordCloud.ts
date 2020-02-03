@@ -1,7 +1,6 @@
 import { Column } from '../dataStructures/DataFrame';
-import * as d3 from "d3";
-import { ColumnAnalysis } from '../analyses/ColumnAnalysis';
 import { URLAnalysis } from '../analyses/URLAnalysis';
+import { ColumnAnalysis } from '../analyses/ColumnAnalysis';
 
 export class OrganizedWordCloud {
     holder: HTMLDivElement;
@@ -14,7 +13,7 @@ export class OrganizedWordCloud {
         this.wordCount = new Map();
         
         this.countWords(column);
-        this.setupUI();
+        this.setupUI(column);
     }
     
     private countWords(column: Column): void {
@@ -24,17 +23,17 @@ export class OrganizedWordCloud {
             try {
                 analyse = new URLAnalysis(url);
                 word = analyse.path[analyse.path.length - 1];
-                word = word.replace(/^\(.*\)$/, "");
+                word = word.replace(/\(.*\)/, "");
                 word = word.replace(/_/, " ");
                 if (word[word.length - 1] === " ") {
                     word = word.slice(0, -1)
                 }
                 this.addWord(word);
             } catch (error) {
+                word = url;
                 this.addWord(word);
             }
         }
-        console.log(this.wordCount);
     }
 
     private addWord(word: string): void {
@@ -45,22 +44,33 @@ export class OrganizedWordCloud {
         this.wordCount.set(word, count);
     } 
 
-    private setupUI(): void {
-        this.holder.style.display = "flex";
-        this.holder.style.position = "absolute";
-        this.holder.style.flexWrap = "wrap";
-        this.holder.style.background = "white";
-        
-        let textHolder;
+    private setupUI(column: Column): void {
+        let topHolder: HTMLDivElement;
+        let textHolder: HTMLDivElement;
+        let wordNb = 0;
 
         this.sortMap(this.wordCount).forEach(({ key: text, val: count }) => {
-            textHolder = document.createElement("div");
-            textHolder.classList.add("word-cloud-text-holder");
-            textHolder.innerText = text;
-            textHolder.style.margin = "2px";
-            textHolder.style.border = "2px solid black";
+            if (wordNb === 0) {
+                topHolder = document.createElement("div")
+                topHolder.classList.add("top-10");
+                this.holder.appendChild(topHolder);
+            } else if (wordNb === 10) {
+                topHolder = document.createElement("div")
+                topHolder.classList.add("top-50");
+                this.holder.appendChild(topHolder);
+            } else if (wordNb === 50) {
+                topHolder = document.createElement("div")
+                topHolder.classList.add("others");
+                this.holder.appendChild(topHolder);
+            }
 
-            this.holder.appendChild(textHolder);
+            textHolder = document.createElement("div");
+            textHolder.classList.add("word");
+            textHolder.innerText = decodeURI(text);
+            textHolder.style.background = `hsl(194, 100%, ${count / column.length() * (80 - 30) + 30}%)` // L in [30, 80]
+
+            topHolder.appendChild(textHolder);
+            wordNb += 1;
         });
     }
 
