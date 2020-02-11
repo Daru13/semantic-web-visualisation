@@ -18,7 +18,7 @@ export class Series<T = any> {
         start = start ?? 0;
         length = length ?? this.content.length;
 
-        return this.content.slice(start, length).values();
+        return this.content.slice(start, start + length).values();
     }
 
     get(index: number): Cell<T> {

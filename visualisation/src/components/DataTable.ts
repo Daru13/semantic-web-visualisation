@@ -15,36 +15,57 @@ export class DataTable {
     node: HTMLElement;
     private headerNode: HTMLElement;
     private contentContainerNode: HTMLElement;
+    private pageBrowserNode: HTMLElement;
     private dashboardContainerNode: HTMLElement;
 
     private cachedPages: Map<number, DataTablePage>;
-    private currentPage: number;
+    private currentPage: DataTablePage;
+    private currentPageNumber: number;
     private pageLength: number;
     private nbPages: number;
 
     private updateStyleCallback: () => void;
+    private changePageCallback: (event: KeyboardEvent) => void;
 
     constructor(content: DataFrame) {
         this.content = content;
         const contentLength = content.length();
 
         this.cachedPages = new Map();
-        this.currentPage = 1;
+        this.currentPage = null;
+        this.currentPageNumber = 1;
         this.pageLength = 50;
         this.nbPages = contentLength % this.pageLength === 0
                      ? contentLength / this.pageLength
                      : Math.ceil(contentLength / this.pageLength);
-
-        this.updateStyleCallback = () => this.updateStyle();
         
         this.init();
     }
 
     private init(): void {
         this.createNode();
-        this.updateContent();
+        this.goToPage(this.currentPageNumber);
 
+        this.initCallbacks();
         this.startUpdatingStyleOnWindowResize();
+        this.startChangingPageOnKeyDown();
+    }
+
+    private initCallbacks() {
+        // Style update
+        this.updateStyleCallback = () => this.updateStyle();
+
+        // Page change
+        this.changePageCallback = (event) => {
+            console.log(event.code)
+            const newPageNumber = event.code === "ArrowLeft" ? Math.max(1, this.currentPageNumber - 1)
+                                : event.code === "ArrowRight" ? Math.min(this.nbPages, this.currentPageNumber + 1)
+                                : this.currentPageNumber;
+            
+            if (newPageNumber !== this.currentPageNumber) {
+                this.goToPage(newPageNumber);
+            }
+        }
     }
 
     private getPage(pageNumber: number): DataTablePage {
@@ -61,14 +82,15 @@ export class DataTable {
 
     private createPage(pageNumber: number): DataTablePage {
         const node = document.createElement("table");
+        node.classList.add("page");
+
         const firstRowIndex = this.pageLength * (pageNumber - 1);
-            
-        for (let rowCells of this.content.rows(firstRowIndex, this.pageLength)) {
+        for (let row of this.content.rows(firstRowIndex, this.pageLength)) {
             const rowNode = document.createElement("tr");
             rowNode.classList.add("row");
             node.appendChild(rowNode);
 
-            for (let cell of rowCells) {
+            for (let cell of row) {
                 const cellNode = document.createElement("td");
 
                 try {
@@ -95,6 +117,7 @@ export class DataTable {
 
         this.createHeader();
         this.createContentContainer();
+        this.createPageBrowser();
         this.createDashboardContainer();
         this.createDashboards();
     }
@@ -120,6 +143,49 @@ export class DataTable {
         this.node.appendChild(this.contentContainerNode);
     }
 
+    private createPageBrowser(): void {
+        this.pageBrowserNode = document.createElement("div");
+        this.pageBrowserNode.classList.add("page-browser");
+
+        const previousPageButton = document.createElement("button");
+        previousPageButton.classList.add("previous-page-button");
+        previousPageButton.type = "button";
+        previousPageButton.textContent = "";
+        previousPageButton.addEventListener("click", () => {
+            this.goToPage(Math.max(1, this.currentPageNumber - 1));
+        });
+        this.pageBrowserNode.append(previousPageButton);
+
+        const currentPageInput = document.createElement("input");
+        currentPageInput.classList.add("current-page-input");
+        currentPageInput.textContent = this.currentPageNumber.toString();
+        currentPageInput.addEventListener("change", () => {
+            let newPageNumber = parseInt(currentPageInput.value, 10);
+
+            if (!isNaN(newPageNumber)) {
+                newPageNumber = Math.max(1, Math.min(this.nbPages, newPageNumber));
+                this.goToPage(newPageNumber);
+            }
+        });
+        this.pageBrowserNode.append(currentPageInput);
+
+        const totalPageNumber = document.createElement("span");
+        totalPageNumber.classList.add("total-page-number");
+        totalPageNumber.textContent = this.nbPages.toString();
+        this.pageBrowserNode.append(totalPageNumber);
+
+        const nextPageButton = document.createElement("button");
+        nextPageButton.classList.add("next-page-button");
+        nextPageButton.type = "button";
+        nextPageButton.textContent = "";
+        nextPageButton.addEventListener("click", () => {
+            this.goToPage(Math.min(this.nbPages, this.currentPageNumber + 1));
+        });
+        this.pageBrowserNode.append(nextPageButton);
+
+        this.contentContainerNode.appendChild(this.pageBrowserNode);
+    }
+
     private createDashboardContainer(): void {
         this.dashboardContainerNode = document.createElement("div");
         this.dashboardContainerNode.classList.add("dashboard-container");
@@ -134,13 +200,38 @@ export class DataTable {
         }
     }
 
-    private updateContent(): void {
-        // Clear the current content
-        this.contentContainerNode.children[0]?.remove();
+    private goToPage(pageNumber: number): void {
+        this.currentPage = this.getPage(pageNumber);
+        this.currentPageNumber = pageNumber;
 
-        // Inject the current page
-        const page = this.getPage(this.currentPage);
-        this.contentContainerNode.append(page.node);
+        this.updateContent();
+    }
+
+    private updateContent(): void {
+        // Remove the previous page
+        this.contentContainerNode
+            .querySelector(".page")
+            ?.remove();
+
+        // Inject the new page
+        this.contentContainerNode.prepend(this.currentPage.node);
+
+        // Update the page browser
+        this.updatePageBrowser();
+    }
+
+    private updatePageBrowser() {
+        const previousPageButton = this.pageBrowserNode.querySelector(".previous-page-button") as HTMLButtonElement;
+        previousPageButton.disabled = this.currentPageNumber === 1;
+
+        const currentPageInput = this.pageBrowserNode.querySelector(".current-page-input") as HTMLInputElement;
+        currentPageInput.value = this.currentPageNumber.toString();
+
+        const totalPageNumber = this.pageBrowserNode.querySelector(".total-page-number") as HTMLElement;
+        totalPageNumber.textContent = this.nbPages.toString();
+
+        const nextPageButton = this.pageBrowserNode.querySelector(".next-page-button") as HTMLButtonElement;
+        nextPageButton.disabled = this.currentPageNumber === this.nbPages;
     }
 
     private updateColumnWidths() {
@@ -167,6 +258,14 @@ export class DataTable {
 
     stopUpdatingStyleOnWindowResize() {
         window.removeEventListener("resize", this.updateStyleCallback);
+    }
+
+    startChangingPageOnKeyDown() {
+        window.addEventListener("keydown", this.changePageCallback);
+    }
+
+    stopChangingPageOnKeyDown() {
+        window.removeEventListener("keydown", this.changePageCallback);
     }
 
     static fromHTMLTable(contentContainerNode: HTMLElement): DataTable {

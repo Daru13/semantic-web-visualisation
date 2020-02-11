@@ -131,13 +131,13 @@ body {
     overflow-y: auto;
 }
 
-.data-table .content table {
+.data-table .content .page {
     width: 100%;
 }
 
-.data-table .content table,
-.data-table .content th,
-.data-table .content td {
+.data-table .content .page,
+.data-table .content .page th,
+.data-table .content .page td {
     padding: 2px;
     border: none;
     border-collapse: collapse;
@@ -145,24 +145,121 @@ body {
     font-size: 16px;
 }
 
-.data-table .content td {
+.data-table .content .page td {
     border-right: 2px solid #CCC;
 }
 
-.data-table .content tr:nth-child(2n) td {
+.data-table .content .page tr:nth-child(2n) td {
     background-color: #FAFAFA;
 }
 
-.data-table .content tr:nth-child(2n+1) td {
+.data-table .content .page tr:nth-child(2n+1) td {
     background-color: #EDEDED;
 }
 
-.data-table .content tr:hover td {
+.data-table .content .page tr:hover td {
     background-color: rgb(255, 227, 174);
 }
 
-.data-table .content tr td:hover {
+.data-table .content .page tr td:hover {
     background-color: rgb(255, 220, 100);
+}
+
+.data-table .page-browser {
+    box-sizing: border-box;
+    position: fixed;
+    bottom: 260px;
+    right: 20px;
+    height: 50px;
+    padding: 5px;
+    background-color: #FFF;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.data-table .page-browser .current-page-input,
+.data-table .page-browser .total-page-number {
+    box-sizing: border-box;
+    height: 40px;
+    padding: 5px;
+    background-color: #EFEFEF;
+    border: none;
+    border-bottom: 2px solid #666;
+    font-size: 1.4rem;
+}
+
+.data-table .page-browser .current-page-input {
+    width: 30px;
+    text-align: center;
+}
+
+.data-table .page-browser .current-page-input:focus,
+.data-table .page-browser .current-page-input:focus + .total-page-number {
+    background-color: rgb(255, 238, 208);
+    border-bottom-color: orange;
+}
+
+.data-table .page-browser .total-page-number {
+    color: #666;
+}
+
+.data-table .page-browser .total-page-number::before {
+    content: "/";
+}
+
+.data-table .page-browser .previous-page-button,
+.data-table .page-browser .next-page-button {
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 150%;
+    border: none;
+    vertical-align: middle;
+    transition: 500ms ease-out;
+}
+
+.data-table .page-browser:hover .previous-page-button,
+.data-table .page-browser:hover .next-page-button {
+    width: 25px;
+    height: 40px;
+}
+
+.data-table .page-browser:hover .previous-page-button {
+    margin: 0 5px 0 0;
+}
+
+.data-table .page-browser:hover .next-page-button {
+    margin: 0 0 0 5px;
+}
+
+.data-table .page-browser:hover .previous-page-button:hover,
+.data-table .page-browser:hover .next-page-button:hover {
+    background-color: orange;
+}
+
+.data-table .page-browser:hover .previous-page-button:disabled:hover,
+.data-table .page-browser:hover .next-page-button:disabled:hover {
+    background-color: transparent;
+}
+
+.data-table .page-browser .previous-page-button {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    
+}
+
+.data-table .page-browser .next-page-button {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+}
+
+.data-table .page-browser .previous-page-button:disabled {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path fill="grey" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+}
+
+.data-table .page-browser .next-page-button:disabled {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path fill="grey" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
 }
 
 .data-table .dashboard-container {
