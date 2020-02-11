@@ -57,7 +57,6 @@ export class DataTable {
 
         // Page change
         this.changePageCallback = (event) => {
-            console.log(event.code)
             const newPageNumber = event.code === "ArrowLeft" ? Math.max(1, this.currentPageNumber - 1)
                                 : event.code === "ArrowRight" ? Math.min(this.nbPages, this.currentPageNumber + 1)
                                 : this.currentPageNumber;
