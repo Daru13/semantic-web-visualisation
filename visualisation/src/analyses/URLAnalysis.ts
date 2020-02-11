@@ -1,4 +1,4 @@
-import countries from "../utils/Countries";
+import { CODES_TO_COUNTRIES } from '../utils/Countries';
 
 
 export class URLAnalysis {
@@ -35,7 +35,7 @@ export class URLAnalysis {
 
         // Country
         const countryCode = this.extractCountryCode();
-        this.country = countries[countryCode] ?? null;
+        this.country = CODES_TO_COUNTRIES[countryCode] ?? null;
         this.countryCode = countryCode;
 
         // Title
@@ -54,7 +54,7 @@ export class URLAnalysis {
             this.url.hostname.indexOf(".")
         ).toUpperCase();
 
-        if (countries.hasOwnProperty(lastSubdomain)) {
+        if (CODES_TO_COUNTRIES.hasOwnProperty(lastSubdomain)) {
             return lastSubdomain;
         }
 
@@ -64,7 +64,7 @@ export class URLAnalysis {
             this.url.hostname.indexOf("/", 1)
         ).toUpperCase();
 
-        if (countries.hasOwnProperty(firstPathElement)) {
+        if (CODES_TO_COUNTRIES.hasOwnProperty(firstPathElement)) {
             return firstPathElement;
         }
 
@@ -74,7 +74,7 @@ export class URLAnalysis {
             this.url.hostname.lastIndexOf(".")
         ).toUpperCase();
 
-        if (countries.hasOwnProperty(tld)) {
+        if (CODES_TO_COUNTRIES.hasOwnProperty(tld)) {
             return tld;
         }
 
