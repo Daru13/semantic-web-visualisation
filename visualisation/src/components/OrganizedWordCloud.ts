@@ -12,10 +12,27 @@ export class OrganizedWordCloud {
         this.holder.classList.add("word-cloud");
         document.body.appendChild(this.holder);
         this.wordCount = new MapCounter();
-        
-        this.countWords(column);
         this.setupUI(column);
     }
+
+    private setupUI(column: Column): void {
+        this.addCloseButton();
+        this.countWords(column);
+        this.drawCloud(column);
+    }
+
+    private addCloseButton(): void {
+        let button = document.createElement("button");
+        button.innerHTML = "Close";
+        button.classList.add("close-button");
+        button.addEventListener("click", () => {
+            if (this.holder.parentNode !== null) {
+                this.holder.parentNode.removeChild(this.holder);
+            }
+        })
+        this.holder.appendChild(button);
+    }
+
     
     private countWords(column: Column): void {
         let analyse;
@@ -44,7 +61,7 @@ export class OrganizedWordCloud {
         return word;
     } 
 
-    private setupUI(column: Column): void {
+    private drawCloud(column: Column): void {
         let topHolder: HTMLDivElement;
         let textHolder: HTMLDivElement;
         let wordNb = 0;
@@ -72,19 +89,5 @@ export class OrganizedWordCloud {
             topHolder.appendChild(textHolder);
             wordNb += 1;
         });
-    }
-
-    private sortMap(map: Map<string, number>): { key: string, val: number }[] {
-        let temp: { key: string, val: number }[] = [];
-
-        map.forEach((v, k, _) => {
-            let i = 0;
-            while (i < temp.length && temp[i].val > v) {
-                i += 1;
-            }
-            temp.splice(i, 0, { key: k, val: v });
-        })
-
-        return temp;
     }
 }
