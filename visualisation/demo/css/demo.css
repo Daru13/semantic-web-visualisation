@@ -146,7 +146,7 @@ body {
 }
 
 .data-table .content .page td {
-    border-right: 2px solid #CCC;
+    /* border-right: 2px solid #CCC; */
 }
 
 .data-table .content .page tr:nth-child(2n) td {
@@ -163,6 +163,14 @@ body {
 
 .data-table .content .page tr td:hover {
     background-color: rgb(255, 220, 100);
+}
+
+/* Row number cell */
+.data-table .content .page tr td:first-child,
+.data-table .content .page tr:hover td:first-child {
+    padding: 2px 10px 2px 0;
+    color: #666;
+    text-align: right;
 }
 
 .data-table .page-browser {
@@ -270,11 +278,6 @@ body {
     box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
 }
 
-.data-table .dashboard-container .controls {
-    display: inline-block;
-    height: 240px;
-}
-
 .data-table .dashboard-container > * {
     height: 240px;
     border-right: 2px solid darkgray;
@@ -285,6 +288,11 @@ body {
     border-right: none;
 }
 
+.data-table .dashboard-container .controls {
+    display: inline-block;
+    height: 240px;
+    border-right: none;
+}
 
 
 /* Dashboard */
