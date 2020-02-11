@@ -68,38 +68,40 @@ export class SankeyDiagram {
 
     private computeColumns(): void {
         for (let url of this.dataColumn) {
-            let analysis = new URLAnalysis(url);
-            let domain = analysis.domain + "." + analysis.tld;
-            let path = analysis.path;
-            let subdomains = analysis.subdomains;
+            try{
+                let analysis = new URLAnalysis(url);
+                let domain = analysis.domain + "." + analysis.tld;
+                let path = analysis.path;
+                let subdomains = analysis.subdomains;
 
-            this.countSankeyColumnElement(this.domainColumn, domain);
-            this.countNext(this.domainColumn.elements.get(domain), path[0]);
+                this.countSankeyColumnElement(this.domainColumn, domain);
+                this.countNext(this.domainColumn.elements.get(domain), path[0]);
 
-            for (let i = 0; i < path.length; i++) {
-                if (!this.pathColumns.has(i)) {
-                    this.pathColumns.set(i, this.getEmptySankeyColumn());
+                for (let i = 0; i < path.length; i++) {
+                    if (!this.pathColumns.has(i)) {
+                        this.pathColumns.set(i, this.getEmptySankeyColumn());
+                    }
+                    this.countSankeyColumnElement(this.pathColumns.get(i), path[i]);
+                    if (i < path.length - 1) {
+                        this.countNext(this.pathColumns.get(i)
+                            .elements.get(path[i]), path[i + 1]);
+                    }
                 }
-                this.countSankeyColumnElement(this.pathColumns.get(i), path[i]);
-                if (i < path.length - 1) {
-                    this.countNext(this.pathColumns.get(i)
-                        .elements.get(path[i]), path[i + 1]);
-                }
-            }
 
-            for (let i = 0; i < subdomains.length; i++) {
-                if (!this.subdomainsColumns.has(i)) {
-                    this.subdomainsColumns.set(i, this.getEmptySankeyColumn());
+                for (let i = 0; i < subdomains.length; i++) {
+                    if (!this.subdomainsColumns.has(i)) {
+                        this.subdomainsColumns.set(i, this.getEmptySankeyColumn());
+                    }
+                    this.countSankeyColumnElement(this.subdomainsColumns.get(i), subdomains[i]);
+                    if (i < subdomains.length - 1) {
+                        this.countNext(this.subdomainsColumns.get(i)
+                            .elements.get(subdomains[i]), subdomains[i + 1]);
+                    } else {
+                        this.countNext(this.subdomainsColumns.get(i)
+                            .elements.get(subdomains[i]), domain);
+                    }
                 }
-                this.countSankeyColumnElement(this.subdomainsColumns.get(i), subdomains[i]);
-                if (i < subdomains.length - 1) {
-                    this.countNext(this.subdomainsColumns.get(i)
-                        .elements.get(subdomains[i]), subdomains[i + 1]);
-                } else {
-                    this.countNext(this.subdomainsColumns.get(i)
-                        .elements.get(subdomains[i]), domain);
-                }
-            }
+            } catch { }
         }
     }
 
