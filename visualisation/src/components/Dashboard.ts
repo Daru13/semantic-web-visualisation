@@ -3,6 +3,8 @@ import { ColumnAnalysis, CellType } from '../analyses/ColumnAnalysis';
 import { MapCounter } from '../utils/MapCounter';
 import { COUNTRIES_TO_CODES } from '../utils/Countries';
 import { voronoi } from 'd3';
+import { SankeyDiagram } from './SankeyDiagram';
+import { OrganizedWordCloud } from './OrganizedWordCloud';
 
 export class Dashboard {
     node: HTMLElement;
@@ -28,6 +30,7 @@ export class Dashboard {
         this.createDataTypeVisualisation();
         this.createTopCountriesVisualisation();
         this.createTopDomainsVisualisation();
+        this.createOtherVisualisationsDisplayButtons();
     }
 
     private createDataTypeVisualisation(): void {
@@ -241,5 +244,30 @@ export class Dashboard {
         }
 
         this.node.append(visualisationNode);
+    }
+
+    private createOtherVisualisationsDisplayButtons() {
+        const buttonAreaNode = document.createElement("div");
+        buttonAreaNode.classList.add("display-buttons-area");
+
+        const displaySankeyDiagramButton = document.createElement("button");
+        displaySankeyDiagramButton.type = "button";
+        displaySankeyDiagramButton.textContent = "Sankey diagram";
+        displaySankeyDiagramButton.classList.add("display-sankey-diagram");
+        displaySankeyDiagramButton.addEventListener("click", () => {
+            new SankeyDiagram(this.column);
+        });
+        buttonAreaNode.append(displaySankeyDiagramButton);
+
+        const displayWordCloudButton = document.createElement("button");
+        displayWordCloudButton.type = "button";
+        displayWordCloudButton.textContent = "Word cloud";
+        displayWordCloudButton.classList.add("display-word-cloud");
+        displayWordCloudButton.addEventListener("click", () => {
+            new OrganizedWordCloud(this.column);
+        });
+        buttonAreaNode.append(displayWordCloudButton);
+
+        this.node.append(buttonAreaNode);
     }
 }
