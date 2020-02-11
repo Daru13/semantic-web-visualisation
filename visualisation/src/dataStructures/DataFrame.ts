@@ -43,9 +43,8 @@ export class DataFrame {
             columnContentIterators.push(column.values(start, length));
         }
 
-        let someIteratorCanContinue = true;
-        while (someIteratorCanContinue) {
-            someIteratorCanContinue = false;
+        for (;;) {
+            let oneIteratorIsDone = true;
 
             const values = [];
             for (let iterator of columnContentIterators) {
@@ -55,8 +54,12 @@ export class DataFrame {
                 }
                 else {
                     values.push(iteration.value);
-                    someIteratorCanContinue = true;
+                    oneIteratorIsDone = false;
                 }
+            }
+
+            if (oneIteratorIsDone) {
+                return;
             }
             
             yield values;
