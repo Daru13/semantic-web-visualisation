@@ -20,8 +20,6 @@ export class ColumnAnalysis {
     tlds: MapCounter<string>;
     paths: MapCounter<string>;
 
-    pairs: Map<string, MapCounter<string>>;
-
     properties: string[] = ["protocol", "subdomains", "domain", "tld", "path"];
 
     constructor(dataframeColumn: Column) {
@@ -34,8 +32,6 @@ export class ColumnAnalysis {
         this.tlds = new MapCounter();
         this.paths = new MapCounter();
         
-        this.pairs = new Map();
-
         this.init();
         this.analyse();
     }
@@ -52,9 +48,6 @@ export class ColumnAnalysis {
 
                 for (let i = 0; i < this.properties.length; i++) {
                     this.countPropertyValue(analysis, this.properties[i]);
-                    if (i < this.properties.length - 1) {
-                        this.updatePairs(analysis, i);
-                    }
                 }
             } catch (error) {
                 if (cell === undefined
@@ -72,19 +65,6 @@ export class ColumnAnalysis {
     private countPropertyValue(analysis: URLAnalysis, property: string){
         let analysisValue = this.getValue(analysis, property);
         this.getCounter(property).count(analysisValue);
-    }
-
-    private updatePairs(analysis: URLAnalysis, property: number) {
-        let firstValue = this.getValue(analysis, this.properties[property]);
-        let secondValue = this.getValue(analysis, this.properties[property + 1]);
-        let temp;
-
-        if (!this.pairs.has(firstValue)) {
-            temp = new MapCounter();
-            temp.zero(secondValue);
-            this.pairs.set(firstValue, temp);
-        }
-        this.pairs.get(firstValue).count(secondValue);
     }
 
     private getValue(analysis: URLAnalysis, property: string): string {
