@@ -14,6 +14,7 @@ export class ColumnAnalysis {
     dataframeColumn: Column;
 
     cellTypes: MapCounter<CellType>;
+    countries: MapCounter<string>;
     protocols: MapCounter<string>;
     subdomains: MapCounter<string>;
     domains: MapCounter<string>;
@@ -26,6 +27,7 @@ export class ColumnAnalysis {
         this.dataframeColumn = dataframeColumn;
         
         this.cellTypes = MapCounter.fromEnum(CellType);
+        this.countries = new MapCounter();
         this.protocols = new MapCounter();
         this.subdomains = new MapCounter();
         this.domains = new MapCounter();
@@ -45,6 +47,7 @@ export class ColumnAnalysis {
             try {
                 analysis = new URLAnalysis(cell);
                 this.cellTypes.count(CellType.URL);
+                this.countries.count(analysis.country);
 
                 for (let i = 0; i < this.properties.length; i++) {
                     this.countPropertyValue(analysis, this.properties[i]);
