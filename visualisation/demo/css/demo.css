@@ -175,9 +175,13 @@ body {
 
 .data-table .dashboard {
     height: 220px;
-    display: inline-block;
+    /* display: inline-block; */
     vertical-align: top;
-    border: 1px solid darkgray;
+    border-right: 2px solid darkgray;
+}
+
+.data-table .dashboard:last-child {
+    border-right: none;
 }
 
 
@@ -186,13 +190,21 @@ body {
 
 .dashboard {
     box-sizing: border-box;
+    display: inline-grid;
+    grid-template-areas:
+    "dist-chart    dist-chart"
+    "top-countries top-domains"
+    "buttons       buttons";
+    grid-template-rows: 60px auto 25px;
+    grid-template-columns: 1fr 1fr;
     padding: 10px;
 }
 
 .dashboard .distribution-chart {
+    grid-area: dist-chart;
     display: flex;
     height: 40px;
-    margin: 10px;
+    margin: 10px 0 0 0;
 }
 
 .dashboard .distribution-chart .chart {
@@ -223,24 +235,41 @@ body {
     display: block;
 }
 
-.dashboard .top-countries-list {
-    max-width: 45%;
+.dashboard .top-countries-list,
+.dashboard .top-domains-list {
     font-size: 0.9rem;
 }
 
-.dashboard .top-countries-list h4 {
+.dashboard .top-countries-list {
+    grid-area: top-countries;
+    padding: 0 5px 0 0;
+}
+
+.dashboard .top-domains-list {
+    grid-area: top-domains;
+    padding: 0 0 0 5px;
+}
+
+.dashboard .top-list h4 {
     margin: 0 0 5px 0;
     padding: 2px 0;
     background-color: #DDD;
     text-align: center;
 }
 
-.dashboard .list-entry {
+.dashboard .top-list .list-entry {
     display: grid;
-    grid-template-columns: 24px 70px 40px auto;
     gap: 2px;
     height: 20px;
     line-height: 20px;
+}
+
+.dashboard .top-countries-list .list-entry {
+    grid-template-columns: 24px 70px 40px auto;
+}
+
+.dashboard .top-domains-list .list-entry {
+    grid-template-columns: 70px 40px auto;
 }
 
 .dashboard .list-entry .flag {
@@ -248,7 +277,7 @@ body {
 }
 
 .dashboard .list-entry .name {
-    padding: 0 3px;
+    padding: 0 0 0 3px;
     font-weight: bold;
     text-align: left;
     overflow: hidden;
@@ -268,7 +297,6 @@ body {
 }
 
 .dashboard .list-entry.aggregate {
-    /* border-top: 1px solid #666; */
     color: #666;
 }
 

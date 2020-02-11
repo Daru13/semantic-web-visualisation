@@ -84,7 +84,7 @@ export class Dashboard {
 
     private createTopCountriesVisualisation(): void {
         const visualisationNode = document.createElement("div");
-        visualisationNode.classList.add("top-countries-list");
+        visualisationNode.classList.add("top-list", "top-countries-list");
 
         const listTitleNode = document.createElement("h4");
         listTitleNode.textContent = "Top URL countries";
@@ -171,6 +171,75 @@ export class Dashboard {
     }
 
     private createTopDomainsVisualisation(): void {
+        const visualisationNode = document.createElement("div");
+        visualisationNode.classList.add("top-list", "top-domains-list");
 
+        const listTitleNode = document.createElement("h4");
+        listTitleNode.textContent = "Top URL domains";
+        visualisationNode.append(listTitleNode);
+
+        function addDomain(domain: string, percent: number, isAggregate: boolean = true) {
+            const listEntryNode = document.createElement("div");
+            listEntryNode.classList.add("list-entry");
+            visualisationNode.append(listEntryNode);
+
+            if (isAggregate) {
+                listEntryNode.classList.add("aggregate");
+            }
+
+            // Domain
+            const domainNode = document.createElement("span");
+            domainNode.classList.add("name");
+            domainNode.textContent = domain;
+            listEntryNode.append(domainNode);
+
+            // Percent
+            const percentAsText = percent > 0.99 && percent < 1.0 ? ">99%"
+                                : percent < 0.01 && percent > 0.0 ? "<1%"
+                                : `${(percent * 100).toFixed(0)}%`;
+            const percentNode = document.createElement("span");
+            percentNode.classList.add("percent");
+            percentNode.textContent = percentAsText;
+            listEntryNode.append(percentNode);
+
+            // Bar chart
+            const barContainerNode = document.createElement("div");
+            barContainerNode.classList.add("bar-container");
+            listEntryNode.append(barContainerNode);
+
+            const barNode = document.createElement("div");
+            barNode.classList.add("bar");
+            barNode.style.width = `${(percent * 100).toFixed(1)}%`;
+            barContainerNode.append(barNode);
+        }
+
+        const maxTopDomains = 4;
+
+        const counters = this.columnAnalysis.domains.counters;
+        const totalCount = [...counters.values()]
+            .reduce((sum, count) => sum + count, 0);
+        const sortedDomainsWithPercents = [...counters.entries()]
+            .map(([country, count]) => {
+                return {
+                    country: country,
+                    percent: count / totalCount
+                };
+            })
+            .sort((o1, o2) => o2.percent - o1.percent);
+
+        const topDomainsWithPercents = sortedDomainsWithPercents
+            .slice(0, maxTopDomains);
+        const remainingDomainsPercent = 1 - topDomainsWithPercents
+            .reduce((sum, obj) => sum + obj.percent, 0);
+        
+        for (let domainWithPercent of topDomainsWithPercents) {
+            addDomain(domainWithPercent.country, domainWithPercent.percent, false);
+        }
+
+        if (remainingDomainsPercent > 0) {
+            addDomain("Others", remainingDomainsPercent, true)
+        }
+
+        this.node.append(visualisationNode);
     }
 }
