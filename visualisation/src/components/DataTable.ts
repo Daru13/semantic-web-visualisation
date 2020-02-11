@@ -85,11 +85,22 @@ export class DataTable {
         node.classList.add("page");
 
         const firstRowIndex = this.pageLength * (pageNumber - 1);
-        for (let row of this.content.rows(firstRowIndex, this.pageLength)) {
+        const rows = this.content.rows(firstRowIndex, this.pageLength);
+        let currentRowNumber = firstRowIndex + 1;
+
+        for (let row of rows) {
             const rowNode = document.createElement("tr");
             rowNode.classList.add("row");
             node.appendChild(rowNode);
 
+            // Row number
+            const rowNumberNode = document.createElement("td");
+            rowNumberNode.textContent = currentRowNumber.toString();
+            rowNode.appendChild(rowNumberNode);
+
+            currentRowNumber++;
+
+            // Content
             for (let cell of row) {
                 const cellNode = document.createElement("td");
 
@@ -126,10 +137,15 @@ export class DataTable {
         this.headerNode = document.createElement("div");
         this.headerNode.classList.add("header");
         
+        // Row number
+        const rowNumberNode = document.createElement("div");
+        rowNumberNode.textContent = "";
+        this.headerNode.appendChild(rowNumberNode);
+
+        // Content
         for (let columnName of this.content.columnNames()) {
             const columnNameNode = document.createElement("div");
             columnNameNode.textContent = columnName;
-
             this.headerNode.appendChild(columnNameNode);
         }
 
@@ -190,6 +206,12 @@ export class DataTable {
         this.dashboardContainerNode = document.createElement("div");
         this.dashboardContainerNode.classList.add("dashboard-container");
 
+        // Dashboard area controls
+        // This block should be aligned with the row numbers
+        const controlsAreaNode = document.createElement("div");
+        controlsAreaNode.classList.add("controls");
+        this.dashboardContainerNode.append(controlsAreaNode);
+
         this.node.appendChild(this.dashboardContainerNode);
     }
 
@@ -218,6 +240,7 @@ export class DataTable {
 
         // Update the page browser
         this.updatePageBrowser();
+        this.updateColumnWidths();
     }
 
     private updatePageBrowser() {

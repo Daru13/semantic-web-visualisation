@@ -270,14 +270,18 @@ body {
     box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
 }
 
-.data-table .dashboard {
+.data-table .dashboard-container .controls {
+    display: inline-block;
     height: 240px;
-    /* display: inline-block; */
-    vertical-align: top;
-    border-right: 2px solid darkgray;
 }
 
-.data-table .dashboard:last-child {
+.data-table .dashboard-container > * {
+    height: 240px;
+    border-right: 2px solid darkgray;
+    vertical-align: top;
+}
+
+.data-table .dashboard-container > *:last-child {
     border-right: none;
 }
 
