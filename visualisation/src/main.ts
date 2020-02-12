@@ -10,4 +10,4 @@ const table = new DataTable(df);
 document.querySelector("#sparql-response").remove();
 document.querySelector("body").append(table.node);
 
-table.updateStyle();
+table.updateDimensions();

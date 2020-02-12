@@ -24,7 +24,7 @@ export class DataTable {
     private pageLength: number;
     private nbPages: number;
 
-    private updateStyleCallback: () => void;
+    private updateDimensionsCallback: () => void;
     private changePageCallback: (event: KeyboardEvent) => void;
 
     constructor(content: DataFrame) {
@@ -47,13 +47,13 @@ export class DataTable {
         this.goToPage(this.currentPageNumber);
 
         this.initCallbacks();
-        this.startUpdatingStyleOnWindowResize();
+        this.startUpdatingDimensionsOnWindowResize();
         this.startChangingPageOnKeyDown();
     }
 
     private initCallbacks() {
         // Style update
-        this.updateStyleCallback = () => this.updateStyle();
+        this.updateDimensionsCallback = () => this.updateDimensions();
 
         // Page change
         this.changePageCallback = (event) => {
@@ -239,7 +239,6 @@ export class DataTable {
 
         // Update the page browser
         this.updatePageBrowser();
-        this.updateColumnWidths();
     }
 
     private updatePageBrowser() {
@@ -256,30 +255,40 @@ export class DataTable {
         nextPageButton.disabled = this.currentPageNumber === this.nbPages;
     }
 
-    private updateColumnWidths() {
-        const firstRowCellNodes = this.contentContainerNode.querySelector("tr").children;
-        const widths = [];
-        for (let cellNode of firstRowCellNodes) {
-            widths.push(cellNode.getBoundingClientRect().width);
-        }
+    updateDimensions() {
+        const documentStyle = getComputedStyle(document.documentElement);
+        const minColumnWidth = parseInt(documentStyle.getPropertyValue("--min-column-width-px"), 10);
+        const minRowNumberColumnWidth = parseInt(documentStyle.getPropertyValue("--min-row-number-column-width-px"), 10);
+        const nbColumns = [...this.content.columns()].length;
 
-        for (let i = 0; i < widths.length; i++) {
-            const width = widths[i];
-            (this.headerNode.childNodes[i] as HTMLElement).style.width = `${width}px`;
-            (this.dashboardContainerNode.childNodes[i] as HTMLElement).style.width = `${width}px`;
-        }
+        let style = "";
+
+        // Update the widths of the columns
+        const rowNumberColumnWidth = Math.max(
+            minRowNumberColumnWidth,
+            Math.floor(window.innerWidth * 0.02)
+        );
+        const columnWidth = Math.max(
+            minColumnWidth,
+            Math.round((window.innerWidth - rowNumberColumnWidth) / nbColumns)
+        );
+        
+        style += `--column-width: ${columnWidth}px;\
+                  --row-number-column-width: ${rowNumberColumnWidth}px;`;
+
+        // Update the minimum width of the top container
+        style += `min-width: ${(nbColumns * minColumnWidth) + minRowNumberColumnWidth}px;`;
+        
+        // Update the actual style attribute
+        this.node.setAttribute("style", style);
     }
 
-    updateStyle() {
-        this.updateColumnWidths();
+    startUpdatingDimensionsOnWindowResize() {
+        window.addEventListener("resize", this.updateDimensionsCallback);
     }
 
-    startUpdatingStyleOnWindowResize() {
-        window.addEventListener("resize", this.updateStyleCallback);
-    }
-
-    stopUpdatingStyleOnWindowResize() {
-        window.removeEventListener("resize", this.updateStyleCallback);
+    stopUpdatingDimensionsOnWindowResize() {
+        window.removeEventListener("resize", this.updateDimensionsCallback);
     }
 
     startChangingPageOnKeyDown() {

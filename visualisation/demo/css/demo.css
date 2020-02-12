@@ -1,6 +1,14 @@
+:root {
+    --column-width: 0px; /* Set in JavaScript */
+    --row-number-column-width: 0px; /* Set in JavaScript */
+    --min-column-width-px: 320; /* in px, used in JavaScript */
+    --min-row-number-column-width-px: 20; /* in px, used in JavaScript */
+}
+
 body {
     margin: 0;
     padding: 0;
+    overflow-x: auto;
 }
 
 /* Tooltip */
@@ -108,7 +116,9 @@ body {
 
 .data-table {
     position: relative;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;;
+    /* min-width must be set in JavaScript */
 }
 
 .data-table .header {
@@ -121,14 +131,20 @@ body {
 
 .data-table .header > * {
     display: inline-block;
+    width: var(--column-width);
     text-align: center;
     line-height: 40px;
     vertical-align: middle;
 }
 
+.data-table .header > *:first-child {
+    width: var(--row-number-column-width);
+}
+
 .data-table .content {
     max-height: calc(100vh - 40px - 240px);
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .data-table .content .page {
@@ -146,7 +162,11 @@ body {
 }
 
 .data-table .content .page td {
-    /* border-right: 2px solid #CCC; */
+    width: var(--column-width);
+}
+
+.data-table .content .page td:first-child {
+    width: var(--row-number-column-width);
 }
 
 .data-table .content .page tr:nth-child(2n) td {
@@ -279,9 +299,11 @@ body {
 }
 
 .data-table .dashboard-container > * {
+    width: var(--column-width);
     height: 240px;
     border-right: 2px solid darkgray;
     vertical-align: top;
+    overflow: hidden;
 }
 
 .data-table .dashboard-container > *:last-child {
@@ -290,6 +312,7 @@ body {
 
 .data-table .dashboard-container .controls {
     display: inline-block;
+    width: var(--row-number-column-width);
     height: 240px;
     border-right: none;
 }
@@ -419,7 +442,10 @@ body {
 
 .dashboard .display-buttons-area button {
     width: calc(50% - 5px);
+    padding: 0;
     display: inline-block;
+    white-space: nowrap;
+    text-overflow: clip;
 }
 
 .dashboard .display-buttons-area button:first-child {
