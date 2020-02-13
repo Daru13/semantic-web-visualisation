@@ -7,18 +7,18 @@ export class OrganizedWordCloud {
     holder: HTMLDivElement;
     wordCount: MapCounter<string>;
 
-    constructor(column: Column, parent: HTMLDivElement) {
+    constructor(column: Column, parent: HTMLDivElement, numberOfWords: number = column.length()) {
         this.holder = document.createElement("div");
         this.holder.classList.add("word-cloud");
         parent.appendChild(this.holder);
 
         this.wordCount = new MapCounter();
-        this.setupUI(column);
+        this.setupUI(column, numberOfWords);
     }
 
-    private setupUI(column: Column): void {
+    private setupUI(column: Column, numberOfWords: number): void {
         this.countWords(column);
-        this.drawCloud(column);
+        this.drawCloud(column, numberOfWords);
     }
     
     private countWords(column: Column): void {
@@ -48,12 +48,12 @@ export class OrganizedWordCloud {
         return word;
     } 
 
-    private drawCloud(column: Column): void {
+    private drawCloud(column: Column, numberOfWords: number): void {
         let topHolder: HTMLDivElement;
         let textHolder: HTMLDivElement;
         let wordNb = 0;
 
-        this.wordCount.sortedEntries().forEach(({ key: text, count: count }) => {
+        this.wordCount.sortedEntries().slice(0, numberOfWords).forEach(({ key: text, count: count }) => {
             if (wordNb === 0) {
                 topHolder = document.createElement("div")
                 topHolder.classList.add("top-10");
