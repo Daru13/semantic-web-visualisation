@@ -1,6 +1,5 @@
 import { Column } from '../dataStructures/DataFrame';
 import { ColumnAnalysis } from '../analyses/ColumnAnalysis'
-import { MapCounter } from '../utils/MapCounter';
 import { URLAnalysis } from '../analyses/URLAnalysis';
 
 const SPACE_BETWEEN_COLUMNS = 400;
@@ -25,7 +24,7 @@ export class SankeyDiagram {
     domainColumn: SankeyColumn;
     pathColumns: Map<number, SankeyColumn>;
 
-    constructor(column: Column) {
+    constructor(column: Column, parent: HTMLDivElement) {
         this.dataColumn = column
         this.dataColumnAnalysis = new ColumnAnalysis(this.dataColumn);
         
@@ -42,7 +41,7 @@ export class SankeyDiagram {
         this.svg.setAttribute("viewBox", "0,0,0,0");
 
         this.holder.appendChild(this.svg);
-        document.body.appendChild(this.holder);
+        parent.appendChild(this.holder);
 
         this.setupUI();
     }

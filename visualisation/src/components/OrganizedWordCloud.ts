@@ -7,10 +7,11 @@ export class OrganizedWordCloud {
     holder: HTMLDivElement;
     wordCount: MapCounter<string>;
 
-    constructor(column: Column) {
+    constructor(column: Column, parent: HTMLDivElement) {
         this.holder = document.createElement("div");
         this.holder.classList.add("word-cloud");
-        document.body.appendChild(this.holder);
+        parent.appendChild(this.holder);
+
         this.wordCount = new MapCounter();
         this.setupUI(column);
     }
