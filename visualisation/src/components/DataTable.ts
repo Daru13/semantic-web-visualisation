@@ -89,11 +89,11 @@ export class DataTable {
 
         for (let row of rows) {
             const rowNode = document.createElement("tr");
-            rowNode.classList.add("row");
             node.appendChild(rowNode);
 
             // Row number
             const rowNumberNode = document.createElement("td");
+            rowNumberNode.classList.add("row-number-cell");
             rowNumberNode.textContent = currentRowNumber.toString();
             rowNode.appendChild(rowNumberNode);
 
@@ -102,13 +102,22 @@ export class DataTable {
             // Content
             for (let cell of row) {
                 const cellNode = document.createElement("td");
+                cellNode.classList.add("data-cell");
 
                 try {
-                    const widget = new SimplifiedURL(encodeURI(cell));
-                    cellNode.appendChild(widget.node);
+                    const simplifiedURL = new SimplifiedURL(encodeURI(cell));
+
+                    const urlLinkNode = document.createElement("a");
+                    urlLinkNode.setAttribute("href", cell);
+                    urlLinkNode.setAttribute("target", "_blank");
+                    urlLinkNode.append(simplifiedURL.node);
+
+                    cellNode.append(urlLinkNode);
+                    cellNode.classList.add("url");
                 }
                 catch (_) {
                     cellNode.textContent = cell;
+                    cellNode.classList.add("text");
                 }
 
                 rowNode.appendChild(cellNode);

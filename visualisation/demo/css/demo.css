@@ -161,11 +161,11 @@ body {
     font-size: 16px;
 }
 
-.data-table .content .page td {
+.data-table .content .page td.data-cell {
     width: var(--column-width);
 }
 
-.data-table .content .page td:first-child {
+.data-table .content .page td.row-number-cell {
     width: var(--row-number-column-width);
 }
 
@@ -191,6 +191,22 @@ body {
     padding: 2px 10px 2px 0;
     color: #666;
     text-align: right;
+}
+
+.data-table .content .page td a,
+.data-table .content .page td a:hover,
+.data-table .content .page td a:active,
+.data-table .content .page td a:visited {
+    color: inherit;
+    text-decoration: none;
+}
+
+.data-table .content .page td.url:hover {
+    /* box-shadow: 0 -2px 0 0 #000 inset; */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>');
+    background-size: 20px 20px;
+    background-position: right center;
+    background-repeat: no-repeat;
 }
 
 .data-table .page-browser {
