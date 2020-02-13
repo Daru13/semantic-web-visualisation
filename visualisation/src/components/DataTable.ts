@@ -135,10 +135,10 @@ export class DataTable {
         this.node.classList.add("data-table");
 
         this.createHeader();
-        this.createContentContainer();
-        this.createPageBrowser();
         this.createDashboardContainer();
         this.createDashboards();
+        this.createContentContainer();
+        this.createPageBrowser();
     }
 
     private createHeader(): void {
