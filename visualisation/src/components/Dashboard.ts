@@ -5,6 +5,7 @@ import { COUNTRIES_TO_CODES } from '../utils/Countries';
 import { voronoi } from 'd3';
 import { SankeyDiagram } from './SankeyDiagram';
 import { OrganizedWordCloud } from './OrganizedWordCloud';
+import { Popup } from '../popups/Popup';
 
 export class Dashboard {
     node: HTMLElement;
@@ -255,7 +256,10 @@ export class Dashboard {
         displaySankeyDiagramButton.textContent = "Sankey diagram";
         displaySankeyDiagramButton.classList.add("display-sankey-diagram");
         displaySankeyDiagramButton.addEventListener("click", () => {
-            new SankeyDiagram(this.column);
+            let popup = new Popup();
+            popup.setTitle("Sankey Diagram");
+            popup.maximize();
+            new SankeyDiagram(this.column, popup.content);
         });
         buttonAreaNode.append(displaySankeyDiagramButton);
 
@@ -264,7 +268,10 @@ export class Dashboard {
         displayWordCloudButton.textContent = "Word cloud";
         displayWordCloudButton.classList.add("display-word-cloud");
         displayWordCloudButton.addEventListener("click", () => {
-            new OrganizedWordCloud(this.column);
+            let popup = new Popup();
+            popup.setTitle("Organized word cloud");
+            popup.maximize();
+            new OrganizedWordCloud(this.column, popup.content);
         });
         buttonAreaNode.append(displayWordCloudButton);
 
