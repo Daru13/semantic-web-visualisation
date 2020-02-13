@@ -48,22 +48,9 @@ export class SankeyDiagram {
     }
 
     private setupUI(): void {
-        this.addCloseButton();
         this.computeColumns();
         this.drawColumns();
         this.drawEdges();
-    }
-
-    private addCloseButton(): void {
-        let button = document.createElement("button");
-        button.innerHTML = "Close";
-        button.classList.add("close-button");
-        button.addEventListener("click", () => {
-            if (this.holder.parentNode !== null) {
-                this.holder.parentNode.removeChild(this.holder);
-            }
-        })
-        this.holder.appendChild(button);
     }
 
     private computeColumns(): void {
