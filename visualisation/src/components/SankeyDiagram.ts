@@ -24,6 +24,8 @@ export class SankeyDiagram {
     domainColumn: SankeyColumn;
     pathColumns: Map<number, SankeyColumn>;
 
+    urlNumber: number;
+
     constructor(column: Column, parent: HTMLDivElement) {
         this.dataColumn = column
         this.dataColumnAnalysis = new ColumnAnalysis(this.dataColumn);
@@ -42,6 +44,8 @@ export class SankeyDiagram {
         this.holder.appendChild(this.svg);
         parent.appendChild(this.holder);
 
+        this.urlNumber = 0;
+
         this.setupUI();
     }
 
@@ -55,6 +59,8 @@ export class SankeyDiagram {
         for (let url of this.dataColumn) {
             try{
                 let analysis = new URLAnalysis(url);
+                this.urlNumber += 1;
+
                 let domain = analysis.domain + "." + analysis.tld;
                 let path = analysis.path;
                 let subdomains = analysis.subdomains;
@@ -142,7 +148,7 @@ export class SankeyDiagram {
         for (let i = Math.min(sortedElements.length - 1, from); i < Math.min(sortedElements.length, to); i++){
             let k = sortedElements[i].key;
             let e = sortedElements[i].ele;
-            percentage = e.height / this.dataColumn.length();
+            percentage = e.height / this.urlNumber;
 
             e.rectangle.setAttribute("x", x.toString());
             e.rectangle.setAttribute("y", y.toString());
@@ -150,7 +156,7 @@ export class SankeyDiagram {
             e.rectangle.setAttribute("fill", this.getFillColor(percentage));
 
             e.text.setAttribute("y", (y + e.height / 2).toString());
-            e.text.style.fill = (e.height / this.dataColumn.length() < 0.3) ? "black" : "white";
+            e.text.style.fill = (e.height / this.urlNumber < 0.3) ? "black" : "white";
             e.text.style.fontSize = `${Math.min(TEXT_FONT_SIZE * 2, Math.max(TEXT_FONT_SIZE / 2, 2 * TEXT_FONT_SIZE * percentage))}px`;
             e.text.innerHTML = k;
 
@@ -183,7 +189,7 @@ export class SankeyDiagram {
             plusButtonRect.setAttribute("x", x.toString());
             plusButtonRect.setAttribute("y", y.toString());
             plusButtonRect.setAttribute("height", "50");
-            plusButtonRect.style.fill = this.getFillColor(1 - Math.min(1, y / this.dataColumn.length()));
+            plusButtonRect.style.fill = this.getFillColor(1 - Math.min(1, y / this.urlNumber));
 
             plusButtonText.setAttribute("x", x.toString());
             plusButtonText.setAttribute("y", (y + 25).toString());
@@ -253,9 +259,9 @@ export class SankeyDiagram {
                     L${toColumn.elements.get(secondValue).toX},${toColumn.elements.get(secondValue).toY} 
                     L${toColumn.elements.get(secondValue).toX},${toColumn.elements.get(secondValue).toY + nb - 1} 
                     L${fromColumn.elements.get(firstValue).fromX},${fromColumn.elements.get(firstValue).fromY + nb - 1}`);
-                ele.style.fill = this.getFillColor(nb / this.dataColumn.length());
+                ele.style.fill = this.getFillColor(nb / this.urlNumber);
 
-                this.addToolTipEvents(ele, nb / this.dataColumn.length() * 100);
+                this.addToolTipEvents(ele, nb / this.urlNumber * 100);
 
                 fromColumn.elements.get(firstValue).fromY += nb;
                 toColumn.elements.get(secondValue).toY += nb;
