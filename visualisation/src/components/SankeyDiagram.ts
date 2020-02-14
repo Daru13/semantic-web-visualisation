@@ -14,7 +14,7 @@ type EleProperties = { height: number, fromX: number, fromY: number, toX: number
 type SankeyColumn = { height: number, width: number, elements: Map<string, EleProperties>, columnHolder: SVGGElement , columnTitle: SVGTextElement};
 
 export class SankeyDiagram {
-    holder: HTMLDivElement;
+    holder: HTMLElement;
     svg: SVGSVGElement;
 
     dataColumn: Column;
@@ -26,7 +26,7 @@ export class SankeyDiagram {
 
     urlNumber: number;
 
-    constructor(column: Column, parent: HTMLDivElement) {
+    constructor(column: Column, parent: HTMLElement) {
         this.dataColumn = column
         this.dataColumnAnalysis = new ColumnAnalysis(this.dataColumn);
         

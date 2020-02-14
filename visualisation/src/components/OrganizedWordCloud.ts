@@ -4,10 +4,10 @@ import { ColumnAnalysis } from '../analyses/ColumnAnalysis';
 import { MapCounter } from '../utils/MapCounter';
 
 export class OrganizedWordCloud {
-    holder: HTMLDivElement;
+    holder: HTMLElement;
     wordCount: MapCounter<string>;
 
-    constructor(column: Column, parent: HTMLDivElement, numberOfWords: number = column.length()) {
+    constructor(column: Column, parent: HTMLElement, numberOfWords: number = column.length()) {
         this.holder = document.createElement("div");
         this.holder.classList.add("word-cloud");
         parent.appendChild(this.holder);
