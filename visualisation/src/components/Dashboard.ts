@@ -38,10 +38,18 @@ export class Dashboard {
         const visualisationNode = document.createElement("div");
         visualisationNode.classList.add("distribution-chart");
 
+        const listTitleNode = document.createElement("h4");
+        listTitleNode.textContent = "Cell type distribution";
+        visualisationNode.append(listTitleNode);
+
+        const chartNode = document.createElement("div");
+        chartNode.classList.add("chart-container");
+        visualisationNode.append(chartNode);
+
         function addLabel(name: string, percent: number) {
             const labelNode = document.createElement("div");
             labelNode.classList.add("chart-label");
-            visualisationNode.append(labelNode);
+            chartNode.append(labelNode);
 
             const nameNode = document.createElement("span");
             nameNode.classList.add("type");
@@ -77,7 +85,7 @@ export class Dashboard {
 
         addLabel("URL", urlCellsPercent);
 
-        visualisationNode.append(segmentContainerNode);
+        chartNode.append(segmentContainerNode);
         addSegment("url-cells-area", urlCellsPercent);
         addSegment("text-cells-area", textCellsPercent);
 

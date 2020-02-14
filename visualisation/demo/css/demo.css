@@ -423,9 +423,10 @@ body {
 }
 
 .data-table .dashboard-container {
+    display: flex;
     position: relative;
     width: 100%;
-    height: 240px;
+    /* height: 240px; */
     background-color: #EFEFEF;
     color: #000;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -434,10 +435,11 @@ body {
 
 .data-table .dashboard-container > * {
     width: var(--column-width);
-    height: 240px;
+    /* height: 240px; */
     border-right: 2px solid darkgray;
     vertical-align: top;
-    overflow: hidden;
+    /* overflow: hidden; */
+    flex-grow: 1;
 }
 
 .data-table .dashboard-container > *:last-child {
@@ -447,7 +449,7 @@ body {
 .data-table .dashboard-container .controls {
     display: inline-block;
     width: var(--row-number-column-width);
-    height: 240px;
+    /* height: 240px; */
     border-right: none;
 }
 
@@ -460,44 +462,57 @@ body {
     grid-template-areas:
     "dist-chart    dist-chart"
     "top-countries top-domains"
+    "word-cloud    word-cloud"
     "buttons       buttons";
-    grid-template-rows: 60px auto 25px;
+    grid-template-rows: 80px 140px auto 25px;
     grid-template-columns: 1fr 1fr;
     padding: 10px;
 }
 
+.dashboard h4 {
+    display: block;
+    margin: 0 0 5px 0;
+    padding: 2px 0;
+    background-color: #DDD;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
 .dashboard .distribution-chart {
     grid-area: dist-chart;
+    /* margin: 10px 0 0 0; */
+}
+
+.dashboard .distribution-chart .chart-container {
     display: flex;
     height: 40px;
-    margin: 10px 0 0 0;
 }
 
-.dashboard .distribution-chart .chart {
+.dashboard .distribution-chart .chart-container .chart {
     flex-grow: 1;
-    padding: 0 10px 0 10px;
+    padding: 4px 10px 0 10px;
 }
 
-.dashboard .distribution-chart .chart-area {
+.dashboard .distribution-chart .chart-container .chart-area {
     display: inline-block;
     height: 20px;
     padding: 10px 0 0 0;
 }
 
-.dashboard .distribution-chart .chart-area.url-cells-area {
+.dashboard .distribution-chart .chart-container .chart-area.url-cells-area {
     background-color: #6666FF;
 }
 
-.dashboard .distribution-chart .chart-area.text-cells-area {
+.dashboard .distribution-chart .chart-container .chart-area.text-cells-area {
     background-color: #FF6666;
 }
 
-.dashboard .distribution-chart .chart-label .type {
+.dashboard .distribution-chart .chart-container .chart-label .type {
     display: block;
     font-weight: bold;
 }
 
-.dashboard .distribution-chart .chart-label .percent {
+.dashboard .distribution-chart .chart-container .chart-label .percent {
     display: block;
 }
 
@@ -516,12 +531,12 @@ body {
     padding: 0 0 0 5px;
 }
 
-.dashboard .top-list h4 {
+/* .dashboard .top-list h4 {
     margin: 0 0 5px 0;
     padding: 2px 0;
     background-color: #DDD;
     text-align: center;
-}
+} */
 
 .dashboard .top-list .list-entry {
     display: grid;
