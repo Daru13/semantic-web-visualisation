@@ -1,8 +1,6 @@
-import { Series, Cell } from '../dataStructures/Series';
+import { Series } from '../dataStructures/Series';
 import { ColumnAnalysis, CellType } from '../analyses/ColumnAnalysis';
-import { MapCounter } from '../utils/MapCounter';
 import { COUNTRIES_TO_CODES } from '../utils/Countries';
-import { voronoi } from 'd3';
 import { SankeyDiagram } from './SankeyDiagram';
 import { OrganizedWordCloud } from './OrganizedWordCloud';
 import { Popup } from '../popups/Popup';
@@ -31,6 +29,7 @@ export class Dashboard {
         this.createDataTypeVisualisation();
         this.createTopCountriesVisualisation();
         this.createTopDomainsVisualisation();
+        this.createWordCloudPreview();
         this.createOtherVisualisationsDisplayButtons();
     }
 
@@ -255,13 +254,26 @@ export class Dashboard {
         this.node.append(visualisationNode);
     }
 
+    private createWordCloudPreview() {
+        const visualisationNode = document.createElement("div");
+        visualisationNode.classList.add("word-cloud-preview");
+
+        const listTitleNode = document.createElement("h4");
+        listTitleNode.textContent = "Top keywords";
+        visualisationNode.append(listTitleNode);
+
+        new OrganizedWordCloud(this.column, visualisationNode, 10);
+
+        this.node.append(visualisationNode);
+    }
+
     private createOtherVisualisationsDisplayButtons() {
         const buttonAreaNode = document.createElement("div");
         buttonAreaNode.classList.add("display-buttons-area");
 
         const displaySankeyDiagramButton = document.createElement("button");
         displaySankeyDiagramButton.type = "button";
-        displaySankeyDiagramButton.textContent = "Sankey diagram";
+        displaySankeyDiagramButton.textContent = "URL structures";
         displaySankeyDiagramButton.classList.add("display-sankey-diagram");
         displaySankeyDiagramButton.addEventListener("click", () => {
             let popup = new Popup();
@@ -273,7 +285,7 @@ export class Dashboard {
 
         const displayWordCloudButton = document.createElement("button");
         displayWordCloudButton.type = "button";
-        displayWordCloudButton.textContent = "Word cloud";
+        displayWordCloudButton.textContent = "All keywords";
         displayWordCloudButton.classList.add("display-word-cloud");
         displayWordCloudButton.addEventListener("click", () => {
             let popup = new Popup();

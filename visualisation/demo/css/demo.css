@@ -601,6 +601,24 @@ body {
     margin: 0 10px 0 0;
 }
 
+.dashboard .word-cloud-preview {
+    grid-area: word-cloud;
+    margin: 0 0 20px 0;
+    overflow: hidden;
+}
+
+.dashboard .word-cloud-preview .word-cloud {
+    padding: 0;
+    background-color: transparent;
+}
+
+.dashboard .word-cloud-preview .word-cloud .top-10 .word {
+    font-size: 20px;
+}
+
+.dashboard .word-cloud-preview .word-cloud .top-50 .word {
+    font-size: 14px;
+}
 
 
 /* URL Widget */
