@@ -34,7 +34,6 @@ export class SankeyDiagram {
 
         this.holder = document.createElement("div");
         
-        this.holder.id = "sankey-holder";
         this.holder.classList.add("sankey");
 
         this.svg = document.createElementNS(SVG_NAME_SPACE, "svg");
@@ -269,17 +268,17 @@ export class SankeyDiagram {
     private addToolTipEvents(element: SVGElement, percentage: number) {
         element.addEventListener("mouseenter", (e) => {
             let bbox = element.getBoundingClientRect();
-            let holderBBox = document.getElementById("sankey-holder").getBoundingClientRect();
 
             let tooltip = document.createElement("div");
             tooltip.classList.add("tooltip");
             tooltip.innerHTML = percentage.toFixed(2) + "%"
+            tooltip.style.zIndex = "100000";
 
-            document.getElementById("sankey-holder").appendChild(tooltip);
+            document.body.appendChild(tooltip);
 
             let tooltipBBox = tooltip.getBoundingClientRect();
-            tooltip.style.top = `${bbox.top + bbox.height / 2 - tooltipBBox.height / 2 - holderBBox.top}px`;
-            tooltip.style.left = `${bbox.left + bbox.width / 2 - tooltipBBox.width / 2 - holderBBox.left}px`;
+            tooltip.style.top = `${bbox.top + bbox.height / 2 - tooltipBBox.height / 2}px`;
+            tooltip.style.left = `${bbox.left + bbox.width / 2 - tooltipBBox.width / 2}px`;
         })
 
         element.addEventListener("mouseleave", (e) => {
