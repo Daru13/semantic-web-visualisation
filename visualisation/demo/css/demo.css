@@ -363,7 +363,7 @@ body {
 .data-table .page-browser .current-page-input:focus,
 .data-table .page-browser .current-page-input:focus + .total-page-number {
     background-color: rgb(255, 238, 208);
-    border-bottom-color: orange;
+    border-bottom-color: #fe9929;
 }
 
 .data-table .page-browser .total-page-number {
@@ -403,16 +403,6 @@ body {
     margin: 0 0 0 5px;
 }
 
-.data-table .page-browser:hover .previous-page-button:hover,
-.data-table .page-browser:hover .next-page-button:hover {
-    background-color: orange;
-}
-
-.data-table .page-browser:hover .previous-page-button:disabled:hover,
-.data-table .page-browser:hover .next-page-button:disabled:hover {
-    background-color: transparent;
-}
-
 .data-table .page-browser .previous-page-button {
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
     
@@ -420,6 +410,14 @@ body {
 
 .data-table .page-browser .next-page-button {
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+}
+
+.data-table .page-browser .previous-page-button:hover {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path fill="orange" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+}
+
+.data-table .page-browser .next-page-button:hover {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path fill="orange" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
 }
 
 .data-table .page-browser .previous-page-button:disabled {
@@ -508,11 +506,16 @@ body {
 }
 
 .dashboard .distribution-chart .chart-container .chart-area.url-cells-area {
-    background-color: #6666FF;
+    background-color: rgb(0, 114, 178);
+    /* border-bottom: 2px solid #0571b0; */
+    /* box-shadow: 0 -2px #0571b0 inset; */
 }
 
 .dashboard .distribution-chart .chart-container .chart-area.text-cells-area {
-    background-color: #FF6666;
+    background-color: rgb(213, 94, 0);
+    /* border-bottom: 2px solid #ca0020; */
+    /* box-shadow: 0 -2px #ca0020 inset; */
+
 }
 
 .dashboard .distribution-chart .chart-container .chart-label .type {
@@ -582,7 +585,7 @@ body {
 .dashboard .list-entry .bar {
     height: 10px;
     margin-top: 5px;
-    background-color: darkorange;
+    background-color: #fe9929;
 }
 
 .dashboard .list-entry.aggregate {
@@ -614,7 +617,7 @@ body {
 }
 
 .dashboard .display-buttons-area button:hover {
-    background-color: orange;
+    background-color: #fe9929;
     color: #000;
 }
 
@@ -732,7 +735,7 @@ body {
 
 .url-widget .path .slash {
     margin: 0 4px;
-    color: orange;
+    color: #f1a340;
     font-weight: bold;
 }
 
