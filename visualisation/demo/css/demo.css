@@ -258,7 +258,8 @@ body {
     width: var(--row-number-column-width);
 }
 
-.data-table .header > *:first-child {
+.data-table .header > *:first-child,
+.data-table .header > *:last-child {
     border-right: none;
 }
 
