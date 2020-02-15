@@ -8,15 +8,13 @@ before_install:
   - npm install -g npm@latest
 
 install:
-  - cd visualisation
   - yarn
 
 script:
   - yarn build
   - mkdir deploy
   - mv build demo deploy
-  - mv deploy ../deploy
-  - touch ../deploy/.nojekyll
+  - touch deploy/.nojekyll
 
 deploy:
   provider: pages
