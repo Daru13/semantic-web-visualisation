@@ -13,7 +13,7 @@ install:
 
 script:
   - yarn build
-  - mv build ../deploy
+  - mv build/main.min.js ../deploy/build
   - mkdir ../deploy/demo
   - cp ./demo/*.html ../deploy/demo
   - mkdir ../deploy/demo/css
