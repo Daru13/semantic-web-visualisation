@@ -7,8 +7,8 @@ More specifically, it was designed to process the **results of SPARQL queries** 
 
 The interface contains two complementary parts:
 
-- Per-column **dashboards** containing basics statistics (_e.g_ most common URL domains), keywords, and visualisations of the structures of the URLs (using a [Sankey diagram](https://en.wikipedia.org/wiki/Sankey_diagram));
-- A table containing the entire result of the SPARQL query split into pages with a simplified representation of URLs.
+- Per-column **dashboards** containing basics statistics (_e.g_ most common URL domains), keywords, and visualisations of the structures of the URLs (using a [Sankey diagram](https://en.wikipedia.org/wiki/Sankey_diagram))
+- A **table** containing the entire result of the SPARQL query split into pages with a simplified representation of URLs
 
 📊 **[ONLINE DEMO](https://daru13.github.io/semantic-web-visualisation/demo/)** 
 
