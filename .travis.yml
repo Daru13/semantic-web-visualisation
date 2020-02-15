@@ -15,8 +15,8 @@ script:
   - yarn build
   - mkdir deploy
   - mv build demo deploy
-  - touch ../deploy/.nojekyll
   - mv deploy ../deploy
+  - touch ../deploy/.nojekyll
 
 deploy:
   provider: pages
