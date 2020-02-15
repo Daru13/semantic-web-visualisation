@@ -13,14 +13,14 @@ install:
 
 script:
   - yarn build
-  - mv build deploy
-  - mkdir deploy/demo
-  - cp ./demo/*.html deploy/demo
-  - mkdir deploy/demo/css
-  - cp ./demo/css/*.css deploy/demo/css
-  - mkdir deploy/demo/img
-  - cp ./demo/img/* deploy/demo/img
-  - touch deploy/.nojekyll
+  - mv build ../deploy
+  - mkdir ../deploy/demo
+  - cp ./demo/*.html ../deploy/demo
+  - mkdir ../deploy/demo/css
+  - cp ./demo/css/*.css ../deploy/demo/css
+  - mkdir ../deploy/demo/img
+  - cp ./demo/img/* ../deploy/demo/img
+  - touch ../deploy/.nojekyll
 
 deploy:
   provider: pages
