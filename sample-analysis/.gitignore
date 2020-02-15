@@ -1,5 +1,0 @@
-.vscode
-.DS_Store
-*.log
-data/generated/*
-__pycache__
