@@ -1,0 +1,41 @@
+{
+  "name": "semantic-web-visualisation",
+  "version": "1.0.0",
+  "description": "Tools for visualising semantic web data.",
+  "main": "build/main.min.js",
+  "scripts": {
+    "init": "yarn",
+    "build": "rollup -c",
+    "watch": "rollup -cw",
+    "clean": "rm -rf build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Daru13/semantic-web-visualisation.git"
+  },
+  "keywords": [
+    "data",
+    "visualisation",
+    "semantic",
+    "web"
+  ],
+  "author": "Camille G. <daru14@gmail.com>",
+  "contributors": [
+    "Camille G. <daru14@gmail.com>",
+    "Adrien C. <chaffangeon.adrien@gmail.com>"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Daru13/semantic-web-visualisation/issues"
+  },
+  "homepage": "https://github.com/Daru13/semantic-web-visualisation#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "rollup": "^1.29.0",
+    "rollup-plugin-copy": "^3.3.0",
+    "rollup-plugin-terser": "^5.2.0",
+    "rollup-plugin-typescript2": "^0.25.3",
+    "tslib": "^1.10.0",
+    "typescript": "^3.7.5"
+  }
+}
