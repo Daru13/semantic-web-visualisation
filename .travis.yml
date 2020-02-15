@@ -8,10 +8,10 @@ before_install:
   - npm install -g npm@latest
 
 install:
+  - cd visualisation
   - yarn
 
 script:
-  - cd visualisation
   - yarn build
   - mv build deploy
   - mkdir deploy/demo
