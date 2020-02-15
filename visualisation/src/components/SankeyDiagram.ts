@@ -1,6 +1,5 @@
 import { Column } from '../dataStructures/DataFrame';
 import { ColumnAnalysis } from '../analyses/ColumnAnalysis'
-import { MapCounter } from '../utils/MapCounter';
 import { URLAnalysis } from '../analyses/URLAnalysis';
 
 const SPACE_BETWEEN_COLUMNS = 400;
@@ -15,7 +14,7 @@ type EleProperties = { height: number, fromX: number, fromY: number, toX: number
 type SankeyColumn = { height: number, width: number, elements: Map<string, EleProperties>, columnHolder: SVGGElement , columnTitle: SVGTextElement};
 
 export class SankeyDiagram {
-    holder: HTMLDivElement;
+    holder: HTMLElement;
     svg: SVGSVGElement;
 
     dataColumn: Column;
@@ -25,7 +24,9 @@ export class SankeyDiagram {
     domainColumn: SankeyColumn;
     pathColumns: Map<number, SankeyColumn>;
 
-    constructor(column: Column) {
+    urlNumber: number;
+
+    constructor(column: Column, parent: HTMLElement) {
         this.dataColumn = column
         this.dataColumnAnalysis = new ColumnAnalysis(this.dataColumn);
         
@@ -35,41 +36,31 @@ export class SankeyDiagram {
 
         this.holder = document.createElement("div");
         
-        this.holder.id = "sankey-holder";
         this.holder.classList.add("sankey");
 
         this.svg = document.createElementNS(SVG_NAME_SPACE, "svg");
         this.svg.setAttribute("viewBox", "0,0,0,0");
 
         this.holder.appendChild(this.svg);
-        document.body.appendChild(this.holder);
+        parent.appendChild(this.holder);
+
+        this.urlNumber = 0;
 
         this.setupUI();
     }
 
     private setupUI(): void {
-        this.addCloseButton();
         this.computeColumns();
         this.drawColumns();
         this.drawEdges();
-    }
-
-    private addCloseButton(): void {
-        let button = document.createElement("button");
-        button.innerHTML = "Close";
-        button.classList.add("close-button");
-        button.addEventListener("click", () => {
-            if (this.holder.parentNode !== null) {
-                this.holder.parentNode.removeChild(this.holder);
-            }
-        })
-        this.holder.appendChild(button);
     }
 
     private computeColumns(): void {
         for (let url of this.dataColumn) {
             try{
                 let analysis = new URLAnalysis(url);
+                this.urlNumber += 1;
+
                 let domain = analysis.domain + "." + analysis.tld;
                 let path = analysis.path;
                 let subdomains = analysis.subdomains;
@@ -157,7 +148,7 @@ export class SankeyDiagram {
         for (let i = Math.min(sortedElements.length - 1, from); i < Math.min(sortedElements.length, to); i++){
             let k = sortedElements[i].key;
             let e = sortedElements[i].ele;
-            percentage = e.height / this.dataColumn.length();
+            percentage = e.height / this.urlNumber;
 
             e.rectangle.setAttribute("x", x.toString());
             e.rectangle.setAttribute("y", y.toString());
@@ -165,7 +156,7 @@ export class SankeyDiagram {
             e.rectangle.setAttribute("fill", this.getFillColor(percentage));
 
             e.text.setAttribute("y", (y + e.height / 2).toString());
-            e.text.style.fill = (e.height / this.dataColumn.length() < 0.3) ? "black" : "white";
+            e.text.style.fill = (e.height / this.urlNumber < 0.3) ? "black" : "white";
             e.text.style.fontSize = `${Math.min(TEXT_FONT_SIZE * 2, Math.max(TEXT_FONT_SIZE / 2, 2 * TEXT_FONT_SIZE * percentage))}px`;
             e.text.innerHTML = k;
 
@@ -198,7 +189,7 @@ export class SankeyDiagram {
             plusButtonRect.setAttribute("x", x.toString());
             plusButtonRect.setAttribute("y", y.toString());
             plusButtonRect.setAttribute("height", "50");
-            plusButtonRect.style.fill = this.getFillColor(1 - Math.min(1, y / this.dataColumn.length()));
+            plusButtonRect.style.fill = this.getFillColor(1 - Math.min(1, y / this.urlNumber));
 
             plusButtonText.setAttribute("x", x.toString());
             plusButtonText.setAttribute("y", (y + 25).toString());
@@ -268,9 +259,9 @@ export class SankeyDiagram {
                     L${toColumn.elements.get(secondValue).toX},${toColumn.elements.get(secondValue).toY} 
                     L${toColumn.elements.get(secondValue).toX},${toColumn.elements.get(secondValue).toY + nb - 1} 
                     L${fromColumn.elements.get(firstValue).fromX},${fromColumn.elements.get(firstValue).fromY + nb - 1}`);
-                ele.style.fill = this.getFillColor(nb / this.dataColumn.length());
+                ele.style.fill = this.getFillColor(nb / this.urlNumber);
 
-                this.addToolTipEvents(ele, nb / this.dataColumn.length() * 100);
+                this.addToolTipEvents(ele, nb / this.urlNumber * 100);
 
                 fromColumn.elements.get(firstValue).fromY += nb;
                 toColumn.elements.get(secondValue).toY += nb;
@@ -283,17 +274,17 @@ export class SankeyDiagram {
     private addToolTipEvents(element: SVGElement, percentage: number) {
         element.addEventListener("mouseenter", (e) => {
             let bbox = element.getBoundingClientRect();
-            let holderBBox = document.getElementById("sankey-holder").getBoundingClientRect();
 
             let tooltip = document.createElement("div");
             tooltip.classList.add("tooltip");
             tooltip.innerHTML = percentage.toFixed(2) + "%"
+            tooltip.style.zIndex = "100000";
 
-            document.getElementById("sankey-holder").appendChild(tooltip);
+            document.body.appendChild(tooltip);
 
             let tooltipBBox = tooltip.getBoundingClientRect();
-            tooltip.style.top = `${bbox.top + bbox.height / 2 - tooltipBBox.height / 2 - holderBBox.top}px`;
-            tooltip.style.left = `${bbox.left + bbox.width / 2 - tooltipBBox.width / 2 - holderBBox.left}px`;
+            tooltip.style.top = `${bbox.top + bbox.height / 2 - tooltipBBox.height / 2}px`;
+            tooltip.style.left = `${bbox.left + bbox.width / 2 - tooltipBBox.width / 2}px`;
         })
 
         element.addEventListener("mouseleave", (e) => {

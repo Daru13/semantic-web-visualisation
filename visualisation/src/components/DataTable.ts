@@ -135,10 +135,10 @@ export class DataTable {
         this.node.classList.add("data-table");
 
         this.createHeader();
-        this.createContentContainer();
-        this.createPageBrowser();
         this.createDashboardContainer();
         this.createDashboards();
+        this.createContentContainer();
+        this.createPageBrowser();
     }
 
     private createHeader(): void {
@@ -275,11 +275,11 @@ export class DataTable {
         // Update the widths of the columns
         const rowNumberColumnWidth = Math.max(
             minRowNumberColumnWidth,
-            Math.floor(window.innerWidth * 0.02)
+            Math.floor(document.documentElement.clientWidth * 0.02)
         );
         const columnWidth = Math.max(
             minColumnWidth,
-            Math.round((window.innerWidth - rowNumberColumnWidth) / nbColumns)
+            Math.round((document.documentElement.clientWidth - rowNumberColumnWidth) / nbColumns)
         );
         
         style += `--column-width: ${columnWidth}px;\
