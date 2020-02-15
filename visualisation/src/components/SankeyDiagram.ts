@@ -157,7 +157,7 @@ export class SankeyDiagram {
 
             e.text.setAttribute("y", (y + e.height / 2).toString());
             e.text.style.fill = (e.height / this.urlNumber < 0.3) ? "black" : "white";
-            e.text.style.fontSize = `${Math.min(TEXT_FONT_SIZE * 2, Math.max(TEXT_FONT_SIZE / 2, 2 * TEXT_FONT_SIZE * percentage))}px`;
+            e.text.style.fontSize = `${TEXT_FONT_SIZE * 0.5}px`;
             e.text.innerHTML = k;
 
             column.columnHolder.appendChild(e.rectangle);
@@ -225,7 +225,7 @@ export class SankeyDiagram {
         let vB = this.svg.getAttribute("viewBox").split(",");
         let width = Math.max(x + column.width, parseFloat(vB[2]));
         let height = Math.max(column.height + SPACE_BETWEEN_ROWS + TEXT_FONT_SIZE, parseFloat(vB[3]));
-        this.svg.setAttribute("viewBox", `0, -${TEXT_FONT_SIZE + SPACE_BETWEEN_ROWS}, ${width}, ${height}`);
+        this.svg.setAttribute("viewBox", `0,-${TEXT_FONT_SIZE + SPACE_BETWEEN_ROWS},${width},${height}`);
     }
 
     private drawEdges() {
@@ -283,8 +283,10 @@ export class SankeyDiagram {
             document.body.appendChild(tooltip);
 
             let tooltipBBox = tooltip.getBoundingClientRect();
-            tooltip.style.top = `${bbox.top + bbox.height / 2 - tooltipBBox.height / 2}px`;
-            tooltip.style.left = `${bbox.left + bbox.width / 2 - tooltipBBox.width / 2}px`;
+            let scrollTop = document.documentElement.scrollTop;
+            let scrollLeft = document.documentElement.scrollLeft;
+            tooltip.style.top = `${bbox.top + bbox.height / 2 - tooltipBBox.height / 2 +scrollTop}px`;
+            tooltip.style.left = `${bbox.left + bbox.width / 2 - tooltipBBox.width / 2 + scrollLeft}px`;
         })
 
         element.addEventListener("mouseleave", (e) => {

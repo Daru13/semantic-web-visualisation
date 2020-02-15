@@ -80,6 +80,7 @@ body {
 
 .popup-content {
     padding: 10px;
+    overflow: scroll;
 }
 
 .background-mask  {

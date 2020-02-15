@@ -14,17 +14,17 @@ install:
 script:
   - yarn build
   - mv build/main.min.js ../deploy/build
-  - mkdir ../deploy/demo
+  - mkdir deploy/demo
   - cp ./demo/*.html ../deploy/demo
-  - mkdir ../deploy/demo/css
-  - cp ./demo/css/*.css ../deploy/demo/css
-  - mkdir ../deploy/demo/img
-  - cp ./demo/img/* ../deploy/demo/img
-  - touch ../deploy/.nojekyll
+  - mkdir deploy/demo/css
+  - cp ./demo/css/*.css deploy/demo/css
+  - mkdir deploy/demo/img
+  - cp ./demo/img/* deploy/demo/img
+  - touch deploy/.nojekyll
 
 deploy:
   provider: pages
-  local-dir: deploy
+  local-dir: ../deploy
   skip-cleanup: true
   github-token: $GITHUB_TOKEN
   keep-history: false
