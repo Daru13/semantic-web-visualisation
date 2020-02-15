@@ -26,11 +26,20 @@ export class Dashboard {
         this.node = document.createElement("div");
         this.node.classList.add("dashboard");
 
+        this.createColumnName();
         this.createDataTypeVisualisation();
         this.createTopCountriesVisualisation();
         this.createTopDomainsVisualisation();
         this.createWordCloudPreview();
         this.createOtherVisualisationsDisplayButtons();
+    }
+
+    private createColumnName() {
+        const columnNameNode = document.createElement("h2");
+        columnNameNode.classList.add("column-name");
+        columnNameNode.textContent = this.column.name;
+
+        this.node.append(columnNameNode);
     }
 
     private createDataTypeVisualisation(): void {

@@ -13,7 +13,6 @@ export class DataTable {
     private content: DataFrame;
 
     node: HTMLElement;
-    private headerNode: HTMLElement;
     private contentContainerNode: HTMLElement;
     private pageBrowserNode: HTMLElement;
     private dashboardContainerNode: HTMLElement;
@@ -134,30 +133,10 @@ export class DataTable {
         this.node = document.createElement("div");
         this.node.classList.add("data-table");
 
-        this.createHeader();
         this.createDashboardContainer();
         this.createDashboards();
         this.createContentContainer();
         this.createPageBrowser();
-    }
-
-    private createHeader(): void {
-        this.headerNode = document.createElement("div");
-        this.headerNode.classList.add("header");
-        
-        // Row number
-        const rowNumberNode = document.createElement("div");
-        rowNumberNode.textContent = "";
-        this.headerNode.appendChild(rowNumberNode);
-
-        // Content
-        for (let columnName of this.content.columnNames()) {
-            const columnNameNode = document.createElement("div");
-            columnNameNode.textContent = columnName;
-            this.headerNode.appendChild(columnNameNode);
-        }
-
-        this.node.appendChild(this.headerNode);
     }
 
     private createContentContainer(): void {
@@ -279,7 +258,7 @@ export class DataTable {
         );
         const columnWidth = Math.max(
             minColumnWidth,
-            Math.round((document.documentElement.clientWidth - rowNumberColumnWidth) / nbColumns)
+            Math.floor((document.documentElement.clientWidth - rowNumberColumnWidth) / nbColumns)
         );
         
         style += `--column-width: ${columnWidth}px;\

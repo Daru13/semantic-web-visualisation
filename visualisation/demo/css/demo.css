@@ -234,35 +234,6 @@ body {
     font-family: "Roboto", sans-serif;
 }
 
-.data-table .header {
-    position: relative;
-    height: 60px;
-    background-color: #FAFAFA;
-    color: #000;
-    font-size: 1.8rem;
-    font-weight: bold;
-    z-index: 30;
-}
-
-.data-table .header > * {
-    box-sizing: border-box;
-    display: inline-block;
-    width: var(--column-width);
-    border-right: 2px solid #CCC;
-    text-align: center;
-    line-height: 60px;
-    vertical-align: middle;
-}
-
-.data-table .header > *:first-child {
-    width: var(--row-number-column-width);
-}
-
-.data-table .header > *:first-child,
-.data-table .header > *:last-child {
-    border-right: none;
-}
-
 .data-table .content {
     /* max-height: calc(100vh - 40px - 240px); */
     overflow-y: auto;
@@ -465,13 +436,26 @@ body {
     box-sizing: border-box;
     display: inline-grid;
     grid-template-areas:
+    "column-name   column-name"
     "dist-chart    dist-chart"
     "top-countries top-domains"
     "word-cloud    word-cloud"
     "buttons       buttons";
-    grid-template-rows: 80px 140px auto 40px;
+    grid-template-rows: 60px 80px 140px auto 40px;
     grid-template-columns: 1fr 1fr;
-    padding: 10px;
+    padding: 0 10px 10px 10px;
+}
+
+.data-table .column-name {
+    grid-area: column-name;
+    display: block;
+    height: 60px;
+    margin: 10px 0 0 0;
+    padding: 0;
+    color: #000;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-align: center;
 }
 
 .dashboard h4 {

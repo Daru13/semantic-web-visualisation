@@ -2,7 +2,7 @@ export type Cell<T = any> = any;
 
 
 export class Series<T = any> {
-    private readonly name: string;
+    readonly name: string;
     private readonly content: Cell<T>[];
 
     constructor(content: Cell<T>[], name: string = "<undefined>") {
