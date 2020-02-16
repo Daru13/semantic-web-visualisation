@@ -1,0 +1,13 @@
+body {
+    max-width: 900px;
+    margin: auto;
+}
+
+h1 {
+    text-align: center;
+}
+
+h1 span {
+    font-size: x-small;
+    color: grey;
+}

@@ -8,10 +8,52 @@
     <title>SPARQL response</title>
 
     <link rel="stylesheet" href="./css/normalize.css">
+    <link rel="stylesheet" href="./css/index.css">
 </head>
 
 <body>
-    <a href="demo1.html">Demo 1</a>
-    <a href="demo2.html">Demo 2</a>
+    <h1>SPARQL response<br><span>Readable URIs</span></h1>
+We built a library to allow developers working with the Semantic Web to better visualise the structure and the statistical properties of a set of URIs (e.g. tables returned by SPARQL queries). Our library is in two folds: 
+<ul>
+    <li>
+we enhanced the table returned by a SPARQL query,
+    </li>
+    <li>
+we built two visualisations to study the structure of URIs in depth.
+    </li>
+</ul>
+
+<h2>Enhancing the table</h2>
+Our first improvement of the table is how we display the URIs. We chose to display only the important parts of an URI: 
+<ul>
+    <li>
+        the domain, i.e. the name of the website, represented in bold to make it pop out,
+    </li>
+    <li>
+        the language of the website, if possible to detect based on the URI alone, represented by a flag
+    </li>
+    <li>
+        the path, i.e. the path to this specific webpage on the website.
+    </li>
+</ul>
+In another hand, we also added dashboards at the top of the column which displays basics statistics per column. 
+
+<h2>Visusalizing the structure of URIs</h2>
+In order to better understand the structure of URI we built two visualisations.<br><br>
+
+The first one is a word cloud. It is displaying the keywords of a column organized from the most present to the least. A keywords is either the last part of the path of an URI, i.e. the name of the webpage, or keywords extracted from pure text by regular expressions.<br><br>
+
+The second one is a Sankey diagram. It has three main columns: the subdomain, the domain plus tld and the path columns. For each elements of those columns (for example wikipedia.org), the more URIs with that element, the thicker and darker the visual representation is. For two elements from two of those columns (for example dbpedia.org and ressource), the more URIs with both elements, the thicker and darker the link between those two elements is.
+
+<h2>Demo</h2>
+Here are some demos of our library on different SPARQL queries:
+<ul>
+    <li>
+<a href="demo1.html">Demo 1</a>
+    </li>
+    <li>
+<a href="demo2.html">Demo 2</a>
+    </li>
+</ul>
 </body>
 </html>
