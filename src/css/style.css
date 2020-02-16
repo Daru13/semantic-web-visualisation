@@ -323,19 +323,23 @@ body.popup-displayed {
     box-sizing: border-box;
     height: 40px;
     padding: 5px;
-    background-color: #EFEFEF;
     border: none;
-    border-bottom: 2px solid #666;
     font-size: 1.4rem;
 }
 
 .data-table .page-browser .current-page-input {
-    width: 30px;
+    background-color: #EFEFEF;
+    border-bottom: 2px solid #666;
+}
+
+
+.data-table .page-browser .current-page-input {
+    min-width: 30px;
+    max-width: 60px;
     text-align: center;
 }
 
-.data-table .page-browser .current-page-input:focus,
-.data-table .page-browser .current-page-input:focus + .total-page-number {
+.data-table .page-browser .current-page-input:focus {
     background-color: rgb(255, 238, 208);
     border-bottom-color: #fe9929;
 }
