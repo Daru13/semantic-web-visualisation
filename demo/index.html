@@ -16,14 +16,14 @@
     <span id="main-subtitle">&laquo; Readable URIs &raquo;</span>
     
     <section>
-        We built a library to help developers working with semantic web data to better visualise the structure, the theme and some statistical properties of SPARQL query responses (tables containing many <abbr title="Uniform Resource Identifier">URI</abbr>s). Our contribution is twofold:
+        We built a library to help developers working with semantic web data to better visualise the structure, the theme and some statistical properties of SPARQL query responses (tables containing many <abbr title="Uniform Resource Identifier">URI</abbr>s). We based our work on SPARQL responses from <a href="https://wiki.dbpedia.org/">dbpedia.org</a>, and our contribution is twofold:
         
         <ol>
             <li>
                 we enhance the representation of the data table returned by a SPARQL query;
             </li>
             <li>
-                we offer two visualisations to illustrate URI structures and themes.
+                we propose two specialised visualisations to illustrate URI structures and themes.
             </li>
         </ol>
 
@@ -32,23 +32,32 @@
     
     <section>
         <h2>Enhancing the data table</h2>
-        
-        We started by improving the representation of URIs in the data table.
-        We chose to hide the repetitive parts (such as the protocol) and to highlight the most meaningful ones for our target audience: 
+        <p>
+            We started by improving the representation of URIs in the data table, assuming developers may want to have a look at the actual data returned by a SPARQL query they ran.
+            We chose to hide the repetitive parts (such as the protocol) and to highlight the most meaningful ones for our target audience:
+        </p>
+
         <ul>
             <li>
-                the <strong>domain</strong>, <em>i.e.</em> the name of the website;
+                the <strong>domain</strong> of the URI (where is the data located);
             </li>
             <li>
-                the <strong>country</strong> as a flag, when available. We attempt to extract it from the URI by using different heuristics based on common URI patterns;
+                the <strong>country/language</strong> of the URI as a flag, when we could extract it from the URI;
             </li>
             <li>
-                the <strong>path</strong>, which appears to usually describe what is the pointed resource. We highlight the structure the path by colouring slashes (which separate the different parts of the path) and almost hiding underscores (which usually act as whitespace).
+                the <strong>path</strong> of the URI (what is the name of this piece of data).
             </li>
         </ul>
 
-        We then added <strong>dashboards</strong> at the top of each column.
-        They display basics statistics about the content of the column and allow to open more advanced visualisations, described below.
+        <p>
+            In order to handle very long tables, we decided to <strong>paginate</strong> the table.
+            You can use the page browser at the bottom-right hand corner of your screen or the left/right arrow keys to navigate between pages.
+        </p>
+
+        <p>
+            We also added <strong>dashboards</strong> at the top of each column.
+            They display basics statistics about the content of the whole column and contain buttons to display more specific visualisations (described below).
+        </p>
     </section>
     
     <section>
@@ -78,11 +87,11 @@
         <h2>Demo pages</h2>
 
         <p>
-            Given the beta status and the requirements for using <a href="https://wiki.dbpedia.org/rest-api">dbpedia's REST API</a>, and given the limited time we had, we did not build any form for visualising the response of any SPARQL query.
+            Given the beta status and the requirements for using <a href="https://wiki.dbpedia.org/rest-api">dbpedia's REST API</a>, and given the limited time we had, we did not build a form where you could run any SPARQL query you want to visualise.
         </p>
 
         <p>
-            Instead, we uploaded a few demos based on SPARQL reponses obtained via dbpedia's SPARQL query runner. We used responses with different numbers of rows and/or columns in order to illustrate the robustness of our library.
+            Instead, we uploaded a few demos based on SPARQL reponses obtained via dbpedia's <a href="http://fr.dbpedia.org/sparql">SPARQL query runner</a>. We used responses with different numbers of rows and/or columns in order to illustrate the robustness of our library.
         </p>
 
         <table id="demo-description">
