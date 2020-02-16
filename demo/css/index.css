@@ -52,9 +52,16 @@ body {
 
 #main-subtitle {
     display: block;
-    margin: 10px 0 20px 0;
+    margin: 10px 0 10px 0;
     font-size: 1.5rem;
     color: grey;
+    text-align: center;
+}
+
+#authors {
+    display: block;
+    margin: 0 0 20px 0;
+    font-size: 1.3rem;
     text-align: center;
 }
 
@@ -69,6 +76,7 @@ section h2 {
 
 section .alert {
     display: block;
+    margin: 5px 0;
     padding: 5px 10px;
     border: 2px solid #AAA;
     font-weight: bold;
