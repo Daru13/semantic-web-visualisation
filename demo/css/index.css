@@ -122,7 +122,3 @@ section a:active {
 #demo-description .link a {
     white-space: nowrap;
 }
-
-#demo-description .sparql {
-    font-size: 0.8rem;
-}

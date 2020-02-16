@@ -103,7 +103,6 @@
                 <tr>
                     <th>Link</th>
                     <th>Description of the data</th>
-                    <!-- <th>SPARQL query</th> -->
                 </tr>
             </thead>
             <tbody>
@@ -114,13 +113,6 @@
                     <td class="description">
                         Small subset of the sample SPARQL response about films we were given at the beginning of the project (3 columns, 500 rows).
                     </td>
-                    <!-- <td class="sparql">
-<pre>SELECT DISTINCT ?resource ?genre ?sameAs WHERE {
-    ?resource a &lt;http://dbpedia.org/ontology/Film&gt; .
-    ?resource &lt;http://fr.dbpedia.org/property/genre&gt; ?genre .
-    ?resource owl:sameAs ?sameAs
-} LIMIT 500</pre>
-                    </td> -->
                 </tr>
                 <tr>
                     <td class="link">
@@ -129,13 +121,6 @@
                     <td class="description">
                         Large subset of the sample SPARQL response about music we were given at the beginning of the project (3 columns, 50,000 rows).<!-- It usually takes a few seconds for the library to process it.-->
                     </td>
-                    <!-- <td class="sparql">
-<pre>SELECT DISTINCT ?resource ?genre ?sameAs WHERE {
-    ?resource a &lt;http://schema.org/MusicGroup&gt; .
-    ?resource &lt;http://fr.dbpedia.org/property/genre&gt; ?genre .
-    ?resource owl:sameAs ?sameAs
-} LIMIT 50000</pre>
-                    </td> -->
                 </tr>
                 <tr>
                     <td class="link">
@@ -144,9 +129,6 @@
                     <td class="description">
                         SPARQL response of dbpedia's example SPARQL request (1 column, 100 rows).
                     </td>
-                    <!-- <td class="sparql">
-<pre>select distinct ?Concept where {[] a ?Concept} LIMIT 100</pre>
-                    </td> -->
                 </tr>
             </tbody>
         </table>
