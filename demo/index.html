@@ -16,7 +16,7 @@
     <span id="main-subtitle">&laquo; Readable URIs &raquo;</span>
     
     <section>
-        We built a library to help developers working with semantic web data to better visualise the structure, the theme and some statistical properties of SPARQL query responses (tables containing many <abbr title="Uniform Resource Identifier">URI</abbr>s). We based our work on SPARQL responses from <a href="https://wiki.dbpedia.org/">dbpedia.org</a>, and our contribution is twofold:
+        We built a library to help developers working with semantic web data to better visualise the structure, the theme and some statistical properties of SPARQL query responses (tables containing many <abbr title="Uniform Resource Identifier">URI</abbr>s). We based our work on SPARQL responses from <a href="https://wiki.dbpedia.org/">dbpedia.org</a> (<em>i.e.</em> from data looking like <a href="http://fr.dbpedia.org/sparql?default-graph-uri=&query=select+distinct+%3FConcept+where+%7B%5B%5D+a+%3FConcept%7D+LIMIT+100&format=text%2Fhtml&timeout=0&debug=on">this</a>), and our contribution is twofold:
         
         <ol>
             <li>
@@ -62,22 +62,24 @@
     
     <section>
         <h2>Visusalising themes and URI structures</h2>
-        When studying a column, a developer may want to focus in one of the two following directions: the main theme of the cells and the plurality of the URI structures. We created two dedicated visulisations to help them perform such tasks. 
+        When studying a column, a developer may want to focus on (1) the main themes of the data and (2) the plurality of the URI structures. We created two dedicated visulisations to help them perform such tasks.
         <ul>
             <li>
                 <p>
                     The first one is a <strong>word cloud</strong>.
-                    It is displaying the keywords of a column organized from the most present to the least. A keywords is either the last part of the path of an URI, <em>i.e.</em> the name of the webpage, or keywords extracted from textual cells using regular expressions.
+                    It contains the keywords of a column organized from the most present to the least. A keywords is either the last part of the path or words extracted from textual cells.
                 </p>
                 <p>
-                    This visualisations allows to understand the dominant theme in a column. For example, in <a href="demo1.html">demo 1</a>, for the genre column, we can read the most present genres of music in the database.
+                    This visualisation allows to understand the dominant theme in a column. For example, in <a href="demo1.html">the first demo</a>, you can easily read the most popular musical genres.
                 </p>
             </li>
             <li>
                 <p>
                     The second one is a <strong>Sankey diagram</strong>.
                     It has three main columns: the subdomain, the domain with the domain extension (TLD), and the path.
-                    For each elements of those columns (such as <span class="code">wikipedia.org</span>), the more URIs with that element, the thicker and darker the visual representation is. For two elements from two of those columns (for example <span class="code">dbpedia.org</span> and <span class="code">resource</span>), the more URIs with both elements, the thicker and darker the link between those two elements is.
+                </p>
+                <p>
+                    In each column, the more URIs contain a certain element (<em>e.g.</em> <span class="code">dbpedia.org</span>), the thicker and more saturated it will be. The same applies for the links between two columns: the more two elements appear in the same URIs, the thicker and more saturated the link will be.
                 </p>
             </li>
         </ul>
