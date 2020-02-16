@@ -8,7 +8,7 @@ export class Popup {
     private title: string;
     private onClose: () => void;
 
-    constructor(displayMask = false) {
+    constructor(title = "", displayMask = false) {
         this.holder = document.createElement("div");
         this.holder.classList.add("popup");
 
@@ -16,7 +16,7 @@ export class Popup {
         this.content.classList.add("popup-content");
 
         this.onClose = () => { };
-        this.title = "";
+        this.title = title;
 
         this.init(displayMask);
     }
@@ -36,6 +36,7 @@ export class Popup {
 
 
         let title = document.createElement("h2");
+        title.textContent = this.title;
         title.classList.add("popup-title");
         titleBar.appendChild(title);
 

@@ -285,8 +285,7 @@ export class Dashboard {
         displaySankeyDiagramButton.textContent = "URL structures";
         displaySankeyDiagramButton.classList.add("display-sankey-diagram");
         displaySankeyDiagramButton.addEventListener("click", () => {
-            let popup = new Popup();
-            popup.setTitle("Sankey Diagram");
+            let popup = new Popup(`URL structures — ${this.column.name} column`);
             popup.maximize();
             new SankeyDiagram(this.column, popup.content);
         });
@@ -297,8 +296,7 @@ export class Dashboard {
         displayWordCloudButton.textContent = "All keywords";
         displayWordCloudButton.classList.add("display-word-cloud");
         displayWordCloudButton.addEventListener("click", () => {
-            let popup = new Popup();
-            popup.setTitle("Organized word cloud");
+            let popup = new Popup(`Keywords — ${this.column.name} column`);
             popup.maximize();
             new OrganizedWordCloud(this.column, popup.content);
         });
