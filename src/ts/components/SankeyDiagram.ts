@@ -4,12 +4,14 @@ import { URLAnalysis } from '../analyses/URLAnalysis';
 
 const SPACE_BETWEEN_COLUMNS = 400;
 const SPACE_BETWEEN_ROWS = 50;
+const MAX_SIZE_NODE = 200;
+const MIN_SIZE_NODE = 3;
 const TEXT_FONT_SIZE = 60;
 const SVG_NAME_SPACE = "http://www.w3.org/2000/svg";
 
-type EdgeProperties = {number: number, path: SVGPathElement, drawn: boolean};
+type EdgeProperties = {nb: number, path: SVGPathElement, drawn: boolean};
 
-type EleProperties = { height: number, fromX: number, fromY: number, toX: number, toY: number, next: Map<string, EdgeProperties>, rectangle: SVGRectElement, text: SVGTextElement, drawn: boolean};
+type EleProperties = { nb: number, fromX: number, fromY: number, toX: number, toY: number, next: Map<string, EdgeProperties>, rectangle: SVGRectElement, text: SVGTextElement, drawn: boolean};
 
 type SankeyColumn = { height: number, width: number, elements: Map<string, EleProperties>, columnHolder: SVGGElement , columnTitle: SVGTextElement};
 
@@ -101,14 +103,14 @@ export class SankeyDiagram {
             let eleProperty = this.getEmptyEleProperties();
             column.elements.set(ele, eleProperty);
         }
-        column.elements.get(ele).height += 1;
+        column.elements.get(ele).nb += 1;
     }
 
     private countNext(element: EleProperties, next: string) {
         if (!element.next.has(next)) {
             element.next.set(next, this.getEmptyEdgeProperties());
         }
-        element.next.get(next).number += 1;
+        element.next.get(next).nb += 1;
     }
 
     private drawColumns() {
@@ -148,15 +150,16 @@ export class SankeyDiagram {
         for (let i = Math.min(sortedElements.length - 1, from); i < Math.min(sortedElements.length, to); i++){
             let k = sortedElements[i].key;
             let e = sortedElements[i].ele;
-            percentage = e.height / this.urlNumber;
+            percentage = e.nb / this.urlNumber;
+            let height = Math.max(MIN_SIZE_NODE, percentage * MAX_SIZE_NODE);
 
             e.rectangle.setAttribute("x", x.toString());
             e.rectangle.setAttribute("y", y.toString());
-            e.rectangle.setAttribute("height", e.height.toString());
+            e.rectangle.setAttribute("height", height.toString());
             e.rectangle.setAttribute("fill", this.getFillColor(percentage));
 
-            e.text.setAttribute("y", (y + e.height / 2).toString());
-            e.text.style.fill = (e.height / this.urlNumber < 0.3) ? "black" : "white";
+            e.text.setAttribute("y", (y + height / 2).toString());
+            e.text.style.fill = (percentage < 0.3) ? "black" : "white";
             e.text.style.fontSize = `${TEXT_FONT_SIZE * 0.5}px`;
             e.text.innerHTML = k;
 
@@ -175,7 +178,7 @@ export class SankeyDiagram {
             column.elements.get(k).toX = x;
             column.elements.get(k).toY = y;
 
-            y += e.height + SPACE_BETWEEN_ROWS;
+            y += height + SPACE_BETWEEN_ROWS;
             e.drawn = true;
         }
 
@@ -250,21 +253,22 @@ export class SankeyDiagram {
                 if (!(fromColumn.elements.get(firstValue).drawn && toColumn.elements.get(secondValue).drawn)) {
                     return;
                 }
-                let nb = edge.number;
+                let percentage = edge.nb / this.urlNumber;
+                let height = Math.max(MIN_SIZE_NODE, percentage * MAX_SIZE_NODE); ;
                 let ele = edge.path;
                 this.svg.appendChild(ele);
 
                 ele.setAttribute("d",
                     `M${fromColumn.elements.get(firstValue).fromX},${fromColumn.elements.get(firstValue).fromY} 
                     L${toColumn.elements.get(secondValue).toX},${toColumn.elements.get(secondValue).toY} 
-                    L${toColumn.elements.get(secondValue).toX},${toColumn.elements.get(secondValue).toY + nb - 1} 
-                    L${fromColumn.elements.get(firstValue).fromX},${fromColumn.elements.get(firstValue).fromY + nb - 1}`);
-                ele.style.fill = this.getFillColor(nb / this.urlNumber);
+                    L${toColumn.elements.get(secondValue).toX},${toColumn.elements.get(secondValue).toY + height - 1} 
+                    L${fromColumn.elements.get(firstValue).fromX},${fromColumn.elements.get(firstValue).fromY + height - 1}`);
+                ele.style.fill = this.getFillColor(percentage);
 
-                this.addToolTipEvents(ele, nb / this.urlNumber * 100);
+                this.addToolTipEvents(ele, percentage * 100);
 
-                fromColumn.elements.get(firstValue).fromY += nb;
-                toColumn.elements.get(secondValue).toY += nb;
+                fromColumn.elements.get(firstValue).fromY += height;
+                toColumn.elements.get(secondValue).toY += height;
 
                 edge.drawn = true;
             });
@@ -303,7 +307,7 @@ export class SankeyDiagram {
     }
 
     private getEmptyEdgeProperties(): EdgeProperties {
-        return { number: 0, path: document.createElementNS(SVG_NAME_SPACE, "path"), drawn: false };
+        return { nb: 0, path: document.createElementNS(SVG_NAME_SPACE, "path"), drawn: false };
     }
 
     private getEmptySankeyColumn(): SankeyColumn {
@@ -311,7 +315,7 @@ export class SankeyDiagram {
     }
 
     private getEmptyEleProperties(): EleProperties {
-        return { height: 0, fromX: 0, fromY: 0, toX: 0, toY: 0, next: new Map(), rectangle: document.createElementNS(SVG_NAME_SPACE, "rect"), text: document.createElementNS(SVG_NAME_SPACE, "text"), drawn: false };
+        return { nb: 0, fromX: 0, fromY: 0, toX: 0, toY: 0, next: new Map(), rectangle: document.createElementNS(SVG_NAME_SPACE, "rect"), text: document.createElementNS(SVG_NAME_SPACE, "text"), drawn: false };
     }
 
     private sortSankeyColumnElements(column: SankeyColumn): { key: string, ele: EleProperties }[] {
@@ -319,7 +323,7 @@ export class SankeyDiagram {
 
         column.elements.forEach((v, k, _) => {
             let i = 0;
-            while (i < temp.length && temp[i].ele.height > v.height) {
+            while (i < temp.length && temp[i].ele.nb > v.nb) {
                 i += 1;
             }
             temp.splice(i, 0, { key: k, ele: v });
@@ -333,7 +337,7 @@ export class SankeyDiagram {
 
         edges.forEach((v, k, _) => {
             let i = 0;
-            while (i < temp.length && temp[i].edge.number > v.number) {
+            while (i < temp.length && temp[i].edge.nb > v.nb) {
                 i += 1;
             }
             temp.splice(i, 0, { key: k, edge: v });
