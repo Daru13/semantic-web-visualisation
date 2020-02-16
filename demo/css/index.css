@@ -44,14 +44,6 @@ body {
     line-height: 140%;
 }
 
-section {
-    margin: 50px 0 20px 0;
-}
-
-section h2 {
-    color: rgb(0, 114, 178);
-}
-
 #main-title {
     color: rgb(0, 114, 178);
     font-size: 2.5rem;
@@ -64,4 +56,65 @@ section h2 {
     font-size: 1.5rem;
     color: grey;
     text-align: center;
+}
+
+section {
+    margin: 50px 0 20px 0;
+    text-align: justify;
+}
+
+section h2 {
+    color: rgb(0, 114, 178);
+}
+
+section .alert {
+    display: block;
+    padding: 5px 10px;
+    border: 2px solid #AAA;
+    font-weight: bold;
+    text-align: center;
+}
+
+section .code {
+    font-family: "Roboto Mono", monospace;
+}
+
+section a,
+section a:hover,
+section a:active,
+section a:visited {
+    color: rgb(0, 114, 178);
+    text-decoration: none;
+}
+
+section a:hover,
+section a:active {
+    box-shadow: 0 -2px 0 0 rgb(0, 114, 178) inset;
+}
+
+#demo-description {
+    border: none;
+    border-collapse: collapse;
+}
+
+#demo-description thead tr {
+    border-bottom: 2px solid #AAA;
+}
+
+#demo-description th,
+#demo-description td {
+    padding-right: 20px;
+    padding-top: 10px;
+}
+
+#demo-description td {
+    vertical-align: top;
+}
+
+#demo-description .link a {
+    white-space: nowrap;
+}
+
+#demo-description .sparql {
+    font-size: 0.8rem;
 }

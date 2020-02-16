@@ -16,27 +16,28 @@
     <span id="main-subtitle">&laquo; Readable URIs &raquo;</span>
     
     <section>
-        We built a library to enable developers working with semantic web data to better visualise the structure and the statistical properties of SPARQL query responses (<em>e.g.</em> tables containing lots of URLs). Our contribution is twofold:
+        We built a library to help developers working with semantic web data to better visualise the structure, the theme and some statistical properties of SPARQL query responses (tables containing many <abbr title="Uniform Resource Identifier">URI</abbr>s). Our contribution is twofold:
         
-        <ul>
+        <ol>
             <li>
-                we enhanced the tabular representation of the raw response of the SPARQL query;
+                we enhance the representation of the data table returned by a SPARQL query;
             </li>
             <li>
-                we built two visualisations to illusyrate the structure and the theme of sets of URIs.
+                we offer two visualisations to illustrate URI structures and themes.
             </li>
-        </ul>
+        </ol>
+
+        <span class="alert">Links to the <a href="#demos" >demos</a> are listed at the bottom of this page!</span>
     </section>
     
-    
     <section>
-        <h2>Enhancing the raw response</h2>
+        <h2>Enhancing the data table</h2>
         
-        We started by improving the representation of URIs in tje data table.
-        We chose to hide the uninteresting, repetitive parts (such as the protocol) and to highlight the most meaningful ones for our target audience: 
+        We started by improving the representation of URIs in the data table.
+        We chose to hide the repetitive parts (such as the protocol) and to highlight the most meaningful ones for our target audience: 
         <ul>
             <li>
-                the <strong>domain</strong>, <em>i.e.</em> the name of the website, in bold;
+                the <strong>domain</strong>, <em>i.e.</em> the name of the website;
             </li>
             <li>
                 the <strong>country</strong> as a flag, when available. We attempt to extract it from the URI by using different heuristics based on common URI patterns;
@@ -51,14 +52,11 @@
     </section>
     
     <section>
-        <h2>Visusalizing the structure of URIs</h2>
+        <h2>Visusalising themes and URI structures</h2>
         
         <p>
-            In order to better understand the structure of URI we built two visualisations.
-        </p>
-
-        <p>
-            The first one is a word cloud. It is displaying the keywords of a column organized from the most present to the least. A keywords is either the last part of the path of an URI, <em>i.e.</em> the name of the webpage, or keywords extracted from pure text by regular expressions. This visualisations allows to understand the dominant theme in a column. For example, in <a href="demo1.html">demo 1</a>, for the genre column, we can read the most present genres of music in the database.
+            Working with the semantic web means manipulating a lot of URIs, and SPARQL responses do seem to contain lots of them.
+            In order to help developers to better understand how they are structured and what are the themes they revolve around, we created two dedicated visualisations:
         </p>
 
         <p>
@@ -72,12 +70,87 @@
         Here are some demos of our library on different SPARQL queries:
         <ul>
             <li>
-                <a href="demo1.html">Demo 1</a>
+                <p>
+                    The first one is a <strong>word cloud</strong>.
+                    It is displaying the keywords of a column organized from the most present to the least. A keywords is either the last part of the path of an URI, <em>i.e.</em> the name of the webpage, or keywords extracted from textual cells using regular expressions.
+                </p>
+                <p>
+                    This visualisations allows to understand the dominant theme in a column. For example, in <a href="demo1.html">demo 1</a>, for the genre column, we can read the most present genres of music in the database.
+                </p>
             </li>
             <li>
-                <a href="demo2.html">Demo 2</a>
+                <p>
+                    The second one is a <strong>Sankey diagram</strong>.
+                    It has three main columns: the subdomain, the domain with the domain extension (TLD), and the path.
+                    For each elements of those columns (such as <span class="code">wikipedia.org</span>), the more URIs with that element, the thicker and darker the visual representation is. For two elements from two of those columns (for example <span class="code">dbpedia.org</span> and <span class="code">resource</span>), the more URIs with both elements, the thicker and darker the link between those two elements is.
+                </p>
             </li>
-        </ul>
+        </ul>        
+    </section>
+    
+    <section id="demos">
+        <h2>Demo pages</h2>
+
+        <p>
+            Given the beta status and the requirements for using <a href="https://wiki.dbpedia.org/rest-api">dbpedia's REST API</a>, and given the limited time we had, we did not build any form for visualising the response of any SPARQL query.
+        </p>
+
+        <p>
+            Instead, we uploaded a few demos based on SPARQL reponses obtained via dbpedia's SPARQL query runner. We used responses with different numbers of rows and/or columns in order to illustrate the robustness of our library.
+        </p>
+
+        <table id="demo-description">
+            <thead>
+                <tr>
+                    <th>Link</th>
+                    <th>Description of the data</th>
+                    <!-- <th>SPARQL query</th> -->
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="link">
+                        <a href="demo1.html" class="link">Demo 1</a>
+                    </td>
+                    <td class="description">
+                        Small subset of the sample SPARQL response about films we were given at the beginning of the project (3 columns, 500 rows).
+                    </td>
+                    <!-- <td class="sparql">
+<pre>SELECT DISTINCT ?resource ?genre ?sameAs WHERE {
+    ?resource a &lt;http://dbpedia.org/ontology/Film&gt; .
+    ?resource &lt;http://fr.dbpedia.org/property/genre&gt; ?genre .
+    ?resource owl:sameAs ?sameAs
+} LIMIT 500</pre>
+                    </td> -->
+                </tr>
+                <tr>
+                    <td class="link">
+                        <a href="demo4.html" class="link">Demo 2</a>
+                    </td>
+                    <td class="description">
+                        Large subset of the sample SPARQL response about music we were given at the beginning of the project (3 columns, 50,000 rows).<!-- It usually takes a few seconds for the library to process it.-->
+                    </td>
+                    <!-- <td class="sparql">
+<pre>SELECT DISTINCT ?resource ?genre ?sameAs WHERE {
+    ?resource a &lt;http://schema.org/MusicGroup&gt; .
+    ?resource &lt;http://fr.dbpedia.org/property/genre&gt; ?genre .
+    ?resource owl:sameAs ?sameAs
+} LIMIT 50000</pre>
+                    </td> -->
+                </tr>
+                <tr>
+                    <td class="link">
+                        <a href="demo2.html" class="link">Demo 3</a>
+                    </td>
+                    <td class="description">
+                        SPARQL response of dbpedia's example SPARQL request (3 columns, 100 rows).
+                    </td>
+                    <!-- <td class="sparql">
+<pre>select distinct ?Concept where {[] a ?Concept} LIMIT 100</pre>
+                    </td> -->
+                </tr>
+            </tbody>
+        </table>
     </section>
 </body>
 </html>
