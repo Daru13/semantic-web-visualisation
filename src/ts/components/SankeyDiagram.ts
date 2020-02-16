@@ -5,7 +5,7 @@ import { URLAnalysis } from '../analyses/URLAnalysis';
 const SPACE_BETWEEN_COLUMNS = 400;
 const SPACE_BETWEEN_ROWS = 50;
 const MAX_SIZE_NODE = 200;
-const MIN_SIZE_NODE = 3;
+const MIN_SIZE_NODE = 5;
 const TEXT_FONT_SIZE = 60;
 const SVG_NAME_SPACE = "http://www.w3.org/2000/svg";
 
@@ -27,6 +27,7 @@ export class SankeyDiagram {
     pathColumns: Map<number, SankeyColumn>;
 
     urlNumber: number;
+    maxProportion: number;
 
     constructor(column: Column, parent: HTMLElement) {
         this.dataColumn = column
@@ -47,6 +48,7 @@ export class SankeyDiagram {
         parent.appendChild(this.holder);
 
         this.urlNumber = 0;
+        this.maxProportion = 0;
 
         this.setupUI();
     }
@@ -104,6 +106,9 @@ export class SankeyDiagram {
             column.elements.set(ele, eleProperty);
         }
         column.elements.get(ele).nb += 1;
+        if (column.elements.get(ele).nb > this.maxProportion) {
+            this.maxProportion = column.elements.get(ele).nb;
+        }
     }
 
     private countNext(element: EleProperties, next: string) {
@@ -111,6 +116,9 @@ export class SankeyDiagram {
             element.next.set(next, this.getEmptyEdgeProperties());
         }
         element.next.get(next).nb += 1;
+        if (element.next.get(next).nb > this.maxProportion) {
+            this.maxProportion = element.next.get(next).nb;
+        }
     }
 
     private drawColumns() {
@@ -303,7 +311,9 @@ export class SankeyDiagram {
     }
 
     private getFillColor(percentage: number): string {
-        return `hsl(220, 100%, ${Math.abs((percentage * (90 - 35) - 90))}%)`;
+        percentage = percentage / (this.maxProportion / this.urlNumber);
+        console.log(percentage)
+        return `hsl(202, ${percentage * 80 + 20}%, 60%`;
     }
 
     private getEmptyEdgeProperties(): EdgeProperties {
