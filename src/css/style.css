@@ -69,7 +69,7 @@ body.popup-displayed {
 
 .popup {
     z-index: 1000;
-    position: absolute;
+    position: fixed;
     background-color: #FAFAFA;
     color: #000;
     box-shadow: 0 0 50px #555;
