@@ -4,56 +4,80 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,">
-
+    
     <title>SPARQL response</title>
-
+    
     <link rel="stylesheet" href="./css/normalize.css">
     <link rel="stylesheet" href="./css/index.css">
 </head>
 
 <body>
-    <h1>SPARQL response<br><span>Readable URIs</span></h1>
-We built a library to allow developers working with the Semantic Web to better visualise the structure and the statistical properties of a set of URIs (e.g. tables returned by SPARQL queries). Our library is in two folds: 
-<ul>
-    <li>
-we enhanced the table returned by a SPARQL query,
-    </li>
-    <li>
-we built two visualisations to study the structure of URIs in depth.
-    </li>
-</ul>
+    <h1 id="main-title">Visualising SPARQL responses</h1>
+    <span id="main-subtitle">&laquo; Readable URIs &raquo;</span>
+    
+    <section>
+        We built a library to enable developers working with semantic web data to better visualise the structure and the statistical properties of SPARQL query responses (<em>e.g.</em> tables containing lots of URLs). Our contribution is twofold:
+        
+        <ul>
+            <li>
+                we enhanced the tabular representation of the raw response of the SPARQL query;
+            </li>
+            <li>
+                we built two visualisations to illusyrate the structure and the theme of sets of URIs.
+            </li>
+        </ul>
+    </section>
+    
+    
+    <section>
+        <h2>Enhancing the raw response</h2>
+        
+        We started by improving the representation of URIs in tje data table.
+        We chose to hide the uninteresting, repetitive parts (such as the protocol) and to highlight the most meaningful ones for our target audience: 
+        <ul>
+            <li>
+                the <strong>domain</strong>, <em>i.e.</em> the name of the website, in bold;
+            </li>
+            <li>
+                the <strong>country</strong> as a flag, when available. We attempt to extract it from the URI by using different heuristics based on common URI patterns;
+            </li>
+            <li>
+                the <strong>path</strong>, which appears to usually describe what is the pointed resource. We highlight the structure the path by colouring slashes (which separate the different parts of the path) and almost hiding underscores (which usually act as whitespace).
+            </li>
+        </ul>
 
-<h2>Enhancing the table</h2>
-Our first improvement of the table is how we display the URIs. We chose to display only the important parts of an URI: 
-<ul>
-    <li>
-        the domain, i.e. the name of the website, represented in bold to make it pop out,
-    </li>
-    <li>
-        the language of the website, if possible to detect based on the URI alone, represented by a flag
-    </li>
-    <li>
-        the path, i.e. the path to this specific webpage on the website.
-    </li>
-</ul>
-In another hand, we also added dashboards at the top of the column which displays basics statistics per column. 
+        We then added <strong>dashboards</strong> at the top of each column.
+        They display basics statistics about the content of the column and allow to open more advanced visualisations, described below.
+    </section>
+    
+    <section>
+        <h2>Visusalizing the structure of URIs</h2>
+        
+        <p>
+            In order to better understand the structure of URI we built two visualisations.
+        </p>
 
-<h2>Visusalizing the structure of URIs</h2>
-In order to better understand the structure of URI we built two visualisations.<br><br>
+        <p>
+            The first one is a word cloud. It is displaying the keywords of a column organized from the most present to the least. A keywords is either the last part of the path of an URI, <em>i.e.</em> the name of the webpage, or keywords extracted from pure text by regular expressions. This visualisations allows to understand the dominant theme in a column. For example, in <a href="demo1.html">demo 1</a>, for the genre column, we can read the most present genres of music in the database.
+        </p>
 
-The first one is a word cloud. It is displaying the keywords of a column organized from the most present to the least. A keywords is either the last part of the path of an URI, i.e. the name of the webpage, or keywords extracted from pure text by regular expressions. This visualisations allows to understand the dominant theme in a column. For example, in <a href="demo1.html">demo 1</a>, for the genre column, we can read the most present genres of music in the database<br><br>
-
-The second one is a Sankey diagram. It has three main columns: the subdomain, the domain plus tld and the path columns. For each elements of those columns (for example wikipedia.org), the more URIs with that element, the thicker and darker the visual representation is. For two elements from two of those columns (for example dbpedia.org and ressource), the more URIs with both elements, the thicker and darker the link between those two elements is. If one can understand how the URIs from on website are structured, one can understand how the website is structured.
-
-<h2>Demo</h2>
-Here are some demos of our library on different SPARQL queries:
-<ul>
-    <li>
-<a href="demo1.html">Demo 1</a>
-    </li>
-    <li>
-<a href="demo2.html">Demo 2</a>
-    </li>
-</ul>
+        <p>
+            The second one is a Sankey diagram. It has three main columns: the subdomain, the domain plus tld and the path columns. For each elements of those columns (for example wikipedia.org), the more URIs with that element, the thicker and darker the visual representation is. For two elements from two of those columns (for example dbpedia.org and ressource), the more URIs with both elements, the thicker and darker the link between those two elements is. If one can understand how the URIs from on website are structured, one can understand how the website is structured.
+        </p>
+    </section>
+    
+    <section>
+        <h2>Demo</h2>
+        
+        Here are some demos of our library on different SPARQL queries:
+        <ul>
+            <li>
+                <a href="demo1.html">Demo 1</a>
+            </li>
+            <li>
+                <a href="demo2.html">Demo 2</a>
+            </li>
+        </ul>
+    </section>
 </body>
 </html>
