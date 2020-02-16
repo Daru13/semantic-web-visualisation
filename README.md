@@ -7,6 +7,7 @@ It is our attempt to visualise **results of SPARQL queries** (_e.g._ from [dpbed
 
 **[Try it on sample data online!](https://daru13.github.io/semantic-web-visualisation/demo/)** 
 
+![Screenshot](misc/screenshots/before-after.png)
 
 
 ## Interface design
