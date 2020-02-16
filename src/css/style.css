@@ -202,30 +202,47 @@ body.popup-displayed {
 }
 
 
-.word-cloud .top-10 {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.word-cloud .top-10 .word {
-    font-size: 50px;
-}
-
-
-.word-cloud .top-50 {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.word-cloud .top-10 .word {
-    font-size: 30px;
-}
-
+.word-cloud .top-10,
+.word-cloud .top-50,
 .word-cloud .others {
     display: flex;
     flex-wrap: wrap;
+    margin: 0 0 20px 0;
 }
 
+.word-cloud .others {
+    margin: 0;
+}
+
+.word-cloud .top-10 .word {
+    font-size: 2rem;
+}
+
+.word-cloud .top-50 .word {
+    font-size: 1.5rem;
+}
+
+.popup .word-cloud .top-10::before,
+.popup .word-cloud .top-50::before,
+.popup .word-cloud .others::before {
+    display: block;
+    width: 100%;
+    padding: 0 0 10px 0;
+    color: #AAA;
+    font-size: 1.2rem;  
+}
+
+.popup .word-cloud .top-10::before {
+    content: "Ranks 1-10";
+}
+
+.popup .word-cloud .top-50::before {
+    content: "Ranks 11-50";
+}
+
+.popup .word-cloud .others::before {
+    content: "Others";
+}
 
 
 /* Data table */
