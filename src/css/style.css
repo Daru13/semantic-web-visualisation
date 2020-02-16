@@ -49,6 +49,10 @@ body {
     overflow-x: auto;
 }
 
+body.popup-displayed {
+    overflow: hidden;
+}
+
 
 
 /* Tooltip */
@@ -118,7 +122,7 @@ body {
 
 .popup-content {
     padding: 10px;
-    overflow: scroll;
+    overflow: auto;
 }
 
 .background-mask  {
