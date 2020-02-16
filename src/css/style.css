@@ -33,7 +33,7 @@
     --column-width: 0px; /* Set in JavaScript */
     --row-number-column-width: 0px; /* Set in JavaScript */
     --min-column-width-px: 320; /* in px, used in JavaScript */
-    --min-row-number-column-width-px: 20; /* in px, used in JavaScript */
+    --min-row-number-column-width-px: 30; /* in px, used in JavaScript */
 }
 
 html {
