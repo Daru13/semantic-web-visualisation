@@ -33,7 +33,7 @@
     --column-width: 0px; /* Set in JavaScript */
     --row-number-column-width: 0px; /* Set in JavaScript */
     --min-column-width-px: 320; /* in px, used in JavaScript */
-    --min-row-number-column-width-px: 20; /* in px, used in JavaScript */
+    --min-row-number-column-width-px: 30; /* in px, used in JavaScript */
 }
 
 html {
@@ -44,10 +44,13 @@ html {
 }
 
 body {
-
     margin: 0;
     padding: 0;
     overflow-x: auto;
+}
+
+body.popup-displayed {
+    overflow: hidden;
 }
 
 
@@ -66,7 +69,7 @@ body {
 
 .popup {
     z-index: 1000;
-    position: absolute;
+    position: fixed;
     background-color: #FAFAFA;
     color: #000;
     box-shadow: 0 0 50px #555;
@@ -119,7 +122,7 @@ body {
 
 .popup-content {
     padding: 10px;
-    overflow: scroll;
+    overflow: auto;
 }
 
 .background-mask  {
@@ -199,30 +202,47 @@ body {
 }
 
 
-.word-cloud .top-10 {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.word-cloud .top-10 .word {
-    font-size: 50px;
-}
-
-
-.word-cloud .top-50 {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.word-cloud .top-10 .word {
-    font-size: 30px;
-}
-
+.word-cloud .top-10,
+.word-cloud .top-50,
 .word-cloud .others {
     display: flex;
     flex-wrap: wrap;
+    margin: 0 0 20px 0;
 }
 
+.word-cloud .others {
+    margin: 0;
+}
+
+.word-cloud .top-10 .word {
+    font-size: 2rem;
+}
+
+.word-cloud .top-50 .word {
+    font-size: 1.5rem;
+}
+
+.popup .word-cloud .top-10::before,
+.popup .word-cloud .top-50::before,
+.popup .word-cloud .others::before {
+    display: block;
+    width: 100%;
+    padding: 0 0 10px 0;
+    color: #AAA;
+    font-size: 1.2rem;  
+}
+
+.popup .word-cloud .top-10::before {
+    content: "Ranks 1-10";
+}
+
+.popup .word-cloud .top-50::before {
+    content: "Ranks 11-50";
+}
+
+.popup .word-cloud .others::before {
+    content: "Others";
+}
 
 
 /* Data table */
@@ -320,19 +340,23 @@ body {
     box-sizing: border-box;
     height: 40px;
     padding: 5px;
-    background-color: #EFEFEF;
     border: none;
-    border-bottom: 2px solid #666;
     font-size: 1.4rem;
 }
 
 .data-table .page-browser .current-page-input {
-    width: 30px;
+    background-color: #EFEFEF;
+    border-bottom: 2px solid #666;
+}
+
+
+.data-table .page-browser .current-page-input {
+    min-width: 30px;
+    max-width: 60px;
     text-align: center;
 }
 
-.data-table .page-browser .current-page-input:focus,
-.data-table .page-browser .current-page-input:focus + .total-page-number {
+.data-table .page-browser .current-page-input:focus {
     background-color: rgb(255, 238, 208);
     border-bottom-color: #fe9929;
 }
