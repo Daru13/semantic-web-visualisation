@@ -11,7 +11,7 @@ const SVG_NAME_SPACE = "http://www.w3.org/2000/svg";
 
 type EdgeProperties = {nb: number, path: SVGPathElement, drawn: boolean};
 
-type EleProperties = { nb: number, fromX: number, fromY: number, toX: number, toY: number, next: Map<string, EdgeProperties>, rectangle: SVGRectElement, text: SVGTextElement, drawn: boolean};
+type EleProperties = { nb: number, x: number, y: number, width: number, fromX: number, fromY: number, toX: number, toY: number, next: Map<string, EdgeProperties>, rectangle: SVGRectElement, text: SVGTextElement, drawn: boolean};
 
 type SankeyColumn = { height: number, width: number, elements: Map<string, EleProperties>, columnHolder: SVGGElement , columnTitle: SVGTextElement};
 
@@ -181,6 +181,8 @@ export class SankeyDiagram {
                 column.width = width;
             }
 
+            column.elements.get(k).x = x;
+            column.elements.get(k).y = y;
             column.elements.get(k).fromX = x;
             column.elements.get(k).fromY = y;
             column.elements.get(k).toX = x;
@@ -207,6 +209,7 @@ export class SankeyDiagram {
             plusButtonText.innerHTML = "+";
 
             plusButton.addEventListener("click", () => {
+                this.removeEdges();
                 this.drawColumn(column, x, columnTitle, to + 5);
                 this.drawEdges();
             });
@@ -226,6 +229,7 @@ export class SankeyDiagram {
 
         column.elements.forEach(element => {
             element.fromX = element.toX + column.width;
+            element.width = column.width;
         });
 
         let text = column.columnHolder.getElementsByTagNameNS(SVG_NAME_SPACE, "text");
@@ -258,13 +262,14 @@ export class SankeyDiagram {
                 if (edge.drawn) {
                     return;
                 }
+                let percentage = edge.nb / this.urlNumber;
+                let height = Math.max(MIN_SIZE_NODE, percentage * MAX_SIZE_NODE);;
+                let ele = edge.path;
+                this.svg.appendChild(ele);
+
                 if (!(fromColumn.elements.get(firstValue).drawn && toColumn.elements.get(secondValue).drawn)) {
                     return;
                 }
-                let percentage = edge.nb / this.urlNumber;
-                let height = Math.max(MIN_SIZE_NODE, percentage * MAX_SIZE_NODE); ;
-                let ele = edge.path;
-                this.svg.appendChild(ele);
 
                 ele.setAttribute("d",
                     `M${fromColumn.elements.get(firstValue).fromX},${fromColumn.elements.get(firstValue).fromY} 
@@ -279,6 +284,36 @@ export class SankeyDiagram {
                 toColumn.elements.get(secondValue).toY += height;
 
                 edge.drawn = true;
+            });
+        }
+    }
+
+    private removeEdges() {
+        for (let i = this.subdomainsColumns.size - 1; i > -1; i--) {
+            if (i !== 0) {
+                this.removeEdge(this.subdomainsColumns.get(i), this.subdomainsColumns.get(i - 1));
+            } else {
+                this.removeEdge(this.subdomainsColumns.get(i), this.domainColumn);
+            }
+        }
+
+        this.removeEdge(this.domainColumn, this.pathColumns.get(0));
+    }
+
+    private removeEdge(fromColumn: SankeyColumn, toColumn: SankeyColumn): void {
+        for (let firstValue of fromColumn.elements.keys()) {
+            let sortedNext = this.sortEdges(fromColumn.elements.get(firstValue).next);
+            sortedNext.forEach(({ key: secondValue, edge: edge }) => {
+                let percentage = edge.nb / this.urlNumber;
+                let ele = edge.path;
+                ele.parentNode.removeChild(ele);
+
+                fromColumn.elements.get(firstValue).fromX = fromColumn.elements.get(firstValue).x + fromColumn.elements.get(firstValue).width;
+                fromColumn.elements.get(firstValue).fromY = fromColumn.elements.get(firstValue).y;
+                toColumn.elements.get(secondValue).toX = toColumn.elements.get(secondValue).x;
+                toColumn.elements.get(secondValue).toY = toColumn.elements.get(secondValue).y;
+
+                edge.drawn = false;
             });
         }
     }
@@ -325,7 +360,7 @@ export class SankeyDiagram {
     }
 
     private getEmptyEleProperties(): EleProperties {
-        return { nb: 0, fromX: 0, fromY: 0, toX: 0, toY: 0, next: new Map(), rectangle: document.createElementNS(SVG_NAME_SPACE, "rect"), text: document.createElementNS(SVG_NAME_SPACE, "text"), drawn: false };
+        return { nb: 0, x: 0, y: 0, width: 0, fromX: 0, fromY: 0, toX: 0, toY: 0, next: new Map(), rectangle: document.createElementNS(SVG_NAME_SPACE, "rect"), text: document.createElementNS(SVG_NAME_SPACE, "text"), drawn: false };
     }
 
     private sortSankeyColumnElements(column: SankeyColumn): { key: string, ele: EleProperties }[] {
