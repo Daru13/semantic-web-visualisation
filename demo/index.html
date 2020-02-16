@@ -54,20 +54,6 @@
     <section>
         <h2>Visusalising themes and URI structures</h2>
         
-        <p>
-            Working with the semantic web means manipulating a lot of URIs, and SPARQL responses do seem to contain lots of them.
-            In order to help developers to better understand how they are structured and what are the themes they revolve around, we created two dedicated visualisations:
-        </p>
-
-        <p>
-            The second one is a Sankey diagram. It has three main columns: the subdomain, the domain plus tld and the path columns. For each elements of those columns (for example wikipedia.org), the more URIs with that element, the thicker and the more saturated the visual representation is. For two elements from two of those columns (for example dbpedia.org and ressource), the more URIs with both elements, the thicker and the more saturated the link between those two elements is. If one can understand how the URIs from on website are structured, one can understand how the website is structured.
-        </p>
-    </section>
-    
-    <section>
-        <h2>Demo</h2>
-        
-        Here are some demos of our library on different SPARQL queries:
         <ul>
             <li>
                 <p>
@@ -85,7 +71,7 @@
                     For each elements of those columns (such as <span class="code">wikipedia.org</span>), the more URIs with that element, the thicker and darker the visual representation is. For two elements from two of those columns (for example <span class="code">dbpedia.org</span> and <span class="code">resource</span>), the more URIs with both elements, the thicker and darker the link between those two elements is.
                 </p>
             </li>
-        </ul>        
+        </ul>
     </section>
     
     <section id="demos">
@@ -143,7 +129,7 @@
                         <a href="demo2.html" class="link">Demo 3</a>
                     </td>
                     <td class="description">
-                        SPARQL response of dbpedia's example SPARQL request (3 columns, 100 rows).
+                        SPARQL response of dbpedia's example SPARQL request (1 column, 100 rows).
                     </td>
                     <!-- <td class="sparql">
 <pre>select distinct ?Concept where {[] a ?Concept} LIMIT 100</pre>
