@@ -137,7 +137,6 @@ export class SankeyDiagram {
 
     private drawColumn(column: SankeyColumn, x: number, columnTitle: string, to: number = 5, from: number = 0): void {
         let y = 0;
-        let percentage;
 
         if (column.columnHolder.parentNode !== null) {
             column.columnHolder.innerHTML = '';
@@ -146,78 +145,20 @@ export class SankeyDiagram {
 
         this.svg.appendChild(column.columnHolder);
 
-        column.columnHolder.appendChild(column.columnTitle);
-        column.columnTitle.innerHTML = columnTitle;
-        column.columnTitle.setAttribute("y", (-SPACE_BETWEEN_ROWS).toString());
-        column.columnTitle.style.fontSize = `${TEXT_FONT_SIZE}px`;
-
-        column.width = column.columnTitle.getBBox().width;
+        this.drawColumnTitle(column, columnTitle);
 
         let sortedElements = this.sortSankeyColumnElements(column);
 
         for (let i = Math.min(sortedElements.length - 1, from); i < Math.min(sortedElements.length, to); i++){
-            let k = sortedElements[i].key;
-            let e = sortedElements[i].ele;
-            percentage = e.nb / this.urlNumber;
-            let height = Math.max(MIN_SIZE_NODE, percentage * MAX_SIZE_NODE);
-
-            e.rectangle.setAttribute("x", x.toString());
-            e.rectangle.setAttribute("y", y.toString());
-            e.rectangle.setAttribute("height", height.toString());
-            e.rectangle.setAttribute("fill", this.getFillColor(percentage));
-
-            e.text.setAttribute("y", (y + height / 2).toString());
-            e.text.style.fill = (percentage < 0.3) ? "black" : "white";
-            e.text.style.fontSize = `${TEXT_FONT_SIZE * 0.5}px`;
-            e.text.innerHTML = k;
-
-            column.columnHolder.appendChild(e.rectangle);
-            column.columnHolder.appendChild(e.text);
-
-            this.addToolTipEvents(e.rectangle, percentage * 100);
-
-            let width = e.text.getBBox().width;
-            if (width > column.width) {
-                column.width = width;
-            }
-
-            column.elements.get(k).x = x;
-            column.elements.get(k).y = y;
-            column.elements.get(k).fromX = x;
-            column.elements.get(k).fromY = y;
-            column.elements.get(k).toX = x;
-            column.elements.get(k).toY = y;
-
-            y += height + SPACE_BETWEEN_ROWS;
-            e.drawn = true;
+            y = this.drawElement(sortedElements[i].key, sortedElements[i].ele, x, y, column);
         }
 
         if (to < column.elements.size) {
-            let plusButton = document.createElementNS(SVG_NAME_SPACE, "g");
-            let plusButtonRect = document.createElementNS(SVG_NAME_SPACE, "rect");
-            let plusButtonText = document.createElementNS(SVG_NAME_SPACE, "text");
-            
-            plusButton.classList.add("plus-button");
-
-            plusButtonRect.setAttribute("x", x.toString());
-            plusButtonRect.setAttribute("y", y.toString());
-            plusButtonRect.setAttribute("height", "50");
-            plusButtonRect.style.fill = this.getFillColor(1 - Math.min(1, y / this.urlNumber));
-
-            plusButtonText.setAttribute("x", x.toString());
-            plusButtonText.setAttribute("y", (y + 25).toString());
-            plusButtonText.innerHTML = "+";
-
-            plusButton.addEventListener("click", () => {
+            y = this.addPlusButton(column, x, y, () => {
                 this.removeEdges();
                 this.drawColumn(column, x, columnTitle, to + 5);
                 this.drawEdges();
-            });
-
-            plusButton.appendChild(plusButtonRect);
-            plusButton.appendChild(plusButtonText);
-            column.columnHolder.appendChild(plusButton);
-            y += 50 + SPACE_BETWEEN_ROWS;
+            })
         }
 
         column.height = y;
@@ -241,6 +182,77 @@ export class SankeyDiagram {
         let width = Math.max(x + column.width, parseFloat(vB[2]));
         let height = Math.max(column.height + SPACE_BETWEEN_ROWS + TEXT_FONT_SIZE, parseFloat(vB[3]));
         this.svg.setAttribute("viewBox", `0,-${TEXT_FONT_SIZE + SPACE_BETWEEN_ROWS},${width},${height}`);
+    }
+
+    private drawColumnTitle(column: SankeyColumn, columnTitle: string) {
+        column.columnHolder.appendChild(column.columnTitle);
+        column.columnTitle.innerHTML = columnTitle;
+        column.columnTitle.setAttribute("y", (-SPACE_BETWEEN_ROWS).toString());
+        column.columnTitle.style.fontSize = `${TEXT_FONT_SIZE}px`;
+
+        column.width = column.columnTitle.getBBox().width;
+    }
+
+    private drawElement(k: string, e: EleProperties, x: number, y: number, column: SankeyColumn): number {
+        let percentage = e.nb / this.urlNumber;
+        let height = Math.max(MIN_SIZE_NODE, percentage * MAX_SIZE_NODE);
+
+        e.rectangle.setAttribute("x", x.toString());
+        e.rectangle.setAttribute("y", y.toString());
+        e.rectangle.setAttribute("height", height.toString());
+        e.rectangle.setAttribute("fill", this.getFillColor(percentage));
+
+        e.text.setAttribute("y", (y + height / 2).toString());
+        e.text.style.fill = (percentage < 0.3) ? "black" : "white";
+        e.text.style.fontSize = `${TEXT_FONT_SIZE * 0.5}px`;
+        e.text.innerHTML = k;
+
+        column.columnHolder.appendChild(e.rectangle);
+        column.columnHolder.appendChild(e.text);
+
+        this.addToolTipEvents(e.rectangle, percentage * 100);
+
+        let width = e.text.getBBox().width;
+        if (width > column.width) {
+            column.width = width;
+        }
+
+        column.elements.get(k).x = x;
+        column.elements.get(k).y = y;
+        column.elements.get(k).fromX = x;
+        column.elements.get(k).fromY = y;
+        column.elements.get(k).toX = x;
+        column.elements.get(k).toY = y;
+
+        y += height + SPACE_BETWEEN_ROWS;
+        e.drawn = true;
+        return y;
+    }
+
+    private addPlusButton(column: SankeyColumn, x: number, y: number, callBack: () => void): number {
+        console.log("al")
+        let plusButton = document.createElementNS(SVG_NAME_SPACE, "g");
+        let plusButtonRect = document.createElementNS(SVG_NAME_SPACE, "rect");
+        let plusButtonText = document.createElementNS(SVG_NAME_SPACE, "text");
+
+        plusButton.classList.add("plus-button");
+
+        plusButtonRect.setAttribute("x", x.toString());
+        plusButtonRect.setAttribute("y", y.toString());
+        plusButtonRect.setAttribute("height", "50");
+        plusButtonRect.style.fill = this.getFillColor(1 - Math.min(1, y / this.urlNumber));
+
+        plusButtonText.setAttribute("x", x.toString());
+        plusButtonText.setAttribute("y", (y + 25).toString());
+        plusButtonText.innerHTML = "+";
+
+        plusButton.addEventListener("click", callBack);
+
+        plusButton.appendChild(plusButtonRect);
+        plusButton.appendChild(plusButtonText);
+        column.columnHolder.appendChild(plusButton);
+        y += 50 + SPACE_BETWEEN_ROWS;
+        return y;
     }
 
     private drawEdges() {
