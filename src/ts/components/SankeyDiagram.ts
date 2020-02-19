@@ -13,7 +13,7 @@ type EdgeProperties = {nb: number, path: SVGPathElement, drawn: boolean};
 
 type EleProperties = { nb: number, x: number, y: number, width: number, fromX: number, fromY: number, toX: number, toY: number, next: Map<string, EdgeProperties>, rectangle: SVGRectElement, text: SVGTextElement, drawn: boolean};
 
-type SankeyColumn = { height: number, width: number, elements: Map<string, EleProperties>, columnHolder: SVGGElement , columnTitle: SVGTextElement};
+type SankeyColumn = { height: number, width: number, elements: Map<string, EleProperties>, columnHolder: SVGGElement , columnTitle: SVGTextElement, previousColumn: SankeyColumn, nextColumn: SankeyColumn};
 
 export class SankeyDiagram {
     holder: HTMLElement;
@@ -28,6 +28,7 @@ export class SankeyDiagram {
 
     urlNumber: number;
     maxProportion: number;
+    currentHighlight: { element: string; elementColumn: SankeyColumn; };
 
     constructor(column: Column, parent: HTMLElement) {
         this.dataColumn = column
@@ -42,7 +43,6 @@ export class SankeyDiagram {
         this.holder.classList.add("sankey");
 
         this.svg = document.createElementNS(SVG_NAME_SPACE, "svg");
-        this.svg.setAttribute("viewBox", "0,0,0,0");
 
         this.holder.appendChild(this.svg);
         parent.appendChild(this.holder);
@@ -54,6 +54,12 @@ export class SankeyDiagram {
     }
 
     private setupUI(): void {
+        this.svg.setAttribute("viewBox", "0,0,0,0");
+        this.svg.addEventListener("click", () => {
+            this.setOpacitySvgElements("1");
+            this.currentHighlight = undefined;
+        });
+
         this.computeColumns();
         this.drawColumns();
         this.drawEdges();
@@ -87,16 +93,41 @@ export class SankeyDiagram {
                     if (!this.subdomainsColumns.has(i)) {
                         this.subdomainsColumns.set(i, this.getEmptySankeyColumn());
                     }
+
                     this.countSankeyColumnElement(this.subdomainsColumns.get(i), subdomains[i]);
                     if (i < subdomains.length - 1) {
-                        this.countNext(this.subdomainsColumns.get(i)
-                            .elements.get(subdomains[i]), subdomains[i + 1]);
+                        this.countNext(
+                            this.subdomainsColumns.get(i)
+                                .elements.get(subdomains[i]), 
+                            subdomains[i + 1]);
                     } else {
                         this.countNext(this.subdomainsColumns.get(i)
                             .elements.get(subdomains[i]), domain);
                     }
                 }
             } catch { }
+
+            for(let i = this.subdomainsColumns.size - 1; i >= 0; i--) {
+                if (i > 1){
+                    this.subdomainsColumns.get(i).nextColumn = this.subdomainsColumns.get(i - 1);
+                    this.subdomainsColumns.get(i - 1).previousColumn = this.subdomainsColumns.get(i);
+                } else {
+                    this.subdomainsColumns.get(i).nextColumn = this.domainColumn;
+                    this.domainColumn.previousColumn = this.subdomainsColumns.get(i);
+                }
+            }
+
+            for (let i = 0; i < this.pathColumns.size; i++) {
+                if (i > 0) {
+                    if (i < this.pathColumns.size - 1) {
+                        this.pathColumns.get(i - 1).nextColumn = this.pathColumns.get(i);
+                        this.pathColumns.get(i).previousColumn = this.pathColumns.get(i - 1);
+                    }
+                } else {
+                    this.domainColumn.nextColumn = this.pathColumns.get(i);
+                    this.pathColumns.get(i).previousColumn = this.domainColumn;
+                }
+            }
         }
     }
 
@@ -158,6 +189,9 @@ export class SankeyDiagram {
                 this.removeEdges();
                 this.drawColumn(column, x, columnTitle, to + 5);
                 this.drawEdges();
+                if (this.currentHighlight !== undefined) {
+                    this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
+                }
             })
         }
 
@@ -201,6 +235,11 @@ export class SankeyDiagram {
         e.rectangle.setAttribute("y", y.toString());
         e.rectangle.setAttribute("height", height.toString());
         e.rectangle.setAttribute("fill", this.getFillColor(percentage));
+        e.rectangle.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.highLight(k, column);
+        })
 
         e.text.setAttribute("y", (y + height / 2).toString());
         e.text.style.fill = (percentage < 0.3) ? "black" : "white";
@@ -230,7 +269,6 @@ export class SankeyDiagram {
     }
 
     private addPlusButton(column: SankeyColumn, x: number, y: number, callBack: () => void): number {
-        console.log("al")
         let plusButton = document.createElementNS(SVG_NAME_SPACE, "g");
         let plusButtonRect = document.createElementNS(SVG_NAME_SPACE, "rect");
         let plusButtonText = document.createElementNS(SVG_NAME_SPACE, "text");
@@ -246,7 +284,11 @@ export class SankeyDiagram {
         plusButtonText.setAttribute("y", (y + 25).toString());
         plusButtonText.innerHTML = "+";
 
-        plusButton.addEventListener("click", callBack);
+        plusButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            callBack();
+        });
 
         plusButton.appendChild(plusButtonRect);
         plusButton.appendChild(plusButtonText);
@@ -316,7 +358,6 @@ export class SankeyDiagram {
         for (let firstValue of fromColumn.elements.keys()) {
             let sortedNext = this.sortEdges(fromColumn.elements.get(firstValue).next);
             sortedNext.forEach(({ key: secondValue, edge: edge }) => {
-                let percentage = edge.nb / this.urlNumber;
                 let ele = edge.path;
                 ele.parentNode.removeChild(ele);
 
@@ -357,9 +398,65 @@ export class SankeyDiagram {
         })
     }
 
+    private highLight(element: string, elementColumn: SankeyColumn) {
+        this.currentHighlight = {element: element, elementColumn: elementColumn};
+        this.setOpacitySvgElements("0.1");
+        let leftColumn = this.subdomainsColumns.get(this.subdomainsColumns.size - 1);
+        leftColumn
+            .elements
+                .forEach((v, k, m) => {
+                    this.highlightBefore(k, leftColumn, element, elementColumn);
+                 })
+        this.highlightAfter(element, elementColumn);
+    }
+
+    private highlightBefore(ele: string, column: SankeyColumn, element: string, elementColumn: SankeyColumn) {
+        if (column === undefined) {
+            return false;
+        } else if (column === elementColumn) {
+            let isPresentInNext = ele === element;
+            if(isPresentInNext){
+                column.elements.get(ele).rectangle.style.opacity = "1";
+            }
+            return isPresentInNext;
+        } else {
+            let isPresentInNext = false;
+            column.elements.get(ele).next.forEach((v, k, m) => {
+                if (this.highlightBefore(k, column.nextColumn, element, elementColumn)) {
+                    isPresentInNext = true;
+                    v.path.style.opacity = "1";
+                }
+            })
+            if (isPresentInNext) {
+                column.elements.get(ele).rectangle.style.opacity = "1";
+            }
+            return isPresentInNext;
+        }
+    }
+
+    private highlightAfter(ele: string, column: SankeyColumn) {
+        if (column === undefined) {
+            return;
+        }
+        column.elements.get(ele).next.forEach((v, k, m) => {
+            this.highlightAfter(k, column.nextColumn);
+            v.path.style.opacity = "1";
+        });
+        column.elements.get(ele).rectangle.style.opacity = "1";
+    }
+
+    private setOpacitySvgElements(opacity: string) {
+        this.svg.querySelectorAll("rect").forEach((e) => {
+            e.style.opacity = opacity;
+            console.log(opacity);
+        });
+        this.svg.querySelectorAll("path").forEach((e) => {
+            e.style.opacity = opacity;
+        });
+    }
+
     private getFillColor(percentage: number): string {
         percentage = percentage / (this.maxProportion / this.urlNumber);
-        console.log(percentage)
         return `hsl(202, ${percentage * 80 + 20}%, 60%`;
     }
 
@@ -368,7 +465,7 @@ export class SankeyDiagram {
     }
 
     private getEmptySankeyColumn(): SankeyColumn {
-        return { height: 0, width: 0, elements: new Map(), columnHolder: document.createElementNS(SVG_NAME_SPACE, "g"), columnTitle: document.createElementNS(SVG_NAME_SPACE, "text")};
+        return { height: 0, width: 0, elements: new Map(), columnHolder: document.createElementNS(SVG_NAME_SPACE, "g"), columnTitle: document.createElementNS(SVG_NAME_SPACE, "text"), previousColumn: undefined, nextColumn: undefined};
     }
 
     private getEmptyEleProperties(): EleProperties {
