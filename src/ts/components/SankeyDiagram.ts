@@ -184,8 +184,20 @@ export class SankeyDiagram {
             y = this.drawElement(sortedElements[i].key, sortedElements[i].ele, x, y, column);
         }
 
+        if (to > 5 ) {
+            y = this.addButton(column, x, y, "-", () => {
+                this.removeEdges();
+                this.removeNode(column);
+                this.drawColumn(column, x, columnTitle, to - 5);
+                this.drawEdges();
+                if (this.currentHighlight !== undefined) {
+                    this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
+                }
+            })
+        }
+
         if (to < column.elements.size) {
-            y = this.addPlusButton(column, x, y, () => {
+            y = this.addButton(column, x, y, "+", () => {
                 this.removeEdges();
                 this.drawColumn(column, x, columnTitle, to + 5);
                 this.drawEdges();
@@ -268,12 +280,10 @@ export class SankeyDiagram {
         return y;
     }
 
-    private addPlusButton(column: SankeyColumn, x: number, y: number, callBack: () => void): number {
+    private addButton(column: SankeyColumn, x: number, y: number, label: string, callBack: () => void): number {
         let plusButton = document.createElementNS(SVG_NAME_SPACE, "g");
         let plusButtonRect = document.createElementNS(SVG_NAME_SPACE, "rect");
         let plusButtonText = document.createElementNS(SVG_NAME_SPACE, "text");
-
-        plusButton.classList.add("plus-button");
 
         plusButtonRect.setAttribute("x", x.toString());
         plusButtonRect.setAttribute("y", y.toString());
@@ -282,7 +292,7 @@ export class SankeyDiagram {
 
         plusButtonText.setAttribute("x", x.toString());
         plusButtonText.setAttribute("y", (y + 25).toString());
-        plusButtonText.innerHTML = "+";
+        plusButtonText.innerHTML = label;
 
         plusButton.addEventListener("click", (e) => {
             e.preventDefault();
@@ -316,14 +326,16 @@ export class SankeyDiagram {
                 if (edge.drawn) {
                     return;
                 }
+                if (!(fromColumn.elements.get(firstValue).drawn && toColumn.elements.get(secondValue).drawn)) {
+                    console.log("not drawn", firstValue, secondValue);
+                    return;
+                }
+
                 let percentage = edge.nb / this.urlNumber;
                 let height = Math.max(MIN_SIZE_NODE, percentage * MAX_SIZE_NODE);;
                 let ele = edge.path;
                 this.svg.appendChild(ele);
-
-                if (!(fromColumn.elements.get(firstValue).drawn && toColumn.elements.get(secondValue).drawn)) {
-                    return;
-                }
+                console.log("Drawn", firstValue, secondValue);
 
                 ele.setAttribute("d",
                     `M${fromColumn.elements.get(firstValue).fromX},${fromColumn.elements.get(firstValue).fromY} 
@@ -340,6 +352,12 @@ export class SankeyDiagram {
                 edge.drawn = true;
             });
         }
+    }
+
+    private removeNode(column: SankeyColumn) {
+        column.elements.forEach((ele) => {
+            ele.drawn = false;
+        })
     }
 
     private removeEdges() {
@@ -359,7 +377,9 @@ export class SankeyDiagram {
             let sortedNext = this.sortEdges(fromColumn.elements.get(firstValue).next);
             sortedNext.forEach(({ key: secondValue, edge: edge }) => {
                 let ele = edge.path;
-                ele.parentNode.removeChild(ele);
+                if (ele.parentNode !== null) {
+                    ele.parentNode.removeChild(ele);
+                }
 
                 fromColumn.elements.get(firstValue).fromX = fromColumn.elements.get(firstValue).x + fromColumn.elements.get(firstValue).width;
                 fromColumn.elements.get(firstValue).fromY = fromColumn.elements.get(firstValue).y;
