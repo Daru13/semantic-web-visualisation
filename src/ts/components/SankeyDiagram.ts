@@ -320,38 +320,37 @@ export class SankeyDiagram {
     }
 
     private drawEdge(fromColumn: SankeyColumn, toColumn: SankeyColumn): void {
-        for (let firstValue of fromColumn.elements.keys()) {
-            let sortedNext = this.sortEdges(fromColumn.elements.get(firstValue).next);
-            sortedNext.forEach(({ key: secondValue, edge: edge }) => {
-                if (edge.drawn) {
-                    return;
-                }
-                if (!(fromColumn.elements.get(firstValue).drawn && toColumn.elements.get(secondValue).drawn)) {
-                    console.log("not drawn", firstValue, secondValue);
-                    return;
-                }
+        this.sortSankeyColumnElements(fromColumn)
+            .forEach(({key: firstValue, ele: firstElement}) => {
+                let sortedNext = this.sortEdges(firstElement.next);
+                sortedNext.forEach(({ key: secondValue, edge: edge }) => {
+                    if (edge.drawn) {
+                        return;
+                    }
+                    if (!(firstElement.drawn && toColumn.elements.get(secondValue).drawn)) {
+                        return;
+                    }
 
-                let percentage = edge.nb / this.urlNumber;
-                let height = Math.max(MIN_SIZE_NODE, percentage * MAX_SIZE_NODE);;
-                let ele = edge.path;
-                this.svg.appendChild(ele);
-                console.log("Drawn", firstValue, secondValue);
+                    let percentage = edge.nb / this.urlNumber;
+                    let height = Math.max(MIN_SIZE_NODE, percentage * MAX_SIZE_NODE);;
+                    let ele = edge.path;
+                    this.svg.appendChild(ele);
 
-                ele.setAttribute("d",
-                    `M${fromColumn.elements.get(firstValue).fromX},${fromColumn.elements.get(firstValue).fromY} 
-                    L${toColumn.elements.get(secondValue).toX},${toColumn.elements.get(secondValue).toY} 
-                    L${toColumn.elements.get(secondValue).toX},${toColumn.elements.get(secondValue).toY + height - 1} 
-                    L${fromColumn.elements.get(firstValue).fromX},${fromColumn.elements.get(firstValue).fromY + height - 1}`);
-                ele.style.fill = this.getFillColor(percentage);
+                    ele.setAttribute("d",
+                        `M${firstElement.fromX},${firstElement.fromY} 
+                        L${toColumn.elements.get(secondValue).toX},${toColumn.elements.get(secondValue).toY} 
+                        L${toColumn.elements.get(secondValue).toX},${toColumn.elements.get(secondValue).toY + height - 1} 
+                        L${firstElement.fromX},${firstElement.fromY + height - 1}`);
+                    ele.style.fill = this.getFillColor(percentage);
 
-                this.addToolTipEvents(ele, percentage * 100);
+                    this.addToolTipEvents(ele, percentage * 100);
 
-                fromColumn.elements.get(firstValue).fromY += height;
-                toColumn.elements.get(secondValue).toY += height;
+                    fromColumn.elements.get(firstValue).fromY += height;
+                    toColumn.elements.get(secondValue).toY += height;
 
-                edge.drawn = true;
-            });
-        }
+                    edge.drawn = true;
+                });
+        });
     }
 
     private removeNode(column: SankeyColumn) {
