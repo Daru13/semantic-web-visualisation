@@ -9,11 +9,24 @@ const MIN_SIZE_NODE = 5;
 const TEXT_FONT_SIZE = 60;
 const SVG_NAME_SPACE = "http://www.w3.org/2000/svg";
 
-type EdgeProperties = {nb: number, path: SVGPathElement, drawn: boolean};
+type EdgeProperties = {
+    nb: number, 
+    path: SVGPathElement, 
+    drawn: boolean };
 
-type EleProperties = { nb: number, x: number, y: number, width: number, fromX: number, fromY: number, toX: number, toY: number, next: Map<string, EdgeProperties>, rectangle: SVGRectElement, text: SVGTextElement, drawn: boolean};
+type EleProperties = { 
+    nb: number, 
+    x: number, y: number, width: number, height: number, 
+    fromX: number, fromY: number, toX: number, toY: number, 
+    next: Map<string, EdgeProperties>, 
+    rectangle: SVGRectElement, text: SVGTextElement, 
+    drawn: boolean };
 
-type SankeyColumn = { height: number, width: number, elements: Map<string, EleProperties>, columnHolder: SVGGElement , columnTitle: SVGTextElement, previousColumn: SankeyColumn, nextColumn: SankeyColumn};
+type SankeyColumn = { 
+    height: number, width: number, 
+    elements: Map<string, EleProperties>, 
+    columnHolder: SVGGElement , columnTitle: SVGTextElement, 
+    previousColumn: SankeyColumn, nextColumn: SankeyColumn };
 
 export class SankeyDiagram {
     holder: HTMLElement;
@@ -268,12 +281,13 @@ export class SankeyDiagram {
             column.width = width;
         }
 
-        column.elements.get(k).x = x;
-        column.elements.get(k).y = y;
-        column.elements.get(k).fromX = x;
-        column.elements.get(k).fromY = y;
-        column.elements.get(k).toX = x;
-        column.elements.get(k).toY = y;
+        e.x = x;
+        e.y = y;
+        e.fromX = x;
+        e.fromY = y;
+        e.toX = x;
+        e.toY = y;
+        e.height = height;
 
         y += height + SPACE_BETWEEN_ROWS;
         e.drawn = true;
@@ -330,6 +344,7 @@ export class SankeyDiagram {
                     if (!(firstElement.drawn && toColumn.elements.get(secondValue).drawn)) {
                         return;
                     }
+                    let secondElement = toColumn.elements.get(secondValue);
 
                     let percentage = edge.nb / this.urlNumber;
                     let height = Math.max(MIN_SIZE_NODE, percentage * MAX_SIZE_NODE);;
@@ -338,16 +353,20 @@ export class SankeyDiagram {
 
                     ele.setAttribute("d",
                         `M${firstElement.fromX},${firstElement.fromY} 
-                        L${toColumn.elements.get(secondValue).toX},${toColumn.elements.get(secondValue).toY} 
-                        L${toColumn.elements.get(secondValue).toX},${toColumn.elements.get(secondValue).toY + height - 1} 
-                        L${firstElement.fromX},${firstElement.fromY + height - 1}`);
+                        L${secondElement.toX},${secondElement.toY} 
+                        L${secondElement.toX},${secondElement.toY + height} 
+                        L${firstElement.fromX},${firstElement.fromY + height}`);
                     ele.style.fill = this.getFillColor(percentage);
 
                     this.addToolTipEvents(ele, percentage * 100);
 
-                    fromColumn.elements.get(firstValue).fromY += height;
-                    toColumn.elements.get(secondValue).toY += height;
+                    if (firstElement.fromY - firstElement.y + height < firstElement.height) {
+                        fromColumn.elements.get(firstValue).fromY += height;
+                    }
 
+                    if (secondElement.toY - secondElement.y + height < secondElement.height) {
+                        secondElement.toY += height;
+                    }
                     edge.drawn = true;
                 });
         });
@@ -484,11 +503,21 @@ export class SankeyDiagram {
     }
 
     private getEmptySankeyColumn(): SankeyColumn {
-        return { height: 0, width: 0, elements: new Map(), columnHolder: document.createElementNS(SVG_NAME_SPACE, "g"), columnTitle: document.createElementNS(SVG_NAME_SPACE, "text"), previousColumn: undefined, nextColumn: undefined};
+        return { 
+            height: 0, width: 0, 
+            elements: new Map(), 
+            columnHolder: document.createElementNS(SVG_NAME_SPACE, "g"), columnTitle: document.createElementNS(SVG_NAME_SPACE, "text"), 
+            previousColumn: undefined, nextColumn: undefined};
     }
 
     private getEmptyEleProperties(): EleProperties {
-        return { nb: 0, x: 0, y: 0, width: 0, fromX: 0, fromY: 0, toX: 0, toY: 0, next: new Map(), rectangle: document.createElementNS(SVG_NAME_SPACE, "rect"), text: document.createElementNS(SVG_NAME_SPACE, "text"), drawn: false };
+        return { 
+            nb: 0, 
+            x: 0, y: 0, width: 0, height: 0,
+            fromX: 0, fromY: 0, toX: 0, toY: 0, 
+            next: new Map(), 
+            rectangle: document.createElementNS(SVG_NAME_SPACE, "rect"), text: document.createElementNS(SVG_NAME_SPACE, "text"), 
+            drawn: false };
     }
 
     private sortSankeyColumnElements(column: SankeyColumn): { key: string, ele: EleProperties }[] {
