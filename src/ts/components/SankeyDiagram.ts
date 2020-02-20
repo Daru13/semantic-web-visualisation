@@ -1,5 +1,4 @@
 import { Column } from '../dataStructures/DataFrame';
-import { ColumnAnalysis } from '../analyses/ColumnAnalysis'
 import { URLAnalysis } from '../analyses/URLAnalysis';
 
 const SPACE_BETWEEN_COLUMNS = 400;
@@ -10,42 +9,65 @@ const TEXT_FONT_SIZE = 60;
 const SVG_NAME_SPACE = "http://www.w3.org/2000/svg";
 
 type EdgeProperties = {
-    nb: number, 
-    path: SVGPathElement, 
-    drawn: boolean };
+    nb: number, // number of url taking that edge
+    path: SVGPathElement,  // path element representing the edge
+    drawn: boolean // is the path drawn
+};
 
 type EleProperties = { 
-    nb: number, 
-    x: number, y: number, width: number, height: number, 
-    fromX: number, fromY: number, toX: number, toY: number, 
-    next: Map<string, EdgeProperties>, 
-    rectangle: SVGRectElement, text: SVGTextElement, 
-    drawn: boolean };
+    nb: number, // Number of url with that element
+    x: number, y: number, width: number, height: number, // Visual property of the element
+    fromX: number, fromY: number, // Where to draw egdes that come from this element
+    toX: number, toY: number, // Where to draw egdes that go to this element
+    next: Map<string, EdgeProperties>, // Map of edges coming from this element
+    rectangle: SVGRectElement, text: SVGTextElement, // Visual representation of the element
+    drawn: boolean // Is the element displayed
+};
 
 type SankeyColumn = { 
-    height: number, width: number, 
-    elements: Map<string, EleProperties>, 
-    columnHolder: SVGGElement , columnTitle: SVGTextElement, 
-    previousColumn: SankeyColumn, nextColumn: SankeyColumn };
+    height: number, width: number, // Visual properties of the column
+    elements: Map<string, EleProperties>, // Map of elements in the columns
+    columnHolder: SVGGElement , columnTitle: SVGTextElement, // Visual representation of the column
+    previousColumn: SankeyColumn, nextColumn: SankeyColumn
+};
 
+/**
+ * A class to draw a Sankey diagram
+ */
 export class SankeyDiagram {
+    /**
+     * Holder of sankey diagram
+     */
     holder: HTMLElement;
+    /**
+     * Svg of sankey diagram
+     */
     svg: SVGSVGElement;
 
+    /**
+     * Data column represented by the sankey diagram
+     */
     dataColumn: Column;
-    dataColumnAnalysis: ColumnAnalysis;
 
     subdomainsColumns: Map<number, SankeyColumn>;
     domainColumn: SankeyColumn;
     pathColumns: Map<number, SankeyColumn>;
 
+    /**
+     * Number of URL in the sankey diagram
+     */
     urlNumber: number;
+    /**
+     * The maximum proportion of one url in the dataColumn
+     */
     maxProportion: number;
+    /**
+     * Current highlighted element of sankey diagram
+     */
     currentHighlight: { element: string; elementColumn: SankeyColumn; };
 
     constructor(column: Column, parent: HTMLElement) {
         this.dataColumn = column
-        this.dataColumnAnalysis = new ColumnAnalysis(this.dataColumn);
         
         this.subdomainsColumns = new Map();
         this.domainColumn = this.getEmptySankeyColumn();
@@ -78,6 +100,9 @@ export class SankeyDiagram {
         this.drawEdges();
     }
 
+    /**
+     * Computes whats needed to draw the columns
+     */
     private computeColumns(): void {
         for (let url of this.dataColumn) {
             try{
@@ -88,6 +113,7 @@ export class SankeyDiagram {
                 let path = analysis.path;
                 let subdomains = analysis.subdomains;
 
+                /** Count Elements and edges for every columns */
                 this.countSankeyColumnElement(this.domainColumn, domain);
                 this.countNext(this.domainColumn.elements.get(domain), path[0]);
 
@@ -120,6 +146,7 @@ export class SankeyDiagram {
                 }
             } catch { }
 
+            /** Set previous and next columns for every columns */
             for(let i = this.subdomainsColumns.size - 1; i >= 0; i--) {
                 if (i > 1){
                     this.subdomainsColumns.get(i).nextColumn = this.subdomainsColumns.get(i - 1);
@@ -144,6 +171,11 @@ export class SankeyDiagram {
         }
     }
 
+    /**
+     * Add one Element to a snakey column
+     * @param column Sankey column of the element
+     * @param ele The Element to count
+     */
     private countSankeyColumnElement(column: SankeyColumn, ele: string): void {
         if (!column.elements.has(ele)) {
             let eleProperty = this.getEmptyEleProperties();
@@ -155,6 +187,11 @@ export class SankeyDiagram {
         }
     }
 
+    /**
+     * Counts a next element for an element
+     * @param element Element to add a next one
+     * @param next Name of the next one
+     */
     private countNext(element: EleProperties, next: string) {
         if (!element.next.has(next)) {
             element.next.set(next, this.getEmptyEdgeProperties());
@@ -165,6 +202,9 @@ export class SankeyDiagram {
         }
     }
 
+    /**
+     * Draws every sankey columns
+     */
     private drawColumns() {
         let x = 0;
         for (let i = this.subdomainsColumns.size - 1; i > -1; i--) {
@@ -179,9 +219,18 @@ export class SankeyDiagram {
         x += this.pathColumns.get(0).width;
     }
 
+    /**
+     * Draws a specic sankey column
+     * @param column Snakey Column to draw
+     * @param x X position of the sankey column
+     * @param columnTitle Title of the column
+     * @param [to] Last index of the column elements to draw
+     * @param [from] First index of the column elements to draw
+     */
     private drawColumn(column: SankeyColumn, x: number, columnTitle: string, to: number = 5, from: number = 0): void {
         let y = 0;
 
+        // Remove the column is already drawn
         if (column.columnHolder.parentNode !== null) {
             column.columnHolder.innerHTML = '';
             column.columnHolder.parentNode.removeChild(column.columnHolder);
@@ -194,11 +243,13 @@ export class SankeyDiagram {
         let sortedElements = this.sortSankeyColumnElements(column);
 
         for (let i = Math.min(sortedElements.length - 1, from); i < Math.min(sortedElements.length, to); i++){
-            y = this.drawElement(sortedElements[i].key, sortedElements[i].ele, x, y, column);
+            this.drawElement(sortedElements[i].key, sortedElements[i].ele, x, y, column);
+            y += sortedElements[i].ele.height + SPACE_BETWEEN_ROWS;
         }
 
+        // Add a minus button
         if (to > 5 ) {
-            y = this.addButton(column, x, y, "-", () => {
+            y += this.addButton(column, x, y, "-", () => {
                 this.removeEdges();
                 this.removeNode(column);
                 this.drawColumn(column, x, columnTitle, to - 5);
@@ -206,43 +257,55 @@ export class SankeyDiagram {
                 if (this.currentHighlight !== undefined) {
                     this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
                 }
-            })
+            });
+            y += SPACE_BETWEEN_ROWS;
         }
 
+        // Add a plus button
         if (to < column.elements.size) {
-            y = this.addButton(column, x, y, "+", () => {
+            y += this.addButton(column, x, y, "+", () => {
                 this.removeEdges();
                 this.drawColumn(column, x, columnTitle, to + 5);
                 this.drawEdges();
                 if (this.currentHighlight !== undefined) {
                     this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
                 }
-            })
+            });
+            y += SPACE_BETWEEN_ROWS;
         }
 
         column.height = y;
 
+        // Set width of every rectangle in the column based on the biggest one
         let rects = column.columnHolder.getElementsByTagNameNS(SVG_NAME_SPACE, "rect");
         for (let i = 0; i < rects.length; i++) {
             rects.item(i).setAttribute("width", column.width.toString());
         }
 
+        // Set the width property for each element
         column.elements.forEach(element => {
             element.fromX = element.toX + column.width;
             element.width = column.width;
         });
 
+        // Center the text of each element 
         let text = column.columnHolder.getElementsByTagNameNS(SVG_NAME_SPACE, "text");
         for (let i = 0; i < text.length; i++) {
             text[i].setAttribute("x", (x + column.width / 2).toString());
         }
 
+        // Adapt if necessary the viewBox property of the sankey svg
         let vB = this.svg.getAttribute("viewBox").split(",");
         let width = Math.max(x + column.width, parseFloat(vB[2]));
         let height = Math.max(column.height + SPACE_BETWEEN_ROWS + TEXT_FONT_SIZE, parseFloat(vB[3]));
         this.svg.setAttribute("viewBox", `0,-${TEXT_FONT_SIZE + SPACE_BETWEEN_ROWS},${width},${height}`);
     }
 
+    /**
+     * Draws the title of a sankey column
+     * @param column The sankey column
+     * @param columnTitle The title
+     */
     private drawColumnTitle(column: SankeyColumn, columnTitle: string) {
         column.columnHolder.appendChild(column.columnTitle);
         column.columnTitle.innerHTML = columnTitle;
@@ -252,7 +315,15 @@ export class SankeyDiagram {
         column.width = column.columnTitle.getBBox().width;
     }
 
-    private drawElement(k: string, e: EleProperties, x: number, y: number, column: SankeyColumn): number {
+    /**
+     * Draws a sankey column element
+     * @param k Name of the element
+     * @param e Element property of the element
+     * @param x x-position of the element
+     * @param y y-position of the element
+     * @param column Column og the sankey element
+     */
+    private drawElement(k: string, e: EleProperties, x: number, y: number, column: SankeyColumn) {
         let percentage = e.nb / this.urlNumber;
         let height = Math.max(MIN_SIZE_NODE, percentage * MAX_SIZE_NODE);
 
@@ -288,12 +359,18 @@ export class SankeyDiagram {
         e.toX = x;
         e.toY = y;
         e.height = height;
-
-        y += height + SPACE_BETWEEN_ROWS;
         e.drawn = true;
-        return y;
     }
 
+    /**
+     * Adds a button to a sankey column
+     * @param column Sankey column where to add the button
+     * @param x X position of the button
+     * @param y Y position of the button
+     * @param label Label of the button
+     * @param callBack Callback for when the button is clicked
+     * @returns the height of the button 
+     */
     private addButton(column: SankeyColumn, x: number, y: number, label: string, callBack: () => void): number {
         let plusButton = document.createElementNS(SVG_NAME_SPACE, "g");
         let plusButtonRect = document.createElementNS(SVG_NAME_SPACE, "rect");
@@ -317,10 +394,13 @@ export class SankeyDiagram {
         plusButton.appendChild(plusButtonRect);
         plusButton.appendChild(plusButtonText);
         column.columnHolder.appendChild(plusButton);
-        y += 50 + SPACE_BETWEEN_ROWS;
-        return y;
+
+        return 50;
     }
 
+    /**
+     * Draws the edges of the sankey diagram
+     */
     private drawEdges() {
         for (let i = this.subdomainsColumns.size - 1; i > -1; i--) {
             if (i !== 0) {
@@ -333,6 +413,11 @@ export class SankeyDiagram {
         this.drawEdge(this.domainColumn, this.pathColumns.get(0));
     }
 
+    /**
+     * Draws edges between two sankey columns
+     * @param fromColumn 
+     * @param toColumn 
+     */
     private drawEdge(fromColumn: SankeyColumn, toColumn: SankeyColumn): void {
         this.sortSankeyColumnElements(fromColumn)
             .forEach(({key: firstValue, ele: firstElement}) => {
