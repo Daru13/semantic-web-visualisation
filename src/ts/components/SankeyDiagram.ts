@@ -43,6 +43,7 @@ export class SankeyDiagram {
      * Svg of sankey diagram
      */
     svg: SVGSVGElement;
+    pathButtonsHolder: HTMLElement;
 
     /**
      * Data column represented by the sankey diagram
@@ -66,6 +67,8 @@ export class SankeyDiagram {
      */
     currentHighlight: { element: string; elementColumn: SankeyColumn; };
 
+    indexLastPathColumnDrawn: number;
+
     constructor(column: Column, parent: HTMLElement) {
         this.dataColumn = column
         
@@ -79,7 +82,11 @@ export class SankeyDiagram {
 
         this.svg = document.createElementNS(SVG_NAME_SPACE, "svg");
 
+        this.pathButtonsHolder = document.createElement("div");
+        this.pathButtonsHolder.id = "path-buttons-holder";
+
         this.holder.appendChild(this.svg);
+        this.holder.appendChild(this.pathButtonsHolder);
         parent.appendChild(this.holder);
 
         this.urlNumber = 0;
@@ -95,6 +102,8 @@ export class SankeyDiagram {
             this.currentHighlight = undefined;
         });
         this.svg.innerHTML = '<defs><filter id="whiteOutlineEffect" ><feMorphology in="SourceAlpha" result = "MORPH" operator = "dilate" radius = "1" /><feColorMatrix in="MORPH" result = "WHITENED" type = "matrix" values = "-1 0 0 1 0, 0 -1 0 1 0, 0 0 -1 1 0, 0 0 0 1 0" /><feMerge><feMergeNode in="WHITENED" /><feMergeNode in="SourceGraphic" /></feMerge>< /filter>< /defs>';
+
+        
 
         this.computeColumns();
         this.drawColumns();
@@ -160,10 +169,8 @@ export class SankeyDiagram {
 
             for (let i = 0; i < this.pathColumns.size; i++) {
                 if (i > 0) {
-                    if (i < this.pathColumns.size - 1) {
-                        this.pathColumns.get(i - 1).nextColumn = this.pathColumns.get(i);
-                        this.pathColumns.get(i).previousColumn = this.pathColumns.get(i - 1);
-                    }
+                    this.pathColumns.get(i - 1).nextColumn = this.pathColumns.get(i);
+                    this.pathColumns.get(i).previousColumn = this.pathColumns.get(i - 1);
                 } else {
                     this.domainColumn.nextColumn = this.pathColumns.get(i);
                     this.pathColumns.get(i).previousColumn = this.domainColumn;
@@ -217,7 +224,36 @@ export class SankeyDiagram {
         x += this.domainColumn.width + SPACE_BETWEEN_COLUMNS
 
         this.drawColumn(this.pathColumns.get(0), x, "Path");
-        x += this.pathColumns.get(0).width;
+        x += this.pathColumns.get(0).width + SPACE_BETWEEN_COLUMNS;
+        this.indexLastPathColumnDrawn = 0;
+
+        if (this.pathColumns.size > this.indexLastPathColumnDrawn) {
+            this.addPathButton("+", () => {
+                if (this.indexLastPathColumnDrawn < this.pathColumns.size) {
+                    this.indexLastPathColumnDrawn += 1;
+                    this.drawColumn(this.pathColumns.get(this.indexLastPathColumnDrawn), x, "");
+                    x += this.pathColumns.get(this.indexLastPathColumnDrawn).width + SPACE_BETWEEN_COLUMNS;
+                    this.drawEdge(this.pathColumns.get(this.indexLastPathColumnDrawn).previousColumn, this.pathColumns.get(this.indexLastPathColumnDrawn));
+                    if (this.currentHighlight !== undefined) {
+                        this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
+                    }
+                }
+            });
+
+            this.addPathButton("-", () => {
+                if (this.indexLastPathColumnDrawn > 0) {
+                    x -= this.pathColumns.get(this.indexLastPathColumnDrawn).width + SPACE_BETWEEN_COLUMNS;
+                    this.removeColumn(this.pathColumns.get(this.indexLastPathColumnDrawn));
+                    this.removeEdge(
+                        this.pathColumns.get(this.indexLastPathColumnDrawn).previousColumn, 
+                        this.pathColumns.get(this.indexLastPathColumnDrawn));
+                    this.indexLastPathColumnDrawn -= 1;
+                    if (this.currentHighlight !== undefined) {
+                        this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
+                    }
+                }
+            });
+        }
     }
 
     /**
@@ -408,19 +444,32 @@ export class SankeyDiagram {
         return 50;
     }
 
+    private addPathButton(label: string, callBack: () => void) {
+        let button = document.createElement("button");
+        button.classList.add("button");
+
+        button.innerHTML = label;
+
+        button.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            callBack();
+        });
+
+        this.pathButtonsHolder.appendChild(button);
+    }
+
     /**
      * Draws the edges of the sankey diagram
      */
     private drawEdges() {
         for (let i = this.subdomainsColumns.size - 1; i > -1; i--) {
-            if (i !== 0) {
-                this.drawEdge(this.subdomainsColumns.get(i), this.subdomainsColumns.get(i - 1));
-            } else {
-                this.drawEdge(this.subdomainsColumns.get(i), this.domainColumn);
-            }
+            this.drawEdge(this.subdomainsColumns.get(i), this.subdomainsColumns.get(i).nextColumn);
         }
 
-        this.drawEdge(this.domainColumn, this.pathColumns.get(0));
+        for (let i = 0; i <= this.indexLastPathColumnDrawn; i++) {
+            this.drawEdge(this.pathColumns.get(i).previousColumn, this.pathColumns.get(i));
+        }
     }
 
     /**
@@ -467,6 +516,15 @@ export class SankeyDiagram {
         });
     }
 
+    private removeColumn(column: SankeyColumn) {
+        this.removeNode(column);
+        if (column.columnHolder.parentNode) {
+            column.columnHolder.parentNode.removeChild(column.columnHolder);
+        }
+        let vB = this.svg.getAttribute("viewBox").split(",");
+        this.svg.setAttribute("viewBox", `0,${vB[1]},${parseFloat(vB[2]) - column.width - SPACE_BETWEEN_COLUMNS},${vB[3]}`);
+    }
+
     private removeNode(column: SankeyColumn) {
         column.elements.forEach((ele) => {
             ele.drawn = false;
@@ -475,14 +533,12 @@ export class SankeyDiagram {
 
     private removeEdges() {
         for (let i = this.subdomainsColumns.size - 1; i > -1; i--) {
-            if (i !== 0) {
-                this.removeEdge(this.subdomainsColumns.get(i), this.subdomainsColumns.get(i - 1));
-            } else {
-                this.removeEdge(this.subdomainsColumns.get(i), this.domainColumn);
-            }
+            this.removeEdge(this.subdomainsColumns.get(i), this.subdomainsColumns.get(i).nextColumn);
         }
 
-        this.removeEdge(this.domainColumn, this.pathColumns.get(0));
+        for (let i = 0; i <= this.indexLastPathColumnDrawn; i++) {
+            this.removeEdge(this.pathColumns.get(i).previousColumn, this.pathColumns.get(i));
+        }
     }
 
     private removeEdge(fromColumn: SankeyColumn, toColumn: SankeyColumn): void {
