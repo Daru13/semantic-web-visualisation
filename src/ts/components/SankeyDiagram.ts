@@ -94,6 +94,7 @@ export class SankeyDiagram {
             this.setOpacitySvgElements("1");
             this.currentHighlight = undefined;
         });
+        this.svg.innerHTML = '<defs><filter id="whiteOutlineEffect" ><feMorphology in="SourceAlpha" result = "MORPH" operator = "dilate" radius = "1" /><feColorMatrix in="MORPH" result = "WHITENED" type = "matrix" values = "-1 0 0 1 0, 0 -1 0 1 0, 0 0 -1 1 0, 0 0 0 1 0" /><feMerge><feMergeNode in="WHITENED" /><feMergeNode in="SourceGraphic" /></feMerge>< /filter>< /defs>';
 
         this.computeColumns();
         this.drawColumns();
@@ -338,15 +339,16 @@ export class SankeyDiagram {
         })
 
         e.text.setAttribute("y", (y + height / 2).toString());
+        e.text.setAttribute("alignment-baseline", "middle");
         e.text.style.fill = (percentage < 0.3) ? "black" : "white";
         e.text.style.fontSize = `${TEXT_FONT_SIZE * 0.5}px`;
         e.text.innerHTML = k;
-
+        
         column.columnHolder.appendChild(e.rectangle);
         column.columnHolder.appendChild(e.text);
-
+        
         this.addToolTipEvents(e.rectangle, percentage * 100);
-
+        
         let width = e.text.getBBox().width;
         if (width > column.width) {
             column.width = width;
@@ -372,28 +374,31 @@ export class SankeyDiagram {
      * @returns the height of the button 
      */
     private addButton(column: SankeyColumn, x: number, y: number, label: string, callBack: () => void): number {
-        let plusButton = document.createElementNS(SVG_NAME_SPACE, "g");
-        let plusButtonRect = document.createElementNS(SVG_NAME_SPACE, "rect");
-        let plusButtonText = document.createElementNS(SVG_NAME_SPACE, "text");
+        let button = document.createElementNS(SVG_NAME_SPACE, "g");
+        let buttonRect = document.createElementNS(SVG_NAME_SPACE, "rect");
+        let buttonText = document.createElementNS(SVG_NAME_SPACE, "text");
 
-        plusButtonRect.setAttribute("x", x.toString());
-        plusButtonRect.setAttribute("y", y.toString());
-        plusButtonRect.setAttribute("height", "50");
-        plusButtonRect.style.fill = this.getFillColor(1 - Math.min(1, y / this.urlNumber));
+        button.classList.add("button");
 
-        plusButtonText.setAttribute("x", x.toString());
-        plusButtonText.setAttribute("y", (y + 25).toString());
-        plusButtonText.innerHTML = label;
+        buttonRect.setAttribute("x", x.toString());
+        buttonRect.setAttribute("y", y.toString());
+        buttonRect.setAttribute("height", "50");
+        buttonRect.style.fill = this.getFillColor(1 - Math.min(1, y / this.urlNumber));
 
-        plusButton.addEventListener("click", (e) => {
+        buttonText.setAttribute("x", x.toString());
+        buttonText.setAttribute("y", (y + 25).toString());
+        buttonText.setAttribute("alignment-baseline", "middle");
+        buttonText.innerHTML = label;
+
+        button.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
             callBack();
         });
 
-        plusButton.appendChild(plusButtonRect);
-        plusButton.appendChild(plusButtonText);
-        column.columnHolder.appendChild(plusButton);
+        button.appendChild(buttonRect);
+        button.appendChild(buttonText);
+        column.columnHolder.appendChild(button);
 
         return 50;
     }

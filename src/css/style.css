@@ -165,9 +165,9 @@ body.popup-displayed {
 }
 
 .sankey svg text {
-    alignment-baseline: middle;
     text-anchor: middle;
     pointer-events: none;
+    filter: url("#whiteOutlineEffect");
 }
 
 .sankey svg .button text {
