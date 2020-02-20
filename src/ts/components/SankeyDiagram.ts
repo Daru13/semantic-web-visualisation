@@ -250,7 +250,7 @@ export class SankeyDiagram {
 
         // Add a minus button
         if (to > 5 ) {
-            y += this.addButton(column, x, y, "-", () => {
+            y += this.addButton(column.columnHolder, x, y, "-", () => {
                 this.removeEdges();
                 this.removeNode(column);
                 this.drawColumn(column, x, columnTitle, to - 5);
@@ -258,13 +258,17 @@ export class SankeyDiagram {
                 if (this.currentHighlight !== undefined) {
                     this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
                 }
+                // Adapt if necessary the viewBox property of the sankey svg
+                let vB = this.svg.getAttribute("viewBox").split(",");
+                let height = this.maxHeight();
+                this.svg.setAttribute("viewBox", `0,${vB[1]},${vB[2]},${height + SPACE_BETWEEN_ROWS + TEXT_FONT_SIZE}`);
             });
             y += SPACE_BETWEEN_ROWS;
         }
 
         // Add a plus button
         if (to < column.elements.size) {
-            y += this.addButton(column, x, y, "+", () => {
+            y += this.addButton(column.columnHolder, x, y, "+", () => {
                 this.removeEdges();
                 this.drawColumn(column, x, columnTitle, to + 5);
                 this.drawEdges();
@@ -373,7 +377,7 @@ export class SankeyDiagram {
      * @param callBack Callback for when the button is clicked
      * @returns the height of the button 
      */
-    private addButton(column: SankeyColumn, x: number, y: number, label: string, callBack: () => void): number {
+    private addButton(parent: SVGElement, x: number, y: number, label: string, callBack: () => void): number {
         let button = document.createElementNS(SVG_NAME_SPACE, "g");
         let buttonRect = document.createElementNS(SVG_NAME_SPACE, "rect");
         let buttonText = document.createElementNS(SVG_NAME_SPACE, "text");
@@ -383,6 +387,7 @@ export class SankeyDiagram {
         buttonRect.setAttribute("x", x.toString());
         buttonRect.setAttribute("y", y.toString());
         buttonRect.setAttribute("height", "50");
+        buttonRect.setAttribute("width", "50");
         buttonRect.style.fill = this.getFillColor(1 - Math.min(1, y / this.urlNumber));
 
         buttonText.setAttribute("x", x.toString());
@@ -398,7 +403,7 @@ export class SankeyDiagram {
 
         button.appendChild(buttonRect);
         button.appendChild(buttonText);
-        column.columnHolder.appendChild(button);
+        parent.appendChild(button);
 
         return 50;
     }
@@ -636,5 +641,19 @@ export class SankeyDiagram {
         })
 
         return temp;
+    }
+
+    private maxHeight(): number {
+        let maxHeight = 0;
+        for (let i = this.subdomainsColumns.size - 1; i >= 0; i--) {
+            maxHeight = Math.max(this.subdomainsColumns.get(i).height, maxHeight);
+        }
+
+        maxHeight = Math.max(this.domainColumn.height, maxHeight);
+
+        for (let i = 0; i < this.pathColumns.size; i++) {
+            maxHeight = Math.max(this.pathColumns.get(i).height, maxHeight);
+        }
+        return maxHeight;
     }
 }
