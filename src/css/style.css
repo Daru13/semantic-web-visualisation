@@ -251,6 +251,11 @@ body.popup-displayed {
     content: "Others";
 }
 
+.tooltip.two-columns {
+    display: grid;
+    grid-template-columns: auto auto;
+}
+
 
 /* Data table */
 

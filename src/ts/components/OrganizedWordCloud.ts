@@ -6,6 +6,7 @@ import { MapCounter } from '../utils/MapCounter';
 export class OrganizedWordCloud {
     holder: HTMLElement;
     wordCount: MapCounter<string>;
+    wordToOriginal: Map<string, MapCounter<string>>;
 
     constructor(column: Column, parent: HTMLElement, numberOfWords: number = column.length()) {
         this.holder = document.createElement("div");
@@ -13,6 +14,7 @@ export class OrganizedWordCloud {
         parent.appendChild(this.holder);
 
         this.wordCount = new MapCounter();
+        this.wordToOriginal = new Map();
         this.setupUI(column, numberOfWords);
     }
 
@@ -28,15 +30,24 @@ export class OrganizedWordCloud {
             try {
                 analyse = new URLAnalysis(url);
                 word = analyse.path[analyse.path.length - 1];
-                this.wordCount.count(this.normalizeWord(word));
+                this.countWord(word, url);
             } catch (error) {
                 word = url;
                 let words = word.split(/,|;|\/| - | et /g);
                 words.forEach((w: string) => {
-                    this.wordCount.count(this.normalizeWord(w));
+                    this.countWord(w, url);
                 })
             }
         }
+    }
+
+    private countWord(word: string, url: string) {
+        let normalizeWord = this.normalizeWord(word);
+        this.wordCount.count(normalizeWord);
+        if (!this.wordToOriginal.has(normalizeWord)) {
+            this.wordToOriginal.set(normalizeWord, new MapCounter());
+        }
+        this.wordToOriginal.get(normalizeWord).count(url);
     }
 
     private normalizeWord(word: string): string {
@@ -74,6 +85,7 @@ export class OrganizedWordCloud {
 
             textHolder = document.createElement("div");
             textHolder.classList.add("word");
+            this.addToolTipEvents(textHolder, this.mapCounterToHTMLList(this.wordToOriginal.get(text)));
             textHolder.innerText = text;
 
             const proportion = count / maxCount;
@@ -82,5 +94,55 @@ export class OrganizedWordCloud {
 
             categoryHolder.appendChild(textHolder);
         }
+    }
+
+    private addToolTipEvents(element: HTMLElement, innerHTML: string) {
+        element.addEventListener("mouseenter", (e) => {
+            let bbox = element.getBoundingClientRect();
+
+            let tooltip = document.createElement("div");
+            tooltip.classList.add("tooltip");
+            tooltip.classList.add("two-columns");
+            tooltip.style.zIndex = "100000";
+            tooltip.innerHTML = innerHTML;
+
+            document.body.appendChild(tooltip);
+
+            let tooltipBBox = tooltip.getBoundingClientRect();
+            let scrollTop = document.documentElement.scrollTop;
+            let scrollLeft = document.documentElement.scrollLeft;
+
+            let top = bbox.top + bbox.height + scrollTop;
+            let left = bbox.left + bbox.width / 2 - tooltipBBox.width / 2 + scrollLeft
+
+            if (left - tooltipBBox.width / 2 < 0) {
+                left = 0;
+            }
+            if (left + tooltipBBox.width > window.innerWidth) {
+                left = window.innerWidth - tooltipBBox.width;
+            }
+
+            if(top + tooltipBBox.height > innerHeight) {
+                top = bbox.top - tooltipBBox.height + scrollTop;
+            }
+            tooltip.style.top = `${top}px`;
+            tooltip.style.left = `${left}px`;
+        })
+
+        element.addEventListener("mouseleave", (e) => {
+            let tooltips = document.getElementsByClassName('tooltip');
+
+            while (tooltips[0]) {
+                tooltips[0].parentNode.removeChild(tooltips[0]);
+            }
+        })
+    }
+
+    private mapCounterToHTMLList(map: MapCounter<string>) {
+        let list = "";
+        map.sortedEntries().forEach((entry) => {
+            list += `<div>${entry.key}</div><div>${entry.count}</div>`;
+        })
+        return list;
     }
 }
