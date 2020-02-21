@@ -161,7 +161,8 @@ body.popup-displayed {
 }
 
 .sankey svg path {
-    border: none;
+    stroke: white;
+    stroke-width: 2px;
 }
 
 .sankey svg text {
@@ -174,14 +175,26 @@ body.popup-displayed {
     font-size: 50px;
 }
 
+.sankey svg rect {
+    stroke: white;
+    stroke-width: 2px;
+}
 
-.sankey #path-buttons-holder {
+
+.sankey #path-buttons-holder {
+    display: flex;
+    flex-direction: column;
+
     position: absolute;
     right: 0;
     top: calc(50% - 40px);
 
-    width: 40px;
-    height: 40px;
+    width: 80px;
+    height: 80px;
+}
+
+.sankey .description {
+    position: absolute;
 }
 
 /* Word Cloud */
@@ -256,6 +269,9 @@ body.popup-displayed {
     grid-template-columns: auto auto;
 }
 
+.word-cloud-preview .description {
+    display: none;
+}
 
 /* Data table */
 

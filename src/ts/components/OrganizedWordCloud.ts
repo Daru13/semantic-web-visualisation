@@ -19,6 +19,11 @@ export class OrganizedWordCloud {
     }
 
     private setupUI(column: Column, numberOfWords: number): void {
+        let description = document.createElement("div");
+        description.classList.add("description");
+        this.holder.appendChild(description);
+        description.innerHTML = "This visualisation displays the keywords of the column. Keywords are extracted from URLs or text based by putting everything in lower case, removing everything between parenthesis and replacing <strong>_</strong> by a space. In the case of pure text, we also detect if it's a list by detecting <strong>,</strong>, <strong>;</strong>, <strong>/</strong>, <strong> - </strong> and <strong> et </strong>. We then split the list based on those elements and consider each part as a keyword.";
+
         this.countWords(column);
         this.drawCloud(numberOfWords);
     }

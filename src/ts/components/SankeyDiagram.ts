@@ -103,6 +103,11 @@ export class SankeyDiagram {
         });
         this.svg.innerHTML = '<defs><filter id="whiteOutlineEffect" ><feMorphology in="SourceAlpha" result = "MORPH" operator = "dilate" radius = "3" /><feColorMatrix in="MORPH" result = "WHITENED" type = "matrix" values = "-1 0 0 1 0, 0 -1 0 1 0, 0 0 -1 1 0, 0 0 0 1 0" /><feMerge><feMergeNode in="WHITENED" /><feMergeNode in="SourceGraphic" /></feMerge>< /filter>< /defs>';
 
+        let description = document.createElement("div");
+        description.classList.add("description");
+        this.holder.appendChild(description);
+        description.innerHTML = "This visualisation displays the structure of the URL in this column.";
+
         
 
         this.computeColumns();
@@ -566,6 +571,7 @@ export class SankeyDiagram {
 
             let tooltip = document.createElement("div");
             tooltip.classList.add("tooltip");
+            tooltip.classList.add("sankey-tooltip");
             tooltip.innerHTML = percentage.toFixed(2) + "%"
             tooltip.style.zIndex = "100000";
 
