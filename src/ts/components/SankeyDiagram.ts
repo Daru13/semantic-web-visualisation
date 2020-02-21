@@ -101,7 +101,7 @@ export class SankeyDiagram {
             this.setOpacitySvgElements("1");
             this.currentHighlight = undefined;
         });
-        this.svg.innerHTML = '<defs><filter id="whiteOutlineEffect" ><feMorphology in="SourceAlpha" result = "MORPH" operator = "dilate" radius = "1" /><feColorMatrix in="MORPH" result = "WHITENED" type = "matrix" values = "-1 0 0 1 0, 0 -1 0 1 0, 0 0 -1 1 0, 0 0 0 1 0" /><feMerge><feMergeNode in="WHITENED" /><feMergeNode in="SourceGraphic" /></feMerge>< /filter>< /defs>';
+        this.svg.innerHTML = '<defs><filter id="whiteOutlineEffect" ><feMorphology in="SourceAlpha" result = "MORPH" operator = "dilate" radius = "3" /><feColorMatrix in="MORPH" result = "WHITENED" type = "matrix" values = "-1 0 0 1 0, 0 -1 0 1 0, 0 0 -1 1 0, 0 0 0 1 0" /><feMerge><feMergeNode in="WHITENED" /><feMergeNode in="SourceGraphic" /></feMerge>< /filter>< /defs>';
 
         
 
@@ -380,7 +380,7 @@ export class SankeyDiagram {
 
         e.text.setAttribute("y", (y + height / 2).toString());
         e.text.setAttribute("alignment-baseline", "middle");
-        e.text.style.fill = (percentage < 0.3) ? "black" : "white";
+        //e.text.style.fill = (percentage < 0.3) ? "black" : "white";
         e.text.style.fontSize = `${TEXT_FONT_SIZE * 0.5}px`;
         e.text.innerHTML = k;
         
