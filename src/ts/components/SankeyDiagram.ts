@@ -1,6 +1,7 @@
 import { Column } from '../dataStructures/DataFrame';
 import { URLAnalysis } from '../analyses/URLAnalysis';
 
+const BUTTON_HEIGHT = 50;
 const SPACE_BETWEEN_COLUMNS = 400;
 const SPACE_BETWEEN_ROWS = 50;
 const MAX_SIZE_NODE = 200;
@@ -298,9 +299,10 @@ export class SankeyDiagram {
             y += sortedElements[i].ele.height + SPACE_BETWEEN_ROWS;
         }
 
+        let buttonAdded = 0;
         // Add a minus button
         if (to > 5 ) {
-            y += this.addButton(column.columnHolder, x, y, "-", () => {
+            this.addButton(column.columnHolder, x, y, "-", () => {
                 this.removeEdges();
                 this.removeNode(column);
                 this.drawColumn(column, x, columnTitle, to - 5);
@@ -313,12 +315,12 @@ export class SankeyDiagram {
                 let height = this.maxHeight();
                 this.svg.setAttribute("viewBox", `0,${vB[1]},${vB[2]},${height + SPACE_BETWEEN_ROWS + TEXT_FONT_SIZE}`);
             });
-            y += SPACE_BETWEEN_ROWS;
+            buttonAdded += 1;
         }
 
         // Add a plus button
         if (to < column.elements.size) {
-            y += this.addButton(column.columnHolder, x, y, "+", () => {
+            this.addButton(column.columnHolder, x, y, "+", () => {
                 this.removeEdges();
                 this.drawColumn(column, x, columnTitle, to + 5);
                 this.drawEdges();
@@ -326,7 +328,11 @@ export class SankeyDiagram {
                     this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
                 }
             });
-            y += SPACE_BETWEEN_ROWS;
+            buttonAdded += 1;
+        }
+
+        if (buttonAdded > 0) {
+            y += BUTTON_HEIGHT + SPACE_BETWEEN_ROWS;
         }
 
         column.height = y;
@@ -347,6 +353,21 @@ export class SankeyDiagram {
         let text = column.columnHolder.getElementsByTagNameNS(SVG_NAME_SPACE, "text");
         for (let i = 0; i < text.length; i++) {
             text[i].setAttribute("x", (x + column.width / 2).toString());
+        }
+
+        if (buttonAdded == 2) {
+            let dx = 0;
+            column.columnHolder.querySelectorAll(".button").forEach((button) => {
+                let rect = button.querySelector("rect");
+                rect.setAttribute("width", (column.width / 2).toString());
+                rect.setAttribute("x", (parseInt(rect.getAttribute("x")) + dx).toString());
+
+                let text = button.querySelector("text");
+                text.setAttribute("x", 
+                    (parseInt(rect.getAttribute("x")) + 
+                    parseInt(rect.getAttribute("width")) / 2).toString());
+                dx += column.width / 2;
+            });
         }
 
         // Adapt if necessary the viewBox property of the sankey svg
@@ -425,9 +446,8 @@ export class SankeyDiagram {
      * @param y Y position of the button
      * @param label Label of the button
      * @param callBack Callback for when the button is clicked
-     * @returns the height of the button 
      */
-    private addButton(parent: SVGElement, x: number, y: number, label: string, callBack: () => void): number {
+    private addButton(parent: SVGElement, x: number, y: number, label: string, callBack: () => void) {
         let button = document.createElementNS(SVG_NAME_SPACE, "g");
         let buttonRect = document.createElementNS(SVG_NAME_SPACE, "rect");
         let buttonText = document.createElementNS(SVG_NAME_SPACE, "text");
@@ -436,7 +456,7 @@ export class SankeyDiagram {
 
         buttonRect.setAttribute("x", x.toString());
         buttonRect.setAttribute("y", y.toString());
-        buttonRect.setAttribute("height", "50");
+        buttonRect.setAttribute("height", BUTTON_HEIGHT.toString());
         buttonRect.setAttribute("width", "50");
         //buttonRect.style.fill = this.getFillColor(1 - Math.min(1, y / this.urlNumber));
 
@@ -454,8 +474,6 @@ export class SankeyDiagram {
         button.appendChild(buttonRect);
         button.appendChild(buttonText);
         parent.appendChild(button);
-
-        return 50;
     }
 
     private addPathButton(label: string, className: string, callBack: () => void) {
