@@ -70,7 +70,7 @@ export class SankeyDiagram {
     /**
      * Current highlighted element of sankey diagram
      */
-    currentHighlight: { element: string; elementColumn: SankeyColumn; };
+    rehighlight: () => void;
 
     indexLastPathColumnDrawn: number;
 
@@ -95,6 +95,7 @@ export class SankeyDiagram {
 
         this.urlNumber = 0;
         this.maxProportion = 0;
+        this.rehighlight = () => {};
 
         this.setupUI();
     }
@@ -103,7 +104,7 @@ export class SankeyDiagram {
         this.svg.setAttribute("viewBox", "0,0,0,0");
         this.svg.addEventListener("click", () => {
             this.setOpacitySvgElements("1");
-            this.currentHighlight = undefined;
+            this.rehighlight = () => {};
         });
         this.svg.innerHTML = '<defs><filter id="whiteOutlineEffect" ><feMorphology in="SourceAlpha" result = "MORPH" operator = "dilate" radius = "2" /><feColorMatrix in="MORPH" result = "WHITENED" type = "matrix" values = "-1 0 0 1 0, 0 -1 0 1 0, 0 0 -1 1 0, 0 0 0 1 0" /><feMerge><feMergeNode in="WHITENED" /><feMergeNode in="SourceGraphic" /></feMerge>< /filter>< /defs>';
 
@@ -281,9 +282,7 @@ export class SankeyDiagram {
                 this.removeNode(column);
                 this.drawColumn(column, columnTitle, to - 5);
                 this.drawEdges();
-                if (this.currentHighlight !== undefined) {
-                    this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
-                }
+                this.rehighlight();
             });
             buttonAdded += 1;
         }
@@ -294,9 +293,7 @@ export class SankeyDiagram {
                 this.removeEdges();
                 this.drawColumn(column, columnTitle, to + 5);
                 this.drawEdges();
-                if (this.currentHighlight !== undefined) {
-                    this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
-                }
+                this.rehighlight();
             });
             buttonAdded += 1;
         }
@@ -457,9 +454,7 @@ export class SankeyDiagram {
                 this.indexLastPathColumnDrawn += 1;
                 this.drawColumn(this.pathColumns.get(this.indexLastPathColumnDrawn), "");
                 this.drawEdge(this.pathColumns.get(this.indexLastPathColumnDrawn).previousColumn, this.pathColumns.get(this.indexLastPathColumnDrawn));
-                if (this.currentHighlight !== undefined) {
-                    this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
-                }
+                this.rehighlight();
             };
         }
 
@@ -470,9 +465,7 @@ export class SankeyDiagram {
                     this.pathColumns.get(this.indexLastPathColumnDrawn).previousColumn,
                     this.pathColumns.get(this.indexLastPathColumnDrawn));
                 this.indexLastPathColumnDrawn -= 1;
-                if (this.currentHighlight !== undefined) {
-                    this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
-                }
+                this.rehighlight();
             }
         }
 
@@ -539,6 +532,11 @@ export class SankeyDiagram {
                     ele.style.fill = this.getFillColor(percentage);
 
                     this.addToolTip(ele, percentage * 100);
+                    ele.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.highLight(firstValue, fromColumn, secondValue, toColumn);
+                    })
 
                     if (firstElement.fromY - firstElement.y + height < firstElement.height) {
                         fromColumn.elements.get(firstValue).fromY += height;
@@ -599,20 +597,22 @@ export class SankeyDiagram {
     }
 
     private addToolTip(element: SVGElement, percentage: number) {
-        let height = element.getBoundingClientRect().height;
         tippy(element, { content: `${percentage.toFixed(2)}%`, followCursor: true});
     }
 
-    private highLight(element: string, elementColumn: SankeyColumn) {
-        this.currentHighlight = {element: element, elementColumn: elementColumn};
+    private highLight(firstElement: string, firstColumn: SankeyColumn, secondElement: string = firstElement, secondColumn: SankeyColumn = firstColumn) {
+        this.rehighlight = () => { this.highLight(firstElement, firstColumn, secondElement, secondColumn); };
         this.setOpacitySvgElements("0.1");
         let leftColumn = this.subdomainsColumns.get(this.subdomainsColumns.size - 1);
         leftColumn
             .elements
-                .forEach((v, k, m) => {
-                    this.highlightBefore(k, leftColumn, element, elementColumn);
-                 })
-        this.highlightAfter(element, elementColumn);
+            .forEach((v, k, m) => {
+                this.highlightBefore(k, leftColumn, firstElement, firstColumn);
+            });
+        try {
+            firstColumn.elements.get(firstElement).next.get(secondElement).path.style.opacity = "1";
+        } catch {}
+        this.highlightAfter(secondElement, secondColumn);
     }
 
     private highlightBefore(ele: string, column: SankeyColumn, element: string, elementColumn: SankeyColumn) {
