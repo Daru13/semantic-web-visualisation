@@ -10,7 +10,10 @@ export default {
     {
       file: "build/main.min.js",
       format: "umd",
-      globals: {},
+      globals: {
+          "popper.js": "popper",
+          "tippy.js": "tippy",
+        },
       plugins: [terser()]
     },
   ],
@@ -30,7 +33,7 @@ export default {
       targets: [
         { src: "src/css/**/*.css", dest: "build"}
       ]
-    })
+    }),
   ],
 }
 

@@ -160,6 +160,10 @@ body.popup-displayed {
     height: 100%;
 }
 
+.sankey svg *:focus {
+    outline: 0;
+}
+
 .sankey svg path {
     stroke: none;
 }

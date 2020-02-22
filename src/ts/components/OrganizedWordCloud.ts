@@ -1,7 +1,7 @@
 import { Column } from '../dataStructures/DataFrame';
 import { URLAnalysis } from '../analyses/URLAnalysis';
-import { ColumnAnalysis } from '../analyses/ColumnAnalysis';
 import { MapCounter } from '../utils/MapCounter';
+import tippy from 'tippy.js';
 
 export class OrganizedWordCloud {
     parent: HTMLElement;
@@ -93,7 +93,7 @@ export class OrganizedWordCloud {
 
             textHolder = document.createElement("div");
             textHolder.classList.add("word");
-            this.addToolTipEvents(textHolder, this.mapCounterToHTMLList(this.wordToOriginal.get(text)));
+            this.addToolTip(textHolder, this.mapCounterToHTMLList(this.wordToOriginal.get(text)));
             textHolder.innerText = text;
 
             const proportion = count / maxCount;
@@ -104,53 +104,20 @@ export class OrganizedWordCloud {
         }
     }
 
-    private addToolTipEvents(element: HTMLElement, innerHTML: string) {
-        element.addEventListener("mouseenter", (e) => {
-            let bbox = element.getBoundingClientRect();
-
-            let tooltip = document.createElement("div");
-            tooltip.classList.add("tooltip");
-            tooltip.classList.add("two-columns");
-            tooltip.style.zIndex = "100000";
-            tooltip.innerHTML = innerHTML;
-
-            document.body.appendChild(tooltip);
-
-            let tooltipBBox = tooltip.getBoundingClientRect();
-            let scrollTop = document.documentElement.scrollTop;
-            let scrollLeft = document.documentElement.scrollLeft;
-
-            let top = bbox.top + bbox.height + scrollTop;
-            let left = bbox.left + bbox.width / 2 - tooltipBBox.width / 2 + scrollLeft
-
-            if (left - tooltipBBox.width / 2 < 0) {
-                left = 0;
-            }
-            if (left + tooltipBBox.width > window.innerWidth) {
-                left = window.innerWidth - tooltipBBox.width;
-            }
-
-            if(top + tooltipBBox.height > innerHeight) {
-                top = bbox.top - tooltipBBox.height + scrollTop;
-            }
-            tooltip.style.top = `${top}px`;
-            tooltip.style.left = `${left}px`;
-        })
-
-        element.addEventListener("mouseleave", (e) => {
-            let tooltips = document.getElementsByClassName('tooltip');
-
-            while (tooltips[0]) {
-                tooltips[0].parentNode.removeChild(tooltips[0]);
-            }
-        })
+    private addToolTip(element: HTMLElement, innerHTML: string) {
+        tippy(element, {
+            content: innerHTML,
+            interactive: true,
+            maxWidth: window.innerWidth
+        });
     }
 
     private mapCounterToHTMLList(map: MapCounter<string>) {
         let list = "";
         map.sortedEntries().forEach((entry) => {
-            list += `<div>${entry.key}</div><div>${entry.count}</div>`;
+            list += `<div style='font-family: "Roboto Mono", monospace;'>${entry.key}</div><div style='text-align:right;font-family: "Roboto Mono", monospace;'>${entry.count}</div>`;
         })
-        return list;
+
+        return "<div style='display: grid; grid-template-columns: auto auto;grid-column-gap: 10px;'>" + list + "</div>";
     }
 }

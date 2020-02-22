@@ -1,5 +1,6 @@
 import { Column } from '../dataStructures/DataFrame';
 import { URLAnalysis } from '../analyses/URLAnalysis';
+import tippy from 'tippy.js';
 
 const BUTTON_HEIGHT = 50;
 const SPACE_BETWEEN_COLUMNS = 400;
@@ -387,7 +388,7 @@ export class SankeyDiagram {
         column.columnHolder.appendChild(e.rectangle);
         column.columnHolder.appendChild(e.text);
         
-        this.addToolTipEvents(e.rectangle, percentage * 100);
+        this.addToolTip(e.rectangle, percentage * 100);
         
         let width = e.text.getBBox().width;
         if (width > column.width) {
@@ -537,7 +538,7 @@ export class SankeyDiagram {
                         L${firstElement.fromX},${firstElement.fromY + height}`);
                     ele.style.fill = this.getFillColor(percentage);
 
-                    this.addToolTipEvents(ele, percentage * 100);
+                    this.addToolTip(ele, percentage * 100);
 
                     if (firstElement.fromY - firstElement.y + height < firstElement.height) {
                         fromColumn.elements.get(firstValue).fromY += height;
@@ -597,32 +598,9 @@ export class SankeyDiagram {
         }
     }
 
-    private addToolTipEvents(element: SVGElement, percentage: number) {
-        element.addEventListener("mouseenter", (e) => {
-            let bbox = element.getBoundingClientRect();
-
-            let tooltip = document.createElement("div");
-            tooltip.classList.add("tooltip");
-            tooltip.classList.add("sankey-tooltip");
-            tooltip.innerHTML = percentage.toFixed(2) + "%"
-            tooltip.style.zIndex = "100000";
-
-            document.body.appendChild(tooltip);
-
-            let tooltipBBox = tooltip.getBoundingClientRect();
-            let scrollTop = document.documentElement.scrollTop;
-            let scrollLeft = document.documentElement.scrollLeft;
-            tooltip.style.top = `${bbox.top + bbox.height / 2 - tooltipBBox.height / 2 +scrollTop}px`;
-            tooltip.style.left = `${bbox.left + bbox.width / 2 - tooltipBBox.width / 2 + scrollLeft}px`;
-        })
-
-        element.addEventListener("mouseleave", (e) => {
-            let tooltips = document.getElementsByClassName('tooltip');
-
-            while (tooltips[0]) {
-                tooltips[0].parentNode.removeChild(tooltips[0]);
-            }​
-        })
+    private addToolTip(element: SVGElement, percentage: number) {
+        let height = element.getBoundingClientRect().height;
+        tippy(element, { content: `${percentage.toFixed(2)}%`, followCursor: true});
     }
 
     private highLight(element: string, elementColumn: SankeyColumn) {
