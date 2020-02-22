@@ -26,10 +26,11 @@ type EleProperties = {
 };
 
 type SankeyColumn = { 
-    height: number, width: number, // Visual properties of the column
+    x: number, y:number, height: number, width: number, // Visual properties of the column
     elements: Map<string, EleProperties>, // Map of elements in the columns
     columnHolder: SVGGElement , columnTitle: SVGTextElement, // Visual representation of the column
-    previousColumn: SankeyColumn, nextColumn: SankeyColumn
+    previousColumn: SankeyColumn, nextColumn: SankeyColumn,
+    drawn: boolean
 };
 
 /**
@@ -47,7 +48,6 @@ export class SankeyDiagram {
      * Svg of sankey diagram
      */
     svg: SVGSVGElement;
-    pathButtonsHolder: HTMLElement;
 
     /**
      * Data column represented by the sankey diagram
@@ -87,11 +87,9 @@ export class SankeyDiagram {
 
         this.svg = document.createElementNS(SVG_NAME_SPACE, "svg");
 
-        this.pathButtonsHolder = document.createElement("div");
-        this.pathButtonsHolder.id = "path-buttons-holder";
+        
 
         this.holder.appendChild(this.svg);
-        this.holder.appendChild(this.pathButtonsHolder);
         parent.appendChild(this.holder);
 
         this.urlNumber = 0;
@@ -113,12 +111,6 @@ export class SankeyDiagram {
         description.classList.add("description");
         description.innerHTML = "This diagram represents how the different values of successive URLs parts are related to each other. The thicker and brighter an edge is, the more URLs share the two values it connects. You can change the number of path components to display using the two buttons at the bottom.";
         this.parent.prepend(description);
-
-        // Description of the "path buttons"
-        const pathButtonsTitle = document.createElement("p");
-        pathButtonsTitle.classList.add("title");
-        pathButtonsTitle.innerHTML = "Path components";
-        this.pathButtonsHolder.prepend(pathButtonsTitle);
 
         this.computeColumns();
         this.drawColumns();
@@ -192,6 +184,7 @@ export class SankeyDiagram {
                 }
             }
         }
+        console.log(this);
     }
 
     /**
@@ -229,58 +222,38 @@ export class SankeyDiagram {
      * Draws every sankey columns
      */
     private drawColumns() {
-        let x = 0;
         for (let i = this.subdomainsColumns.size - 1; i > -1; i--) {
-            this.drawColumn(this.subdomainsColumns.get(i), x , (i == 0) ? "Subdomains" : "");
-            x += this.subdomainsColumns.get(i).width + SPACE_BETWEEN_COLUMNS;
+            this.drawColumn(this.subdomainsColumns.get(i), (i == 0) ? "Subdomains" : "");
         }
         
-        this.drawColumn(this.domainColumn, x, "Domain");
-        x += this.domainColumn.width + SPACE_BETWEEN_COLUMNS
+        this.drawColumn(this.domainColumn, "Domain");
 
-        this.drawColumn(this.pathColumns.get(0), x, "Path");
-        x += this.pathColumns.get(0).width + SPACE_BETWEEN_COLUMNS;
-        this.indexLastPathColumnDrawn = 0;
-
-        if (this.pathColumns.size > this.indexLastPathColumnDrawn) {
-            this.addPathButton("+", "add", () => {
-                if (this.indexLastPathColumnDrawn < this.pathColumns.size - 1) {
-                    this.indexLastPathColumnDrawn += 1;
-                    this.drawColumn(this.pathColumns.get(this.indexLastPathColumnDrawn), x, "");
-                    x += this.pathColumns.get(this.indexLastPathColumnDrawn).width + SPACE_BETWEEN_COLUMNS;
-                    this.drawEdge(this.pathColumns.get(this.indexLastPathColumnDrawn).previousColumn, this.pathColumns.get(this.indexLastPathColumnDrawn));
-                    if (this.currentHighlight !== undefined) {
-                        this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
-                    }
-                }
-            });
-
-            this.addPathButton("-", "remove", () => {
-                if (this.indexLastPathColumnDrawn > 0) {
-                    x -= this.pathColumns.get(this.indexLastPathColumnDrawn).width + SPACE_BETWEEN_COLUMNS;
-                    this.removeColumn(this.pathColumns.get(this.indexLastPathColumnDrawn));
-                    this.removeEdge(
-                        this.pathColumns.get(this.indexLastPathColumnDrawn).previousColumn, 
-                        this.pathColumns.get(this.indexLastPathColumnDrawn));
-                    this.indexLastPathColumnDrawn -= 1;
-                    if (this.currentHighlight !== undefined) {
-                        this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
-                    }
-                }
-            });
+        
+        if (this.pathColumns.size > 0 ) {
+            this.drawColumn(this.pathColumns.get(0), "Path");
+            this.indexLastPathColumnDrawn = 0;
+            if (this.pathColumns.size > 1) {
+                this.addPathButtons();
+            }
         }
     }
 
     /**
      * Draws a specic sankey column
      * @param column Snakey Column to draw
-     * @param x X position of the sankey column
      * @param columnTitle Title of the column
      * @param [to] Last index of the column elements to draw
      * @param [from] First index of the column elements to draw
      */
-    private drawColumn(column: SankeyColumn, x: number, columnTitle: string, to: number = 5, from: number = 0): void {
-        let y = 0;
+    private drawColumn(column: SankeyColumn, columnTitle: string, to: number = 5, from: number = 0): void {
+        let x: number;
+        let y = column.y;
+        if (column.previousColumn) {
+            x = column.previousColumn.x + column.previousColumn.width + SPACE_BETWEEN_COLUMNS;
+        } else {
+            x = 0;
+        }
+        column.x = x;
 
         // Remove the column is already drawn
         if (column.columnHolder.parentNode !== null) {
@@ -305,15 +278,11 @@ export class SankeyDiagram {
             this.addButton(column.columnHolder, x, y, "-", () => {
                 this.removeEdges();
                 this.removeNode(column);
-                this.drawColumn(column, x, columnTitle, to - 5);
+                this.drawColumn(column, columnTitle, to - 5);
                 this.drawEdges();
                 if (this.currentHighlight !== undefined) {
                     this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
                 }
-                // Adapt if necessary the viewBox property of the sankey svg
-                let vB = this.svg.getAttribute("viewBox").split(",");
-                let height = this.maxHeight();
-                this.svg.setAttribute("viewBox", `0,${vB[1]},${vB[2]},${height + SPACE_BETWEEN_ROWS + TEXT_FONT_SIZE}`);
             });
             buttonAdded += 1;
         }
@@ -322,7 +291,7 @@ export class SankeyDiagram {
         if (to < column.elements.size) {
             this.addButton(column.columnHolder, x, y, "+", () => {
                 this.removeEdges();
-                this.drawColumn(column, x, columnTitle, to + 5);
+                this.drawColumn(column, columnTitle, to + 5);
                 this.drawEdges();
                 if (this.currentHighlight !== undefined) {
                     this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
@@ -335,7 +304,7 @@ export class SankeyDiagram {
             y += BUTTON_HEIGHT + SPACE_BETWEEN_ROWS;
         }
 
-        column.height = y;
+        column.height = y + SPACE_BETWEEN_ROWS + TEXT_FONT_SIZE;
 
         // Set width of every rectangle in the column based on the biggest one
         let rects = column.columnHolder.getElementsByTagNameNS(SVG_NAME_SPACE, "rect");
@@ -369,12 +338,8 @@ export class SankeyDiagram {
                 dx += column.width / 2;
             });
         }
-
-        // Adapt if necessary the viewBox property of the sankey svg
-        let vB = this.svg.getAttribute("viewBox").split(",");
-        let width = Math.max(x + column.width, parseFloat(vB[2]));
-        let height = Math.max(column.height + SPACE_BETWEEN_ROWS + TEXT_FONT_SIZE, parseFloat(vB[3]));
-        this.svg.setAttribute("viewBox", `0,-${TEXT_FONT_SIZE + SPACE_BETWEEN_ROWS},${width},${height}`);
+        column.drawn = true;
+        this.adaptSVGViewBox();
     }
 
     /**
@@ -476,7 +441,46 @@ export class SankeyDiagram {
         parent.appendChild(button);
     }
 
-    private addPathButton(label: string, className: string, callBack: () => void) {
+    private addPathButtons() {
+        let pathButtonsHolder = document.createElement("div");
+        pathButtonsHolder.id = "path-buttons-holder";
+        this.holder.appendChild(pathButtonsHolder);
+        // Description of the "path buttons"
+        const pathButtonsTitle = document.createElement("p");
+        pathButtonsTitle.classList.add("title");
+        pathButtonsTitle.innerHTML = "Path components";
+        pathButtonsHolder.prepend(pathButtonsTitle);
+
+        let add = () => {
+            if (this.indexLastPathColumnDrawn < this.pathColumns.size - 1) {
+                this.indexLastPathColumnDrawn += 1;
+                this.drawColumn(this.pathColumns.get(this.indexLastPathColumnDrawn), "");
+                this.drawEdge(this.pathColumns.get(this.indexLastPathColumnDrawn).previousColumn, this.pathColumns.get(this.indexLastPathColumnDrawn));
+                if (this.currentHighlight !== undefined) {
+                    this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
+                }
+            };
+        }
+
+        let remove = () => {
+            if (this.indexLastPathColumnDrawn > 0) {
+                this.removeColumn(this.pathColumns.get(this.indexLastPathColumnDrawn));
+                this.removeEdge(
+                    this.pathColumns.get(this.indexLastPathColumnDrawn).previousColumn,
+                    this.pathColumns.get(this.indexLastPathColumnDrawn));
+                this.indexLastPathColumnDrawn -= 1;
+                if (this.currentHighlight !== undefined) {
+                    this.highLight(this.currentHighlight.element, this.currentHighlight.elementColumn);
+                }
+            }
+        }
+
+        this.addPathButton("+", "add", add, pathButtonsHolder);
+
+        this.addPathButton("-", "remove", remove, pathButtonsHolder);
+    }
+
+    private addPathButton(label: string, className: string, callBack: () => void, parent: HTMLElement) {
         let button = document.createElement("button");
         button.classList.add("button", className);
 
@@ -487,8 +491,7 @@ export class SankeyDiagram {
             e.stopPropagation();
             callBack();
         });
-
-        this.pathButtonsHolder.appendChild(button);
+        parent.appendChild(button);
     }
 
     /**
@@ -553,8 +556,10 @@ export class SankeyDiagram {
         if (column.columnHolder.parentNode) {
             column.columnHolder.parentNode.removeChild(column.columnHolder);
         }
-        let vB = this.svg.getAttribute("viewBox").split(",");
-        this.svg.setAttribute("viewBox", `0,${vB[1]},${parseFloat(vB[2]) - column.width - SPACE_BETWEEN_COLUMNS},${vB[3]}`);
+        column.columnHolder.innerHTML = "";
+        column.columnTitle.innerHTML = "";
+        column.drawn = false;
+        this.adaptSVGViewBox();
     }
 
     private removeNode(column: SankeyColumn) {
@@ -639,6 +644,7 @@ export class SankeyDiagram {
             let isPresentInNext = ele === element;
             if(isPresentInNext){
                 column.elements.get(ele).rectangle.style.opacity = "1";
+                column.elements.get(ele).text.style.opacity = "1";
             }
             return isPresentInNext;
         } else {
@@ -651,6 +657,7 @@ export class SankeyDiagram {
             })
             if (isPresentInNext) {
                 column.elements.get(ele).rectangle.style.opacity = "1";
+                column.elements.get(ele).text.style.opacity = "1";
             }
             return isPresentInNext;
         }
@@ -665,15 +672,14 @@ export class SankeyDiagram {
             v.path.style.opacity = "1";
         });
         column.elements.get(ele).rectangle.style.opacity = "1";
+        column.elements.get(ele).text.style.opacity = "1";
     }
 
     private setOpacitySvgElements(opacity: string) {
-        this.svg.querySelectorAll("rect").forEach((e) => {
-            e.style.opacity = opacity;
-            console.log(opacity);
-        });
-        this.svg.querySelectorAll("path").forEach((e) => {
-            e.style.opacity = opacity;
+        this.svg.querySelectorAll("rect, path, text").forEach((e) => {
+            if (!e.parentElement.classList.contains("button")){
+                (e as SVGElement).style.opacity = opacity;
+            }
         });
     }
 
@@ -688,10 +694,11 @@ export class SankeyDiagram {
 
     private getEmptySankeyColumn(): SankeyColumn {
         return { 
-            height: 0, width: 0, 
+            x: 0, y: 0, height: 0, width: 0, 
             elements: new Map(), 
             columnHolder: document.createElementNS(SVG_NAME_SPACE, "g"), columnTitle: document.createElementNS(SVG_NAME_SPACE, "text"), 
-            previousColumn: undefined, nextColumn: undefined};
+            previousColumn: undefined, nextColumn: undefined,
+            drawn: false};
     }
 
     private getEmptyEleProperties(): EleProperties {
@@ -732,17 +739,50 @@ export class SankeyDiagram {
         return temp;
     }
 
-    private maxHeight(): number {
+    private sankeyHeight(): number {
         let maxHeight = 0;
         for (let i = this.subdomainsColumns.size - 1; i >= 0; i--) {
-            maxHeight = Math.max(this.subdomainsColumns.get(i).height, maxHeight);
+            if (this.subdomainsColumns.get(i).drawn){
+                maxHeight = Math.max(this.subdomainsColumns.get(i).height, maxHeight);
+            }
         }
 
-        maxHeight = Math.max(this.domainColumn.height, maxHeight);
+        if (this.domainColumn.drawn) {
+            maxHeight = Math.max(this.domainColumn.height, maxHeight);
+        }
 
         for (let i = 0; i < this.pathColumns.size; i++) {
-            maxHeight = Math.max(this.pathColumns.get(i).height, maxHeight);
+            if (this.pathColumns.get(i).drawn){
+                maxHeight = Math.max(this.pathColumns.get(i).height, maxHeight);
+            }
         }
         return maxHeight;
+    }
+
+    private sankeyWidth(): number {
+        let width = 0;
+        for (let i = this.subdomainsColumns.size - 1; i >= 0; i--) {
+            if (this.subdomainsColumns.get(i).drawn) {
+                width += this.subdomainsColumns.get(i).width + SPACE_BETWEEN_COLUMNS;
+            }
+        }
+
+        if (this.domainColumn.drawn) {
+            width += this.domainColumn.width + SPACE_BETWEEN_COLUMNS;
+        }
+
+        for (let i = 0; i < this.pathColumns.size; i++) {
+            if (this.pathColumns.get(i).drawn) {
+                width += this.pathColumns.get(i).width + SPACE_BETWEEN_COLUMNS;
+            }
+        }
+
+        width -= SPACE_BETWEEN_COLUMNS;
+        return width;
+    }
+
+    private adaptSVGViewBox() {
+        let vB = this.svg.getAttribute("viewBox").split(",");
+        this.svg.setAttribute("viewBox", `0,${-TEXT_FONT_SIZE - SPACE_BETWEEN_ROWS},${this.sankeyWidth()},${this.sankeyHeight()}`);
     }
 }
