@@ -603,42 +603,34 @@ export class SankeyDiagram {
     private highLight(firstElement: string, firstColumn: SankeyColumn, secondElement: string = firstElement, secondColumn: SankeyColumn = firstColumn) {
         this.rehighlight = () => { this.highLight(firstElement, firstColumn, secondElement, secondColumn); };
         this.setOpacitySvgElements("0.1");
-        let leftColumn = this.subdomainsColumns.get(this.subdomainsColumns.size - 1);
-        leftColumn
-            .elements
-            .forEach((v, k, m) => {
-                this.highlightBefore(k, leftColumn, firstElement, firstColumn);
-            });
+        if (firstColumn.previousColumn) {
+            this.highlightBefore(firstColumn.previousColumn, firstElement);
+        }
+        firstColumn.elements.get(firstElement).rectangle.style.opacity = "1";
+        firstColumn.elements.get(firstElement).text.style.opacity = "1";
         try {
             firstColumn.elements.get(firstElement).next.get(secondElement).path.style.opacity = "1";
         } catch {}
         this.highlightAfter(secondElement, secondColumn);
     }
 
-    private highlightBefore(ele: string, column: SankeyColumn, element: string, elementColumn: SankeyColumn) {
-        if (column === undefined) {
-            return false;
-        } else if (column === elementColumn) {
-            let isPresentInNext = ele === element;
-            if(isPresentInNext){
-                column.elements.get(ele).rectangle.style.opacity = "1";
-                column.elements.get(ele).text.style.opacity = "1";
-            }
-            return isPresentInNext;
-        } else {
+    private highlightBefore(column: SankeyColumn, element: string) {
+        column.elements.forEach((ele, key, m) => {
             let isPresentInNext = false;
-            column.elements.get(ele).next.forEach((v, k, m) => {
-                if (this.highlightBefore(k, column.nextColumn, element, elementColumn)) {
+            ele.next.forEach((v, k, m) => {
+                if (k === element) {
                     isPresentInNext = true;
                     v.path.style.opacity = "1";
                 }
             })
             if (isPresentInNext) {
-                column.elements.get(ele).rectangle.style.opacity = "1";
-                column.elements.get(ele).text.style.opacity = "1";
+                ele.rectangle.style.opacity = "1";
+                ele.text.style.opacity = "1";
+                if (column.previousColumn) {
+                    this.highlightBefore(column.previousColumn, key);
+                }
             }
-            return isPresentInNext;
-        }
+        });
     }
 
     private highlightAfter(ele: string, column: SankeyColumn) {
