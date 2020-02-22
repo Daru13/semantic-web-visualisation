@@ -4,11 +4,13 @@ import { ColumnAnalysis } from '../analyses/ColumnAnalysis';
 import { MapCounter } from '../utils/MapCounter';
 
 export class OrganizedWordCloud {
+    parent: HTMLElement;
     holder: HTMLElement;
     wordCount: MapCounter<string>;
     wordToOriginal: Map<string, MapCounter<string>>;
 
     constructor(column: Column, parent: HTMLElement, numberOfWords: number = column.length()) {
+        this.parent = parent;
         this.holder = document.createElement("div");
         this.holder.classList.add("word-cloud");
         parent.appendChild(this.holder);
@@ -19,10 +21,11 @@ export class OrganizedWordCloud {
     }
 
     private setupUI(column: Column, numberOfWords: number): void {
-        let description = document.createElement("div");
+        // Description of the visualisation
+        const description = document.createElement("p");
         description.classList.add("description");
-        this.holder.appendChild(description);
-        description.innerHTML = "This visualisation displays the keywords of the column. Keywords are extracted from URLs or text based by putting everything in lower case, removing everything between parenthesis and replacing <strong>_</strong> by a space. In the case of pure text, we also detect if it's a list by detecting <strong>,</strong>, <strong>;</strong>, <strong>/</strong>, <strong> - </strong> and <strong> et </strong>. We then split the list based on those elements and consider each part as a keyword.";
+        description.innerText = `Keywords are extracted from both URL and raw text nodes. They are transformed to lowercase, parentheses are removed, and the remaining strings are split on various substrings (such as underscores or "et").`;
+        this.parent.prepend(description);
 
         this.countWords(column);
         this.drawCloud(numberOfWords);

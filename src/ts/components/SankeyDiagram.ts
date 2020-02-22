@@ -35,6 +35,9 @@ type SankeyColumn = {
  * A class to draw a Sankey diagram
  */
 export class SankeyDiagram {
+    /** Parent element of the component. */
+    parent: HTMLElement;
+
     /**
      * Holder of sankey diagram
      */
@@ -71,6 +74,7 @@ export class SankeyDiagram {
 
     constructor(column: Column, parent: HTMLElement) {
         this.dataColumn = column
+        this.parent = parent;
         
         this.subdomainsColumns = new Map();
         this.domainColumn = this.getEmptySankeyColumn();
@@ -101,12 +105,13 @@ export class SankeyDiagram {
             this.setOpacitySvgElements("1");
             this.currentHighlight = undefined;
         });
-        this.svg.innerHTML = '<defs><filter id="whiteOutlineEffect" ><feMorphology in="SourceAlpha" result = "MORPH" operator = "dilate" radius = "3" /><feColorMatrix in="MORPH" result = "WHITENED" type = "matrix" values = "-1 0 0 1 0, 0 -1 0 1 0, 0 0 -1 1 0, 0 0 0 1 0" /><feMerge><feMergeNode in="WHITENED" /><feMergeNode in="SourceGraphic" /></feMerge>< /filter>< /defs>';
+        this.svg.innerHTML = '<defs><filter id="whiteOutlineEffect" ><feMorphology in="SourceAlpha" result = "MORPH" operator = "dilate" radius = "2" /><feColorMatrix in="MORPH" result = "WHITENED" type = "matrix" values = "-1 0 0 1 0, 0 -1 0 1 0, 0 0 -1 1 0, 0 0 0 1 0" /><feMerge><feMergeNode in="WHITENED" /><feMergeNode in="SourceGraphic" /></feMerge>< /filter>< /defs>';
 
-        let description = document.createElement("div");
+        // Description of the visualisation
+        const description = document.createElement("p");
         description.classList.add("description");
-        this.holder.appendChild(description);
-        description.innerHTML = "This visualisation displays the structure of the URL in this column.";
+        description.innerHTML = "This diagram represents how the different values of successive URLs parts are related to each other. The thicker and brighter an edge is, the more URLs share the two values it connects. You can display more or less of the path elements by using the two dedicated buttons.";
+        this.parent.prepend(description);
 
         
 

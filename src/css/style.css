@@ -193,8 +193,12 @@ body.popup-displayed {
     height: 80px;
 }
 
-.sankey .description {
-    position: absolute;
+.popup .description {
+    max-width: 1280px;
+    margin: 0 auto;
+    color: #666;
+    font-size: 1.2rem;
+    text-align: center;
 }
 
 /* Word Cloud */
