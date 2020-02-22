@@ -5,8 +5,8 @@ export class SimplifiedURL {
     node: HTMLElement;
     private analysis: URLAnalysis;
 
-    constructor(href: string) {
-        this.analysis = new URLAnalysis(href);
+    constructor(analysis: URLAnalysis) {
+        this.analysis = analysis;
         this.createNode();
     }
 

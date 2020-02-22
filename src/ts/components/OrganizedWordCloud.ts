@@ -1,7 +1,9 @@
+import tippy from 'tippy.js';
+
 import { Column } from '../dataStructures/DataFrame';
 import { URLAnalysis } from '../analyses/URLAnalysis';
 import { MapCounter } from '../utils/MapCounter';
-import tippy from 'tippy.js';
+import { ResponseDataCell } from '../SPARQLResponseVisualisation';
 
 export class OrganizedWordCloud {
     parent: HTMLElement;

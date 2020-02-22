@@ -11,9 +11,9 @@ export class Dashboard {
     private column: Series;
     private columnAnalysis: ColumnAnalysis;
 
-    constructor(column: Series) {
+    constructor(column: Series, analysis: ColumnAnalysis) {
         this.column = column;
-        this.columnAnalysis = new ColumnAnalysis(column);
+        this.columnAnalysis = analysis;
 
         this.init();
     }

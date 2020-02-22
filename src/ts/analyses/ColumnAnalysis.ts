@@ -1,6 +1,7 @@
-import { Column } from '../dataStructures/DataFrame';
+import { Column as Column } from '../dataStructures/DataFrame';
 import { URLAnalysis } from './URLAnalysis';
 import { MapCounter } from '../utils/MapCounter';
+import { ResponseDataCell, ResponseDataCellType, URLResponseDataCell } from '../SPARQLResponseVisualisation';
 
 
 export enum CellType {
@@ -11,7 +12,7 @@ export enum CellType {
 
 
 export class ColumnAnalysis {
-    dataframeColumn: Column;
+    column: Column<ResponseDataCell>;
 
     cellTypes: MapCounter<CellType>;
     countries: MapCounter<string>;
@@ -23,8 +24,8 @@ export class ColumnAnalysis {
 
     properties: string[] = ["protocol", "subdomains", "domain", "tld", "path"];
 
-    constructor(dataframeColumn: Column) {
-        this.dataframeColumn = dataframeColumn;
+    constructor(dataframeColumn: Column<ResponseDataCell>) {
+        this.column = dataframeColumn;
         
         this.cellTypes = MapCounter.fromEnum(CellType);
         this.countries = new MapCounter();
@@ -43,20 +44,22 @@ export class ColumnAnalysis {
 
     analyse() {
         let analysis;
-        for (let cell of this.dataframeColumn) {
-            try {
-                analysis = new URLAnalysis(cell);
+        for (let cell of this.column) {
+            if (cell.type === ResponseDataCellType.URL) {
+                const analysis = (cell as URLResponseDataCell).analysis;
+
                 this.cellTypes.count(CellType.URL);
                 this.countries.count(analysis.country);
 
                 for (let i = 0; i < this.properties.length; i++) {
                     this.countPropertyValue(analysis, this.properties[i]);
                 }
-            } catch (error) {
+            }
+            else {
                 if (cell === undefined
-                ||  cell === null
-                ||  cell.toString().trim() === "") {
-                    this.cellTypes.count(CellType.Empty);
+                    ||  cell === null
+                    ||  cell.toString().trim() === "") {
+                        this.cellTypes.count(CellType.Empty);
                 }
                 else {
                     this.cellTypes.count(CellType.Text);

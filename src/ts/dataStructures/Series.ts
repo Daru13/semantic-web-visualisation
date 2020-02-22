@@ -1,4 +1,4 @@
-export type Cell<T = any> = any;
+export type Cell<T = any> = T;
 
 
 export class Series<T = any> {
@@ -25,7 +25,7 @@ export class Series<T = any> {
         return this.content[index];
     }
 
-    map<U>(f: (value: T) => U, name: string = "<mapped>"): Series<U> {
+    map<U>(f: (value: T) => U, name: string = this.name): Series<U> {
         return new Series(this.content.map(f), name);
     }
 

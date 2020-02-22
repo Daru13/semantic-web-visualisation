@@ -1,6 +1,7 @@
-import { DataFrame } from "../dataStructures/DataFrame";
 import { SimplifiedURL } from "./SimplifiedURL";
 import { Dashboard } from "./Dashboard";
+import { ColumnAnalysis } from '../analyses/ColumnAnalysis';
+import { ResponseData, ResponseDataCellType, URLResponseDataCell, TextResponseDataCell } from '../SPARQLResponseVisualisation';
 
 
 interface DataTablePage {
@@ -10,7 +11,8 @@ interface DataTablePage {
 
 
 export class DataTable {
-    private content: DataFrame;
+    private content: ResponseData;
+    private contentColumnAnalyses: Map<string, ColumnAnalysis>;
 
     node: HTMLElement;
     private contentContainerNode: HTMLElement;
@@ -26,10 +28,11 @@ export class DataTable {
     private updateDimensionsCallback: () => void;
     private changePageCallback: (event: KeyboardEvent) => void;
 
-    constructor(content: DataFrame) {
+    constructor(content: ResponseData, contentColumnAnalyses: Map<string, ColumnAnalysis>) {
         this.content = content;
-        const contentLength = content.length();
+        this.contentColumnAnalyses = contentColumnAnalyses;
 
+        const contentLength = content.length();
         this.cachedPages = new Map();
         this.currentPage = null;
         this.currentPageNumber = 1;
@@ -103,19 +106,21 @@ export class DataTable {
                 const cellNode = document.createElement("td");
                 cellNode.classList.add("data-cell");
 
-                try {
-                    const simplifiedURL = new SimplifiedURL(encodeURI(cell));
+                if (cell.type === ResponseDataCellType.URL) {
+                    const analysis = (cell as URLResponseDataCell).analysis;
+                    const simplifiedURL = new SimplifiedURL(analysis);
 
                     const urlLinkNode = document.createElement("a");
-                    urlLinkNode.setAttribute("href", cell);
+                    urlLinkNode.setAttribute("href", analysis.url.href);
                     urlLinkNode.setAttribute("target", "_blank");
                     urlLinkNode.append(simplifiedURL.node);
 
                     cellNode.append(urlLinkNode);
                     cellNode.classList.add("url");
                 }
-                catch (_) {
-                    cellNode.textContent = cell;
+                else {
+                    const rawText = (cell as TextResponseDataCell).text;
+                    cellNode.textContent = rawText;
                     cellNode.classList.add("text");
                 }
 
@@ -204,7 +209,8 @@ export class DataTable {
 
     private createDashboards(): void {
         for (let column of this.content.columns()) {
-            const dashboard = new Dashboard(column);
+            const analysis = this.contentColumnAnalyses.get(column.name);
+            const dashboard = new Dashboard(column, analysis);
             this.dashboardContainerNode.append(dashboard.node);
         }
     }
@@ -285,10 +291,5 @@ export class DataTable {
 
     stopChangingPageOnKeyDown() {
         window.removeEventListener("keydown", this.changePageCallback);
-    }
-
-    static fromHTMLTable(contentContainerNode: HTMLElement): DataTable {
-        const df = DataFrame.fromHTMLTable(contentContainerNode);
-        return new DataTable(df);
     }
 }

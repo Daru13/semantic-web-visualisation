@@ -1,7 +1,7 @@
 import { Series, Cell } from './Series';
 
 
-export type Column<T = any> = Series<T>;
+export type Column<T> = Series<T>;
 
 
 export class DataFrame<T = any> {
@@ -38,7 +38,7 @@ export class DataFrame<T = any> {
     }
 
     * rows(start?: number, length?: number): IterableIterator<Cell<T>[]> {
-        const columnContentIterators: IterableIterator<Cell<T>[]>[] = [];
+        const columnContentIterators: IterableIterator<Cell<T>>[] = [];
         for (let column of this.content.values()) {
             columnContentIterators.push(column.values(start, length));
         }
@@ -72,6 +72,15 @@ export class DataFrame<T = any> {
                 yield value;
             }
         }
+    }
+
+    map<U>(f: (value: T) => U): DataFrame<U> {
+        const content = new Map();
+        for (let column of this.columns()) {
+            content.set(column.name, column.map(f));
+        }
+
+        return new DataFrame(content);
     }
 
     static fromHTMLTable(tableNode: HTMLElement) {
