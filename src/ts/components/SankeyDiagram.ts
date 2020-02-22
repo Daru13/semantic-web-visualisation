@@ -110,7 +110,7 @@ export class SankeyDiagram {
         // Description of the visualisation
         const description = document.createElement("p");
         description.classList.add("description");
-        description.innerHTML = "This diagram represents how the different values of successive URLs parts are related to each other. The thicker and brighter an edge is, the more URLs share the two values it connects. You can display more or less of the path elements by using the two dedicated buttons.";
+        description.innerHTML = "This diagram represents how the different values of successive URLs parts are related to each other. The thicker and brighter an edge is, the more URLs share the two values it connects. You can change the number of path components to display using the two buttons at the bottom.";
         this.parent.prepend(description);
 
         // Description of the "path buttons"
