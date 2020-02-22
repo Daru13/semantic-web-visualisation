@@ -3,7 +3,7 @@ import tippy from 'tippy.js';
 import { Column } from '../dataStructures/DataFrame';
 import { URLAnalysis } from '../analyses/URLAnalysis';
 import { MapCounter } from '../utils/MapCounter';
-import { ResponseDataCell } from '../SPARQLResponseVisualisation';
+import { ResponseDataCell, ResponseDataCellType, URLResponseDataCell, TextResponseDataCell } from '../SPARQLResponseVisualisation';
 
 export class OrganizedWordCloud {
     parent: HTMLElement;
@@ -11,7 +11,7 @@ export class OrganizedWordCloud {
     wordCount: MapCounter<string>;
     wordToOriginal: Map<string, MapCounter<string>>;
 
-    constructor(column: Column, parent: HTMLElement, numberOfWords: number = column.length()) {
+    constructor(column: Column<ResponseDataCell>, parent: HTMLElement, numberOfWords: number = column.length()) {
         this.parent = parent;
         this.holder = document.createElement("div");
         this.holder.classList.add("word-cloud");
@@ -22,7 +22,7 @@ export class OrganizedWordCloud {
         this.setupUI(column, numberOfWords);
     }
 
-    private setupUI(column: Column, numberOfWords: number): void {
+    private setupUI(column: Column<ResponseDataCell>, numberOfWords: number): void {
         // Description of the visualisation
         const description = document.createElement("p");
         description.classList.add("description");
@@ -33,20 +33,24 @@ export class OrganizedWordCloud {
         this.drawCloud(numberOfWords);
     }
     
-    private countWords(column: Column): void {
-        let analyse;
-        let word;
-        for (let url of column) {
-            try {
-                analyse = new URLAnalysis(url);
-                word = analyse.path[analyse.path.length - 1];
-                this.countWord(word, url);
-            } catch (error) {
-                word = url;
-                let words = word.split(/,|;|\/| - | et /g);
-                words.forEach((w: string) => {
-                    this.countWord(w, url);
-                })
+    private countWords(column: Column<ResponseDataCell>): void {
+        let word: string;
+        for (let cell of column) {
+            if (cell.type === ResponseDataCellType.URL) {
+                const analysis = (cell as URLResponseDataCell).analysis;
+                word = analysis.path[analysis.path.length - 1];
+                this.countWord(word,analysis.href);
+            } else {
+                if (!(cell === undefined
+                    || cell === null
+                    || cell.toString().trim() === "")) {
+
+                    word = (cell as TextResponseDataCell).text;
+                    let words = word.split(/,|;|\/| - | et /g);
+                    words.forEach((w: string) => {
+                        this.countWord(w, word);
+                    });
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 import { Column } from '../dataStructures/DataFrame';
 import { URLAnalysis } from '../analyses/URLAnalysis';
 import tippy from 'tippy.js';
+import { ResponseDataCell, ResponseDataCellType, URLResponseDataCell } from '../SPARQLResponseVisualisation';
 
 const BUTTON_HEIGHT = 50;
 const SPACE_BETWEEN_COLUMNS = 400;
@@ -53,7 +54,7 @@ export class SankeyDiagram {
     /**
      * Data column represented by the sankey diagram
      */
-    dataColumn: Column;
+    dataColumn: Column<ResponseDataCell>;
 
     subdomainsColumns: Map<number, SankeyColumn>;
     domainColumn: SankeyColumn;
@@ -74,7 +75,7 @@ export class SankeyDiagram {
 
     indexLastPathColumnDrawn: number;
 
-    constructor(column: Column, parent: HTMLElement) {
+    constructor(column: Column<ResponseDataCell>, parent: HTMLElement) {
         this.dataColumn = column
         this.parent = parent;
         
@@ -123,9 +124,9 @@ export class SankeyDiagram {
      * Computes whats needed to draw the columns
      */
     private computeColumns(): void {
-        for (let url of this.dataColumn) {
-            try{
-                let analysis = new URLAnalysis(url);
+        for (let cell of this.dataColumn) {
+            if (cell.type === ResponseDataCellType.URL) {
+                let analysis = (cell as URLResponseDataCell).analysis;
                 this.urlNumber += 1;
 
                 let domain = analysis.domain + "." + analysis.tld;
@@ -163,30 +164,28 @@ export class SankeyDiagram {
                             .elements.get(subdomains[i]), domain);
                     }
                 }
-            } catch { }
-
-            /** Set previous and next columns for every columns */
-            for(let i = this.subdomainsColumns.size - 1; i >= 0; i--) {
-                if (i > 1){
-                    this.subdomainsColumns.get(i).nextColumn = this.subdomainsColumns.get(i - 1);
-                    this.subdomainsColumns.get(i - 1).previousColumn = this.subdomainsColumns.get(i);
-                } else {
-                    this.subdomainsColumns.get(i).nextColumn = this.domainColumn;
-                    this.domainColumn.previousColumn = this.subdomainsColumns.get(i);
-                }
-            }
-
-            for (let i = 0; i < this.pathColumns.size; i++) {
-                if (i > 0) {
-                    this.pathColumns.get(i - 1).nextColumn = this.pathColumns.get(i);
-                    this.pathColumns.get(i).previousColumn = this.pathColumns.get(i - 1);
-                } else {
-                    this.domainColumn.nextColumn = this.pathColumns.get(i);
-                    this.pathColumns.get(i).previousColumn = this.domainColumn;
-                }
             }
         }
-        console.log(this);
+        /** Set previous and next columns for every columns */
+        for (let i = this.subdomainsColumns.size - 1; i >= 0; i--) {
+            if (i > 1) {
+                this.subdomainsColumns.get(i).nextColumn = this.subdomainsColumns.get(i - 1);
+                this.subdomainsColumns.get(i - 1).previousColumn = this.subdomainsColumns.get(i);
+            } else {
+                this.subdomainsColumns.get(i).nextColumn = this.domainColumn;
+                this.domainColumn.previousColumn = this.subdomainsColumns.get(i);
+            }
+        }
+
+        for (let i = 0; i < this.pathColumns.size; i++) {
+            if (i > 0) {
+                this.pathColumns.get(i - 1).nextColumn = this.pathColumns.get(i);
+                this.pathColumns.get(i).previousColumn = this.pathColumns.get(i - 1);
+            } else {
+                this.domainColumn.nextColumn = this.pathColumns.get(i);
+                this.pathColumns.get(i).previousColumn = this.domainColumn;
+            }
+        }
     }
 
     /**
