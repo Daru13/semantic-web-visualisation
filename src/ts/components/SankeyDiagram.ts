@@ -113,7 +113,11 @@ export class SankeyDiagram {
         description.innerHTML = "This diagram represents how the different values of successive URLs parts are related to each other. The thicker and brighter an edge is, the more URLs share the two values it connects. You can display more or less of the path elements by using the two dedicated buttons.";
         this.parent.prepend(description);
 
-        
+        // Description of the "path buttons"
+        const pathButtonsTitle = document.createElement("p");
+        pathButtonsTitle.classList.add("title");
+        pathButtonsTitle.innerHTML = "Path components";
+        this.pathButtonsHolder.prepend(pathButtonsTitle);
 
         this.computeColumns();
         this.drawColumns();
@@ -238,7 +242,7 @@ export class SankeyDiagram {
         this.indexLastPathColumnDrawn = 0;
 
         if (this.pathColumns.size > this.indexLastPathColumnDrawn) {
-            this.addPathButton("+", () => {
+            this.addPathButton("+", "add", () => {
                 if (this.indexLastPathColumnDrawn < this.pathColumns.size) {
                     this.indexLastPathColumnDrawn += 1;
                     this.drawColumn(this.pathColumns.get(this.indexLastPathColumnDrawn), x, "");
@@ -250,7 +254,7 @@ export class SankeyDiagram {
                 }
             });
 
-            this.addPathButton("-", () => {
+            this.addPathButton("-", "remove", () => {
                 if (this.indexLastPathColumnDrawn > 0) {
                     x -= this.pathColumns.get(this.indexLastPathColumnDrawn).width + SPACE_BETWEEN_COLUMNS;
                     this.removeColumn(this.pathColumns.get(this.indexLastPathColumnDrawn));
@@ -454,9 +458,9 @@ export class SankeyDiagram {
         return 50;
     }
 
-    private addPathButton(label: string, callBack: () => void) {
+    private addPathButton(label: string, className: string, callBack: () => void) {
         let button = document.createElement("button");
-        button.classList.add("button");
+        button.classList.add("button", className);
 
         button.innerHTML = label;
 

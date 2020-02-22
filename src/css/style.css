@@ -183,14 +183,70 @@ body.popup-displayed {
 
 .sankey #path-buttons-holder {
     display: flex;
-    flex-direction: column;
-
     position: absolute;
-    right: 0;
-    top: calc(50% - 40px);
+    bottom: 20px;
+    left: calc(50% - 140px);
+    padding: 5px;
+    background-color: #DDD;
+}
 
-    width: 80px;
-    height: 80px;
+.sankey #path-buttons-holder .title {
+    order: 2;
+    box-sizing: border-box;
+    display: inline-block;
+    width: 150px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    font-size: 1.2rem;
+    text-align: center;
+    line-height: 40px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.sankey #path-buttons-holder button {
+    box-sizing: border-box;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    background-color: #444;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: none;
+    color: transparent;
+    font-size: 2rem;
+    vertical-align: middle;
+    line-height: 40px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.sankey #path-buttons-holder button.add {
+    order: 3;
+    margin: 0 0 0 20px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path fill="lightgrey" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+}
+
+.sankey #path-buttons-holder button.remove {
+    order: 1;
+    margin: 0 20px 0 0;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path fill="lightgrey" d="M19 13H5v-2h14v2z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+}
+
+.sankey #path-buttons-holder button:hover {
+    background-color: #fe9929;
+}
+
+.sankey #path-buttons-holder button.add:hover {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path fill="black" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+
+}
+
+.sankey #path-buttons-holder button.remove:hover {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path fill="black" d="M19 13H5v-2h14v2z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+
 }
 
 .popup .description {
