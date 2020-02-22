@@ -243,7 +243,7 @@ export class SankeyDiagram {
 
         if (this.pathColumns.size > this.indexLastPathColumnDrawn) {
             this.addPathButton("+", "add", () => {
-                if (this.indexLastPathColumnDrawn < this.pathColumns.size) {
+                if (this.indexLastPathColumnDrawn < this.pathColumns.size - 1) {
                     this.indexLastPathColumnDrawn += 1;
                     this.drawColumn(this.pathColumns.get(this.indexLastPathColumnDrawn), x, "");
                     x += this.pathColumns.get(this.indexLastPathColumnDrawn).width + SPACE_BETWEEN_COLUMNS;
