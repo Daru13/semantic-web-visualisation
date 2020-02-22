@@ -1,13 +1,13 @@
 import { Series, Cell } from './Series';
 
 
-export type Column = Series;
+export type Column<T = any> = Series<T>;
 
 
-export class DataFrame {
-    private readonly content: Map<string, Column>;
+export class DataFrame<T = any> {
+    private readonly content: Map<string, Column<T>>;
 
-    constructor(content: Map<string, Column>) {
+    constructor(content: Map<string, Column<T>>) {
         this.content = content;
     }
 
@@ -15,11 +15,11 @@ export class DataFrame {
         return Math.max(...[...this.columns()].map(c => c.length()));
     }
 
-    column(name: string): Column {
+    column(name: string): Column<T> {
         return this.content.get(name);
     }
 
-    columns(): IterableIterator<Column> {
+    columns(): IterableIterator<Column<T>> {
         return this.content.values();
     }
 
@@ -27,7 +27,7 @@ export class DataFrame {
         return this.content.keys();
     }
 
-    row(index: number): Cell[] {
+    row(index: number): Cell<T>[] {
         const values = [];
 
         for (let column of this.content.values()) {
@@ -37,8 +37,8 @@ export class DataFrame {
         return values;
     }
 
-    * rows(start?: number, length?: number): IterableIterator<Cell[]> {
-        const columnContentIterators: IterableIterator<Cell[]>[] = [];
+    * rows(start?: number, length?: number): IterableIterator<Cell<T>[]> {
+        const columnContentIterators: IterableIterator<Cell<T>[]>[] = [];
         for (let column of this.content.values()) {
             columnContentIterators.push(column.values(start, length));
         }
@@ -66,7 +66,7 @@ export class DataFrame {
         }
     }
 
-    * values(): IterableIterator<Cell> {
+    * values(): IterableIterator<Cell<T>> {
         for (let column of this.columns()) {
             for (let value of column.values()) {
                 yield value;
