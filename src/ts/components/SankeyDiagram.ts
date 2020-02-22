@@ -366,6 +366,9 @@ export class SankeyDiagram {
         let percentage = e.nb / this.urlNumber;
         let height = Math.max(MIN_SIZE_NODE, percentage * MAX_SIZE_NODE);
 
+        column.columnHolder.appendChild(e.rectangle);
+        column.columnHolder.appendChild(e.text);
+
         e.rectangle.setAttribute("x", x.toString());
         e.rectangle.setAttribute("y", y.toString());
         e.rectangle.setAttribute("height", height.toString());
@@ -374,16 +377,12 @@ export class SankeyDiagram {
             e.preventDefault();
             e.stopPropagation();
             this.highLight(k, column);
-        })
+        });
 
-        e.text.setAttribute("y", (y + height / 2).toString());
-        e.text.setAttribute("alignment-baseline", "middle");
-        //e.text.style.fill = (percentage < 0.3) ? "black" : "white";
-        e.text.style.fontSize = `${TEXT_FONT_SIZE * 0.5}px`;
         e.text.innerHTML = k;
-        
-        column.columnHolder.appendChild(e.rectangle);
-        column.columnHolder.appendChild(e.text);
+        e.text.style.fontSize = `${TEXT_FONT_SIZE * 0.5}px`;
+        let textHeight = e.text.getBBox().height;
+        e.text.setAttribute("y", (y + height / 2 + textHeight / 4).toString());
         
         this.addToolTip(e.rectangle, percentage * 100);
         
@@ -415,18 +414,21 @@ export class SankeyDiagram {
         let buttonRect = document.createElementNS(SVG_NAME_SPACE, "rect");
         let buttonText = document.createElementNS(SVG_NAME_SPACE, "text");
 
+        button.appendChild(buttonRect);
+        button.appendChild(buttonText);
+        parent.appendChild(button);
+
         button.classList.add("button");
 
         buttonRect.setAttribute("x", x.toString());
         buttonRect.setAttribute("y", y.toString());
         buttonRect.setAttribute("height", BUTTON_HEIGHT.toString());
         buttonRect.setAttribute("width", "50");
-        //buttonRect.style.fill = this.getFillColor(1 - Math.min(1, y / this.urlNumber));
 
-        buttonText.setAttribute("x", x.toString());
-        buttonText.setAttribute("y", (y + 25).toString());
-        buttonText.setAttribute("alignment-baseline", "middle");
         buttonText.innerHTML = label;
+        buttonText.setAttribute("x", x.toString());
+        let textHeight = buttonText.getBBox().height;
+        buttonText.setAttribute("y", (y + BUTTON_HEIGHT / 2 + textHeight / 4).toString());
 
         button.addEventListener("click", (e) => {
             e.preventDefault();
@@ -434,9 +436,7 @@ export class SankeyDiagram {
             callBack();
         });
 
-        button.appendChild(buttonRect);
-        button.appendChild(buttonText);
-        parent.appendChild(button);
+        
     }
 
     private addPathButtons() {
