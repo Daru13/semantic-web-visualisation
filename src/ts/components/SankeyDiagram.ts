@@ -438,7 +438,7 @@ export class SankeyDiagram {
         buttonRect.setAttribute("y", y.toString());
         buttonRect.setAttribute("height", "50");
         buttonRect.setAttribute("width", "50");
-        buttonRect.style.fill = this.getFillColor(1 - Math.min(1, y / this.urlNumber));
+        //buttonRect.style.fill = this.getFillColor(1 - Math.min(1, y / this.urlNumber));
 
         buttonText.setAttribute("x", x.toString());
         buttonText.setAttribute("y", (y + 25).toString());

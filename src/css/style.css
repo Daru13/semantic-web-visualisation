@@ -161,8 +161,7 @@ body.popup-displayed {
 }
 
 .sankey svg path {
-    stroke: white;
-    stroke-width: 2px;
+    stroke: none;
 }
 
 .sankey svg text {
@@ -171,14 +170,30 @@ body.popup-displayed {
     filter: url("#whiteOutlineEffect");
 }
 
-.sankey svg .button text {
-    font-size: 50px;
-}
-
 .sankey svg rect {
     stroke: white;
     stroke-width: 2px;
 }
+
+.sankey svg .button rect {
+    fill: #444;
+}
+
+.sankey svg .button:hover rect {
+    fill: #fe9929;
+}
+
+.sankey svg .button text {
+    font-size: 50px;
+    fill: white;
+    filter: none;
+}
+
+.sankey svg .button:hover text {
+    fill: black;
+}
+
+
 
 
 .sankey #path-buttons-holder {
