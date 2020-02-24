@@ -62,7 +62,7 @@ export class SPARQLResponseVisualisation {
                 catch (_) {
                     return {
                         type: ResponseDataCellType.Text,
-                        analysis: cell
+                        text: cell
                     };
                 }
             });
