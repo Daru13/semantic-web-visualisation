@@ -8,7 +8,7 @@ export default {
   
   output: [
     {
-      file: "build/main.min.js",
+      file: "build/js/main.min.js",
       format: "umd",
       globals: {
           "popper.js": "popper",
@@ -31,7 +31,12 @@ export default {
 
     copy({
       targets: [
-        { src: "src/css/**/*.css", dest: "build"}
+        { src: "src/css", dest: "build"},
+        { src: "src/demos", dest: "build"},
+        { src: "src/fonts", dest: "build"},
+        { src: "src/img", dest: "build"},
+        { src: "src/lib", dest: "build"},
+        { src: "src/index.html", dest: "build"}
       ]
     }),
   ],
