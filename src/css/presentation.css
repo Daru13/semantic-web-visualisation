@@ -65,9 +65,28 @@ body {
     text-align: center;
 }
 
+#cover-picture {
+    width: 100%;
+    height: 271px;
+    margin: 50px 0 0 0;
+    background-size: contain;
+    background-image: url("../img/before-after.png");
+    background-repeat: no-repeat;
+}
+
+@media only screen and (max-width: 900px) {
+    #cover-picture {
+        height: 33vw;
+    }
+}
+
 section {
     margin: 50px 0 20px 0;
     text-align: justify;
+}
+
+section:nth-of-type(1) {
+    margin-top: 20px;
 }
 
 section h2 {
@@ -101,6 +120,7 @@ section a:active {
 }
 
 #demo-description {
+    margin: 50px 0;
     border: none;
     border-collapse: collapse;
 }
