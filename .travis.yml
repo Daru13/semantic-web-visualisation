@@ -13,7 +13,7 @@ install:
 script:
   - yarn build
   - mkdir deploy
-  - mv build demos deploy
+  - mv build src/demos deploy
   - touch deploy/.nojekyll
 
 deploy:
