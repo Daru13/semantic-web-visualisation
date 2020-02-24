@@ -13,7 +13,9 @@ install:
 script:
   - yarn build
   - mkdir deploy
-  - mv build src/demos deploy
+  - mkdir deploy/js
+  - mv build/* deploy/js
+  - mv src/demos/* src/index.html deploy
   - touch deploy/.nojekyll
 
 deploy:
