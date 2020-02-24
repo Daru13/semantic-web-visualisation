@@ -15,7 +15,8 @@ script:
   - mkdir deploy
   - mkdir deploy/js
   - mv build/* deploy/js
-  - mv src/demos/* src/index.html deploy
+  - mv src/* deploy
+  - rm -rf deploy/ts
   - touch deploy/.nojekyll
 
 deploy:
