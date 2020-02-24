@@ -13,10 +13,7 @@ install:
 script:
   - yarn build
   - mkdir deploy
-  - mkdir deploy/js
-  - mv build/* deploy/js
-  - mv src/* deploy
-  - rm -rf deploy/ts
+  - mv build/* deploy
   - touch deploy/.nojekyll
 
 deploy:
