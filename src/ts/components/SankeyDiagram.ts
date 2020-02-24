@@ -365,6 +365,9 @@ export class SankeyDiagram {
         let percentage = e.nb / this.urlNumber;
         let height = Math.max(MIN_SIZE_NODE, percentage * MAX_SIZE_NODE);
 
+        column.columnHolder.appendChild(e.rectangle);
+        column.columnHolder.appendChild(e.text);
+
         e.rectangle.setAttribute("x", x.toString());
         e.rectangle.setAttribute("y", y.toString());
         e.rectangle.setAttribute("height", height.toString());
@@ -373,16 +376,12 @@ export class SankeyDiagram {
             e.preventDefault();
             e.stopPropagation();
             this.highLight(k, column);
-        })
+        });
 
-        e.text.setAttribute("y", (y + height / 2).toString());
-        e.text.setAttribute("alignment-baseline", "middle");
-        //e.text.style.fill = (percentage < 0.3) ? "black" : "white";
-        e.text.style.fontSize = `${TEXT_FONT_SIZE * 0.5}px`;
         e.text.innerHTML = k;
-        
-        column.columnHolder.appendChild(e.rectangle);
-        column.columnHolder.appendChild(e.text);
+        e.text.style.fontSize = `${TEXT_FONT_SIZE * 0.5}px`;
+        let textHeight = e.text.getBBox().height;
+        e.text.setAttribute("y", (y + height / 2 + textHeight / 4).toString());
         
         this.addToolTip(e.rectangle, percentage * 100);
         
@@ -414,18 +413,21 @@ export class SankeyDiagram {
         let buttonRect = document.createElementNS(SVG_NAME_SPACE, "rect");
         let buttonText = document.createElementNS(SVG_NAME_SPACE, "text");
 
+        button.appendChild(buttonRect);
+        button.appendChild(buttonText);
+        parent.appendChild(button);
+
         button.classList.add("button");
 
         buttonRect.setAttribute("x", x.toString());
         buttonRect.setAttribute("y", y.toString());
         buttonRect.setAttribute("height", BUTTON_HEIGHT.toString());
         buttonRect.setAttribute("width", "50");
-        //buttonRect.style.fill = this.getFillColor(1 - Math.min(1, y / this.urlNumber));
 
-        buttonText.setAttribute("x", x.toString());
-        buttonText.setAttribute("y", (y + 25).toString());
-        buttonText.setAttribute("alignment-baseline", "middle");
         buttonText.innerHTML = label;
+        buttonText.setAttribute("x", x.toString());
+        let textHeight = buttonText.getBBox().height;
+        buttonText.setAttribute("y", (y + BUTTON_HEIGHT / 2 + textHeight / 4).toString());
 
         button.addEventListener("click", (e) => {
             e.preventDefault();
@@ -433,9 +435,7 @@ export class SankeyDiagram {
             callBack();
         });
 
-        button.appendChild(buttonRect);
-        button.appendChild(buttonText);
-        parent.appendChild(button);
+        
     }
 
     private addPathButtons() {
@@ -602,42 +602,34 @@ export class SankeyDiagram {
     private highLight(firstElement: string, firstColumn: SankeyColumn, secondElement: string = firstElement, secondColumn: SankeyColumn = firstColumn) {
         this.rehighlight = () => { this.highLight(firstElement, firstColumn, secondElement, secondColumn); };
         this.setOpacitySvgElements("0.1");
-        let leftColumn = this.subdomainsColumns.get(this.subdomainsColumns.size - 1);
-        leftColumn
-            .elements
-            .forEach((v, k, m) => {
-                this.highlightBefore(k, leftColumn, firstElement, firstColumn);
-            });
+        if (firstColumn.previousColumn) {
+            this.highlightBefore(firstColumn.previousColumn, firstElement);
+        }
+        firstColumn.elements.get(firstElement).rectangle.style.opacity = "1";
+        firstColumn.elements.get(firstElement).text.style.opacity = "1";
         try {
             firstColumn.elements.get(firstElement).next.get(secondElement).path.style.opacity = "1";
         } catch {}
         this.highlightAfter(secondElement, secondColumn);
     }
 
-    private highlightBefore(ele: string, column: SankeyColumn, element: string, elementColumn: SankeyColumn) {
-        if (column === undefined) {
-            return false;
-        } else if (column === elementColumn) {
-            let isPresentInNext = ele === element;
-            if(isPresentInNext){
-                column.elements.get(ele).rectangle.style.opacity = "1";
-                column.elements.get(ele).text.style.opacity = "1";
-            }
-            return isPresentInNext;
-        } else {
+    private highlightBefore(column: SankeyColumn, element: string) {
+        column.elements.forEach((ele, key, m) => {
             let isPresentInNext = false;
-            column.elements.get(ele).next.forEach((v, k, m) => {
-                if (this.highlightBefore(k, column.nextColumn, element, elementColumn)) {
+            ele.next.forEach((v, k, m) => {
+                if (k === element) {
                     isPresentInNext = true;
                     v.path.style.opacity = "1";
                 }
             })
             if (isPresentInNext) {
-                column.elements.get(ele).rectangle.style.opacity = "1";
-                column.elements.get(ele).text.style.opacity = "1";
+                ele.rectangle.style.opacity = "1";
+                ele.text.style.opacity = "1";
+                if (column.previousColumn) {
+                    this.highlightBefore(column.previousColumn, key);
+                }
             }
-            return isPresentInNext;
-        }
+        });
     }
 
     private highlightAfter(ele: string, column: SankeyColumn) {
