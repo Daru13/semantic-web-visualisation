@@ -1,3 +1,5 @@
+import tippy from 'tippy.js';
+
 import { Series } from '../dataStructures/Series';
 import { ColumnAnalysis, CellType } from '../analyses/ColumnAnalysis';
 import { COUNTRIES_TO_CODES } from '../utils/Countries';
@@ -110,7 +112,7 @@ export class Dashboard {
         listTitleNode.textContent = "Top URL countries";
         visualisationNode.append(listTitleNode);
 
-        function addCountry(country: string, percent: number, isAggregate: boolean = true) {
+        function addCountry(country: string, percent: number, isAggregate: boolean = true): HTMLElement {
             const listEntryNode = document.createElement("div");
             listEntryNode.classList.add("list-entry");
             visualisationNode.append(listEntryNode);
@@ -159,6 +161,8 @@ export class Dashboard {
             barNode.classList.add("bar");
             barNode.style.width = `${(percent * 100).toFixed(1)}%`;
             barContainerNode.append(barNode);
+
+            return listEntryNode;
         }
 
         const maxTopCountries = 4;
@@ -184,7 +188,17 @@ export class Dashboard {
         }
 
         if (remainingCountriesPercent > 0) {
-            addCountry("Others", remainingCountriesPercent, true)
+            const listEntry = addCountry("Others", remainingCountriesPercent, true);
+            const tooltipData = sortedCountriesWithPercents
+                .slice(maxTopCountries)
+                .map(entry => {
+                    return {
+                        value: entry.country,
+                        percent: entry.percent
+                    };
+                });
+
+            this.createValueToPercentListTooltip(listEntry, tooltipData);
         }
 
         this.node.append(visualisationNode);
@@ -198,7 +212,7 @@ export class Dashboard {
         listTitleNode.textContent = "Top URL domains";
         visualisationNode.append(listTitleNode);
 
-        function addDomain(domain: string, percent: number, isAggregate: boolean = true) {
+        function addDomain(domain: string, percent: number, isAggregate: boolean = true): HTMLElement {
             const listEntryNode = document.createElement("div");
             listEntryNode.classList.add("list-entry");
             visualisationNode.append(listEntryNode);
@@ -231,6 +245,8 @@ export class Dashboard {
             barNode.classList.add("bar");
             barNode.style.width = `${(percent * 100).toFixed(1)}%`;
             barContainerNode.append(barNode);
+        
+            return listEntryNode;
         }
 
         const maxTopDomains = 4;
@@ -239,9 +255,9 @@ export class Dashboard {
         const totalCount = [...counters.values()]
             .reduce((sum, count) => sum + count, 0);
         const sortedDomainsWithPercents = [...counters.entries()]
-            .map(([country, count]) => {
+            .map(([domain, count]) => {
                 return {
-                    country: country,
+                    domain: domain,
                     percent: count / totalCount
                 };
             })
@@ -253,12 +269,22 @@ export class Dashboard {
             .reduce((sum, obj) => sum + obj.percent, 0);
         
         for (let domainWithPercent of topDomainsWithPercents) {
-            addDomain(domainWithPercent.country, domainWithPercent.percent, false);
+            addDomain(domainWithPercent.domain, domainWithPercent.percent, false);
         }
 
         if (remainingDomainsPercent > 0) {
-            addDomain("Others", remainingDomainsPercent, true)
-        }
+            const listEntry = addDomain("Others", remainingDomainsPercent, true);
+            const tooltipData = sortedDomainsWithPercents
+            .slice(maxTopDomains)
+            .map(entry => {
+                return {
+                    value: entry.domain,
+                    percent: entry.percent
+                };
+            });
+
+        this.createValueToPercentListTooltip(listEntry, tooltipData);
+    }
 
         this.node.append(visualisationNode);
     }
@@ -303,5 +329,35 @@ export class Dashboard {
         buttonAreaNode.append(displayWordCloudButton);
 
         this.node.append(buttonAreaNode);
+    }
+
+    createValueToPercentListTooltip(element: HTMLElement, data: {value: string, percent: number}[]) {
+        const tooltipContent = document.createElement("div");
+        tooltipContent.classList.add("two-columns-tooltip-content");
+        
+        for (let entry of data) {
+            const entryValue = entry.value;
+            const entryPercent = entry.percent;
+            const percentAsText = entryPercent > 0.99 && entryPercent < 1.0 ? ">99%"
+                                : entryPercent < 0.01 && entryPercent > 0.0 ? "<1%"
+                                : `${(entryPercent * 100).toFixed(0)}%`;
+
+            const value = document.createElement("span");
+            value.classList.add("value");
+            value.textContent = entryValue;
+            tooltipContent.append(value);
+
+            const percent = document.createElement("span");
+            percent.classList.add("percent");
+            percent.textContent = percentAsText;
+            tooltipContent.append(percent);
+        }
+        
+        tippy(element, {
+            content: tooltipContent,
+            interactive: true,
+            maxWidth: window.innerWidth,
+            placement: "bottom-start"
+        });
     }
 }

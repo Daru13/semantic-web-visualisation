@@ -63,6 +63,16 @@ body.popup-displayed {
     background-color: white;
 }
 
+.two-columns-tooltip-content {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 10px;
+    font-family: "Roboto Mono", monospace;
+}
+
+.two-columns-tooltip-content .percent {
+    text-align: right;
+}
 
 
 /* Popup */
