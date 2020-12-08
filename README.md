@@ -5,7 +5,7 @@
 This project is a data visualisation class project targetting developers working with the **semantic web**.
 It is our attempt to visualise **results of SPARQL queries** (_e.g._ from [dpbedia](https://dbpedia.org/sparql)), which usually come in the form of long tables containing **lots of URIs** (though we actually focus on URLs, not all kinds of URIs).
 
-**[Try it on sample data online!](https://daru13.github.io/semantic-web-visualisation/demo/)** 
+**[Try it on sample data online!](https://daru13.github.io/semantic-web-visualisation/)** 
 
 ![Screenshot](misc/screenshots/before-after.png)
 
