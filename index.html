@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0,">
+    
+    <title>Visualising SPARQL responses</title>
+    
+    <link rel="stylesheet" href="./css/normalize.css">
+    <link rel="stylesheet" href="./css/presentation.css">
+</head>
+
+<body>
+    <h1 id="main-title">Visualising SPARQL responses</h1>
+    <span id="main-subtitle">&ldquo;Readable URIs&rdquo;</span>
+    <span id="authors">by Adrien C. and Camille G.</span>
+
+    <div id="cover-picture"></div>
+    
+    <section>
+        <p>
+            The World Wide Web (WWW) was invented about 30 years ago, and has undergone many improvements since then. One of them was the notion of <em>semantic web</em>, which is a subset of the WWW in which the semantic of the web pages can be understood and processed by computer programs. It has since then become a domain of reseach of its own, and led to the creation of databases of resources extracted from semantic web pages—notably <abbr title="Uniform Resource Identifier">URI</abbr>s (such as <a href="https://wiki.dbpedia.org/">DBpedia</a>). In order to <em>query</em> such databases, dedicated languages (such as SPARQL) have been created.
+        </p>
+
+        <p>
+            In order to help developers working with semantic web data, we built an interactive interface (to visualise the reponses returned by SPARQL queries: data table organised in columns which often contain a lot of URLs (a particular kind of URI). We based our work on the data returned by the responses of sample SPARQL queries ran on DBpedia (which initially looked like <a href="http://fr.dbpedia.org/sparql?default-graph-uri=&query=select+distinct+%3FConcept+where+%7B%5B%5D+a+%3FConcept%7D+LIMIT+100&format=text%2Fhtml&timeout=0&debug=on">this</a>). Our contribution (depicted above) is twofold:
+        </p>
+        
+        <ol>
+            <li>
+                we augment the data table with dashboards and simplify the representation of the URLs;
+            </li>
+            <li>
+                we propose two specialised visualisations to illustrate URL structures and column themes.
+            </li>
+        </ol>
+
+        <span class="alert"><a href="#demos" >Links to the demos</a> are listed at the bottom of this page.</span>
+        <span class="alert">Sources are available on this <a href="https://github.com/Daru13/semantic-web-visualisation">GitHub repository</a>.</span>
+    </section>
+    
+    <section>
+        <h2>Improvement of the data table</h2>
+        <p>
+            We started by improving the representation of URLs in the data table, assuming developers may want to have a look at the actual data returned by a SPARQL query they ran.
+            We chose to hide the most useless parts (such as the protocol) and to highlight the most meaningful ones for our target audience:
+        </p>
+
+        <ul>
+            <li>
+                the <strong>domain</strong> of the URL (where is the data located);
+            </li>
+            <li>
+                the <strong>country/language</strong> of the URL as a flag, when we could extract it from the URL;
+            </li>
+            <li>
+                the <strong>path</strong> of the URL (what is the name of this piece of data).
+            </li>
+        </ul>
+
+        <p>
+            In order to handle very long tables, we decided to <strong>paginate</strong> the table.
+            You can use the page browser at the bottom-right hand corner of your screen or the left/right arrow keys to navigate between pages.
+        </p>
+
+        <p>
+            We also added <strong>dashboards</strong> at the top of each column.
+            They display basics statistics about the content of the whole column and contain buttons to display more specific visualisations (described below).
+        </p>
+    </section>
+    
+    <section>
+        <h2>Visualisation of URL structures and column themes</h2>
+        When studying a column, a developer may want to focus on (1) the main themes of the data and (2) the plurality of the URL structures. We created two dedicated visulisations to help them perform such tasks.
+        <ul>
+            <li>
+                <p>
+                    The first one is a <strong>word cloud</strong>.
+                    It contains the keywords of a column organized from the most present to the least. A keywords is either the last part of the path or words extracted from textual cells.
+                </p>
+                <p>
+                    This visualisation allows to understand the dominant theme in a column. For example, in <a href="demo1.html">the first demo</a>, you can easily read the most popular musical genres.
+                </p>
+            </li>
+            <li>
+                <p>
+                    The second one is a <strong>Sankey diagram</strong>.
+                    It has three main columns: the subdomain, the domain with the domain extension (TLD), and the path.
+                </p>
+                <p>
+                    In each column, the more URLs contain a certain element (<em>e.g.</em> <span class="code">dbpedia.org</span>), the thicker and more saturated it will be. The same applies for the links between two columns: the more two elements appear in the same URLs, the thicker and more saturated the link will be.
+                </p>
+            </li>
+        </ul>
+    </section>
+    
+    <section id="demos">
+        <h2>Demo pages</h2>
+
+        <p>
+            Given the beta status and the requirements for using <a href="https://wiki.dbpedia.org/rest-api">DBpedia's REST API</a>, and given the limited time we had, we did not build a form where you could run any SPARQL query you want to visualise.
+        </p>
+
+        <p>
+            Instead, we uploaded a few demos based on SPARQL reponses obtained via DBpedia's <a href="http://fr.dbpedia.org/sparql">SPARQL query runner</a>. We used responses with different numbers of rows and/or columns in order to illustrate the robustness of the interface.
+        </p>
+
+        <table id="demo-description">
+            <thead>
+                <tr>
+                    <th>Link</th>
+                    <th>Description of the data</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="link">
+                        <a href="./demos/demo1.html" class="link">Demo 1</a>
+                    </td>
+                    <td class="description">
+                        Small subset of the sample SPARQL response about films we were given at the beginning of the project (3 columns, 500 rows).
+                    </td>
+                </tr>
+                <tr>
+                    <td class="link">
+                        <a href="./demos/demo2.html" class="link">Demo 2</a>
+                    </td>
+                    <td class="description">
+                        Large subset of the sample SPARQL response about music we were given at the beginning of the project (3 columns, 50,000 rows). It usually takes a few seconds to load.
+                    </td>
+                </tr>
+                <tr>
+                    <td class="link">
+                        <a href="./demos/demo3.html" class="link">Demo 3</a>
+                    </td>
+                    <td class="description">
+                        SPARQL response of DBpedia's example SPARQL request (1 column, 100 rows).
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>
+            While we only provide demos based on sampled reponses, you can easily visualise other SPARQL responses :
+            <ol>
+                <li>Export the result of the query generated by DBpedia's <a href="http://fr.dbpedia.org/sparql">SPARQL query runner</a> as HTML. Make sure the id attribute of the <span class="code">&lt;table&gt;</span> element is equal to "sparql-response";</li>
+                <li>Make a copy of one of the demo HTML files;</li>
+                <li>Replace the content of the <span class="code">&lt;body&gt;</span> with the table mentioned earlier.</li>
+            </ol>
+        </p>
+    </section>
+</body>
+</html>
